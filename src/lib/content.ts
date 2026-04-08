@@ -182,7 +182,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       requestQuote: "Request a free quote",
       bilingual: "English / 中文 support",
       placeholderBanner:
-        "Confirm the final production domain, legal company spelling and privacy wording before launch.",
+        "",
     },
     nav: {
       services: "Services",
@@ -198,7 +198,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "Licensed Canberra tiler | 22+ years | English & Chinese",
       title: "Canberra tiling, waterproofing and silicone for residential projects.",
       description:
-        "Floor tiling, wall tiling, bathroom waterproofing, splashbacks, stone cladding, feature columns, pool tiling and repair work across Canberra. Built to be clear for homeowners, search engines and AI search systems from the first screen.",
+        "Floor tiling, wall tiling, bathroom waterproofing, splashbacks, stone cladding, feature columns, pool tiling and repair work across Canberra. Suitable for bathroom renovations, living areas, kitchens, wet areas and smaller repair jobs.",
       badges: [
         "Bathrooms, floors and walls",
         "Waterproofing, silicone and regrouting",
@@ -221,43 +221,43 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     trust: {
-      eyebrow: "Why homeowners enquire",
-      title: "The page tells people and search systems exactly what you do.",
+      eyebrow: "Why homeowners choose LITA",
+      title: "Clear communication, careful workmanship and practical quoting.",
       description:
-        "The structure is intentionally direct: services, recent work, Canberra coverage, FAQ and contact details. That makes the business easier to understand, compare and contact.",
+        "Homeowners usually want to know three things first: whether you handle their type of job, whether you service their suburb and whether they can get a clear quote without wasting time. The aim is to make those answers clear from the start.",
       items: [
         {
           title: "Licensed trade",
           description:
-            "Licensed positioning is stated clearly in the hero, trust content and structured business data.",
+            "Licensed residential tiling and waterproofing experience gives homeowners more confidence when comparing local trades.",
         },
         {
           title: "22+ years",
           description:
-            "Experience is visible early so homeowners understand they are looking at an established residential trade business.",
+            "Over 22 years of experience means the work is approached with a practical understanding of preparation, layout, finishing and handover.",
         },
         {
           title: "Residential focus",
           description:
-            "The messaging stays aimed at Canberra homeowners, bathrooms, kitchens, floors and other residential projects.",
+            "The work is focused on Canberra homes, including bathrooms, kitchens, floors, feature walls, pool areas and smaller repair jobs.",
         },
         {
           title: "Free quotes",
           description:
-            "The primary conversion path is a free quote request with suburb, service type and project stage.",
+            "Quotes can start with a quick message, a few job details and the suburb, so it is easier to understand scope before scheduling.",
         },
         {
           title: "Workmanship warranty",
           description:
-            "Warranty language is included as a trust signal without making claims broader than the quoted scope.",
+            "Workmanship warranty is available, with final terms aligned to the quoted scope of work.",
         },
       ],
     },
     services: {
       eyebrow: "Core services",
-      title: "Residential tile and waterproofing work people actually search for.",
+      title: "Residential tiling, waterproofing and finishing across Canberra.",
       description:
-        "The service cards match local homeowner intent in Canberra and make it clear that the business covers both standard tiling work and more specialised residential finishes.",
+        "Services cover common bathroom and floor projects as well as splashbacks, silicone finishing, stone cladding, pool tiling and smaller repair work.",
       items: [
         {
           title: "Floor tiling",
@@ -353,11 +353,11 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     projects: {
       eyebrow: "Recent project highlights",
-      title: "Selected Canberra residential work from the current photo library.",
+      title: "Recent Canberra residential project highlights.",
       description:
-        "The examples below show the range of work immediately: bathrooms, floors, splashbacks, stone cladding and pool tiles.",
+        "These examples show the range of work across bathrooms, floors, splashbacks, stone cladding and pool tiling.",
       notice:
-        "Selected highlights from Canberra residential work, chosen to show bathrooms, floors, splashbacks, stone cladding and pool tiling in one place.",
+        "A selection of Canberra residential work to show the finish, scope and variety of jobs handled.",
       items: [
         {
           suburb: "Belconnen",
@@ -365,7 +365,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "Marble-look bathroom fit-out with shower screen, wall tiling, floor tiling and wet-area coordination for a cleaner, brighter finish.",
           result:
-            "A strong example for homeowners searching bathroom tiling Canberra, shower tiling Canberra and bathroom waterproofing Canberra.",
+            "A cleaner, brighter bathroom finish with coordinated waterproofing, wall tiling and floor tiling.",
           highlights: [
             "Bathroom waterproofing coordination",
             "Wall and floor tile layout",
@@ -378,7 +378,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "Open-plan living area finished with large-format floor tiles for a clean, low-maintenance surface across the main traffic zones of the home.",
           result:
-            "Useful for floor tiling Canberra searches because it shows real residential scale, alignment and edge detail rather than only close-up tile shots.",
+            "Shows large-format floor tiling across a real residential layout with neat thresholds and consistent grout lines.",
           highlights: [
             "Large-format floor tiles",
             "Open-plan residential layout",
@@ -391,7 +391,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "Kitchen splashback using small-format wall tiles with clean bench lines, corner finishing and a tidy silicone seal at key junctions.",
           result:
-            "Shows that smaller residential jobs are welcome and makes splashback tiling Canberra searches easier to convert.",
+            "A practical example of a smaller kitchen upgrade where neat cuts, alignment and finishing make the difference.",
           highlights: [
             "Kitchen splashback tiling",
             "Bench-edge silicone finish",
@@ -404,7 +404,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "Stacked-stone installation used to create a stronger focal point on a residential wall and column surface.",
           result:
-            "Broadens the site beyond standard wet areas and supports stone cladding Canberra, feature wall tiler and pillar cladding searches.",
+            "Shows detailed stone cladding work for a residential feature wall and column finish.",
           highlights: [
             "Stone cladding alignment",
             "Feature wall and column detailing",
@@ -417,7 +417,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "Swimming pool tiling example with mosaic-style finishes suited to pool interiors or waterline detailing in residential outdoor areas.",
           result:
-            "Helps qualify pool tiling enquiries early by showing that the business can handle more specialised tile environments as well as interiors.",
+            "Demonstrates pool-area tile work for residential outdoor spaces where finish and durability both matter.",
           highlights: [
             "Swimming pool tile finish",
             "Wet-area exterior detailing",
@@ -471,7 +471,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "Canberra service area",
       title: "Residential work across Canberra districts.",
       description:
-        "The site is intentionally local. It speaks to homeowners in Canberra rather than trying to sound national or generic.",
+        "Work is focused on Canberra residential projects, with regular service across the main districts and nearby suburbs.",
       coverageNote:
         "Core coverage includes Belconnen, Gungahlin, Woden Valley, Tuggeranong, Inner North, Inner South, Molonglo Valley and Weston Creek. If the property is nearby, send the suburb and we can confirm.",
     },
@@ -479,7 +479,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "FAQ",
       title: "Questions homeowners ask before requesting a quote.",
       description:
-        "The FAQ reduces hesitation and gives search engines and AI search systems clearer language around the business, the service area and the types of work offered.",
+        "These are the questions most homeowners ask before sending through photos, measurements or a quote request.",
       items: [
         {
           question: "Do you handle both waterproofing and tiling for bathrooms?",
@@ -494,7 +494,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           question: "Do you install stone cladding on feature walls or columns?",
           answer:
-            "Yes. The site is set up to support residential stone cladding enquiries for feature walls, pillars, entry details and other statement surfaces.",
+            "Yes. Stone cladding can be quoted for feature walls, pillars, entry details and other residential statement surfaces.",
         },
         {
           question: "Do you take swimming pool tiling jobs?",
@@ -509,7 +509,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           question: "Are quotes free?",
           answer:
-            "Yes. The site is built around free quote requests so homeowners can send the suburb, job type and project stage before work is booked in.",
+            "Yes. You can send the suburb, job type and project stage first, and the scope can be reviewed before work is booked in.",
         },
         {
           question: "Do you provide workmanship warranty?",
@@ -640,8 +640,8 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           title: "Storage and access",
           body: [
-            "Website enquiries are configured to be stored through Firebase-backed lead capture for business follow-up.",
-            "Before the site goes live, confirm that the final privacy wording matches the real operating process and the legal company details.",
+            "Website enquiries are stored through a Firebase-backed lead capture system so they can be reviewed and followed up by the business.",
+            "Information is used for quote follow-up, job review and customer communication connected to the enquiry you submit.",
           ],
         },
       ],
@@ -672,7 +672,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       requestQuote: "免费报价",
       bilingual: "支持英文 / 中文沟通",
       placeholderBanner:
-        "上线前请确认正式域名、公司法定名称拼写和最终隐私文案。",
+        "",
     },
     nav: {
       services: "服务",
@@ -688,7 +688,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "持牌施工 | 22年以上经验 | 支持中文沟通",
       title: "Canberra 家庭贴砖、防水、Silicone 与文化石服务。",
       description:
-        "如果您在 Canberra 做浴室翻新、铺地砖墙砖、做防水、挡水板、Silicone 收边、文化石背景墙或泳池砖，这个页面会先把能做什么、服务哪些区、怎么询价讲清楚。",
+        "无论您是做浴室翻新、铺地砖墙砖、防水、挡水板、Silicone 收边、文化石背景墙还是泳池砖，都可以先通过这里了解服务范围、案例和报价方式。",
       badges: [
         "浴室贴砖与防水",
         "地砖 / 墙砖 / 挡水板",
@@ -711,43 +711,43 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     trust: {
-      eyebrow: "为什么这个页面适合上线",
-      title: "先把业务说清楚，再让客户放心联系。",
+      eyebrow: "为什么客户会联系 LITA",
+      title: "范围清楚、沟通直接、报价更省时间。",
       description:
-        "页面不会写得很虚，而是直接把服务、案例、Canberra 区域、常见问题和联系方式摆出来，也更容易让搜索和 AI 系统理解你的业务。",
+        "很多业主最关心的就是做不做这类项目、在不在服务区、能不能先把报价范围讲清楚。把这些信息直接说清楚，客户会更容易判断是否适合联系。",
       items: [
         {
           title: "持牌施工",
           description:
-            "首页和结构化数据都会明确体现持牌信息，先把最重要的信任点放出来。",
+            "持牌施工和住宅项目经验，会让业主在比较本地施工团队时更放心。",
         },
         {
           title: "22年以上经验",
           description:
-            "经验信息放在首屏就能看到，业主更容易判断这是不是成熟、稳定的本地施工团队。",
+            "22 年以上经验，意味着从基层准备、排版铺贴到收尾交付都更有把握。",
         },
         {
           title: "主要做住宅",
           description:
-            "整站文案都围绕 Canberra 家庭业主，不会写成很泛的商业工程宣传页。",
+            "主要面向 Canberra 家庭业主，常见项目包括浴室、厨房、地砖、特色墙面和泳池区域。",
         },
         {
           title: "免费报价",
           description:
-            "表单和 CTA 都围绕免费报价来设计，用户更容易迈出第一步。",
+            "先发 suburb、项目类型和需求概况，就可以更快判断范围和后续安排。",
         },
         {
           title: "工艺质保",
           description:
-            "把 workmanship warranty 作为公开信任信息写清楚，但最终仍以报价范围为准。",
+            "提供工艺质保，具体范围和条件以最终报价和施工范围为准。",
         },
       ],
     },
     services: {
       eyebrow: "核心服务",
-      title: "围绕 Canberra 住宅客户高意图搜索来写。",
+      title: "Canberra 住宅贴砖、防水和细节收边服务。",
       description:
-        "服务内容既覆盖常见的浴室、地砖、墙砖，也覆盖 Silicone、文化石和泳池砖这类更细分但转化意图很强的需求。",
+        "服务范围既包括常见的浴室、地砖、墙砖，也包括 Silicone 收边、文化石、泳池砖和局部维修这类更细分的项目。",
       items: [
         {
           title: "地砖铺贴",
@@ -792,7 +792,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           title: "防水施工",
           description:
-            "防水会单独作为一项核心服务写出来，方便承接浴室和湿区的高意图搜索。",
+            "浴室、洗衣房等湿区防水可以单独做，也可以和贴砖一起安排，更方便整体报价。",
           bullets: [
             "浴室、洗衣房等湿区防水",
             "贴砖前的基层准备",
@@ -843,11 +843,11 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     projects: {
       eyebrow: "案例展示",
-      title: "从现有图库里整理出的 Canberra 住宅项目方向。",
+      title: "Canberra 住宅项目案例。",
       description:
-        "首页案例区现在直接覆盖浴室、地砖、挡水板、文化石和泳池砖，让客户进来就能看到业务范围。",
+        "案例覆盖浴室、地砖、挡水板、文化石和泳池砖，方便客户快速了解常见项目类型。",
       notice:
-        "这里精选了几类最有代表性的住宅项目，方便客户一次看懂浴室、地砖、挡水板、文化石和泳池砖的业务范围。",
+        "这里选了几类比较有代表性的住宅项目，方便先看完成效果和施工范围。",
       items: [
         {
           suburb: "Belconnen",
@@ -855,7 +855,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "这组浴室图展示了大理石纹墙砖、地砖、淋浴区和整体湿区完成度，适合承接浴室翻新类客户。",
           result:
-            "对搜索“堪培拉浴室贴砖”“Canberra bathroom waterproofing”的用户来说，这类案例最容易建立信任。",
+            "适合参考浴室翻新、防水和墙地砖整体搭配的完成效果。",
           highlights: ["浴室防水配合", "墙地砖整体协调", "湿区 Silicone 收边"],
         },
         {
@@ -864,7 +864,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "开放式住宅空间的大规格地砖更能体现平整度、对缝和整体完成度，也适合展示客厅和通道类项目。",
           result:
-            "让用户一眼看到你不只是做小面积浴室，也能做整片地面更新。",
+            "让客户一眼看到不仅可以做浴室，也可以做整片地面更新。",
           highlights: ["大规格地砖", "开放空间铺贴", "门口与过渡位收边"],
         },
         {
@@ -873,7 +873,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "厨房挡水板虽然项目不大，但很能体现切割、对缝和台面收边的细节水平。",
           result:
-            "这类案例会让只想做局部升级的客户更愿意直接留下联系方式。",
+            "也适合只想做局部升级的客户先参考完成效果。",
           highlights: ["厨房挡水板", "台面边 Silicone 收口", "适合局部翻新客户"],
         },
         {
@@ -882,7 +882,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "这组文化石案例适合展示住宅背景墙、立柱或特色墙面的施工能力，和普通浴室贴砖区分开。",
           result:
-            "能直接覆盖“堪培拉文化石”“石材包柱”这类更细分的搜索意图。",
+            "适合参考住宅背景墙、立柱和特色墙面的石材表面效果。",
           highlights: ["文化石对缝与排版", "背景墙与柱面细节", "住宅特色饰面项目"],
         },
         {
@@ -891,7 +891,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           summary:
             "泳池砖项目本身比较细分，但一旦客户有需求，通常意图很强，也更看重是否真的做过类似环境。",
           result:
-            "把泳池砖写进首页，有助于提前筛选更精准的询盘，而不是等客户打电话再解释。",
+            "如果是泳池砖或水线砖项目，可以先参考类似环境下的施工方向。",
           highlights: ["泳池砖或水线砖", "室外湿区细节", "按现场状态和范围报价"],
         },
       ],
@@ -903,7 +903,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "很多客户最担心的是不知道下一步怎么走。把询价、报价、防水、铺贴、收边和交付说清楚，转化会更顺畅。",
       spotlightTitle: "真实施工过程",
       spotlightDescription:
-        "保留一张施工过程图很重要，因为它能证明你不是只会放成品图，也更适合解释找平、铺贴、收边和交付之间的关系。",
+        "施工过程图可以帮助客户更直观地了解基层准备、铺贴过程和最后收边的衔接方式。",
       steps: [
         {
           title: "1. 提交需求",
@@ -941,7 +941,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "服务区域",
       title: "重点服务 Canberra 住宅客户。",
       description:
-        "页面不会泛泛写全澳洲，而是直接围绕 Canberra 和真实服务区域来组织内容，这样对本地搜索更有效。",
+        "目前主要服务 Canberra 住宅项目，常做区域包括主城区和周边常见 suburb。",
       coverageNote:
         "当前重点覆盖 Belconnen、Gungahlin、Woden Valley、Tuggeranong、Inner North、Inner South、Molonglo Valley 和 Weston Creek。周边区域也可以先发 suburb 来确认。",
     },
@@ -949,7 +949,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "常见问题",
       title: "客户在联系前最常问的几个问题。",
       description:
-        "FAQ 既能减少犹豫，也能让搜索和 AI 系统更容易读懂你到底做哪些项目、服务哪些客户。",
+        "如果您还没确定怎么报价、做不做小项目，或者材料怎么安排，可以先看这里。",
       items: [
         {
           question: "浴室是贴砖和防水一起做吗？",
@@ -979,7 +979,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           question: "报价免费吗？",
           answer:
-            "免费。页面和表单就是按免费报价来设计的，方便客户先把 suburb、项目类型和需求发过来。",
+            "免费。您可以先把 suburb、项目类型和需求发过来，再进一步沟通范围和安排。",
         },
         {
           question: "有工艺质保吗？",
@@ -1108,8 +1108,8 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         {
           title: "存储与查看",
           body: [
-            "网站询价目前配置为通过 Firebase 进行线索存储，方便后续业务跟进。",
-            "正式上线前，请再次确认隐私文案、正式域名和公司法定名称与实际经营信息一致。",
+            "网站询价会通过 Firebase 进行线索存储，方便后续业务跟进和客户联系。",
+            "这些信息仅用于报价、项目沟通和与您提交的需求相关的后续服务。",
           ],
         },
       ],
