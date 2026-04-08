@@ -427,13 +427,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     process: {
-      eyebrow: "How the work moves",
-      title: "From first message to final handover.",
+      eyebrow: "What to expect",
+      title: "Clear steps from quote to handover.",
       description:
-        "The steps below show what usually happens after the first message, from quoting and preparation through to installation and handover.",
+        "From the first message, the quote, preparation, installation and final handover are explained clearly so you know what comes next.",
       spotlightTitle: "Real installation photo",
       spotlightDescription:
-        "The installation photo helps show how preparation, tile layout and finishing come together on site.",
+        "This site photo shows the work mid-installation, including preparation, tile layout and finishing details.",
       steps: [
         {
           title: "1. Send the enquiry",
@@ -897,13 +897,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     process: {
-      eyebrow: "报价与施工流程",
-      title: "先把范围讲明白，再安排报价和施工。",
+      eyebrow: "一般怎么安排",
+      title: "从报价到完工，步骤都说清楚。",
       description:
-        "很多客户第一次联系时，只想先知道下一步怎么安排。把询价、报价、防水、铺贴、收边和交付说清楚，沟通会更省时间。",
+        "从第一次联系开始，哪些内容会报价、哪些地方要先准备、什么时候进场施工，都会提前跟您说清楚。",
       spotlightTitle: "真实施工过程",
       spotlightDescription:
-        "施工过程图可以帮助客户更直观地了解基层准备、铺贴过程和最后收边的衔接方式。",
+        "这张现场施工图能更直观看到基层、排砖和收边这些细节，不只是最后拍好的成品照。",
       steps: [
         {
           title: "1. 提交需求",
