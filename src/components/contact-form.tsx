@@ -25,6 +25,11 @@ type FormState = {
   company: string;
 };
 
+type FieldErrors = {
+  serviceType: string;
+  projectType: string;
+};
+
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
 
 const initialState: FormState = {
@@ -51,13 +56,42 @@ export function ContactForm({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+    serviceType: "",
+    projectType: "",
+  });
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetCounter, setTurnstileResetCounter] = useState(0);
   const requiresTurnstile = Boolean(turnstileSiteKey);
 
+  function getClientValidationErrors() {
+    return {
+      serviceType: formState.serviceType
+        ? ""
+        : content.validation.serviceTypeRequired,
+      projectType: formState.projectType
+        ? ""
+        : content.validation.projectTypeRequired,
+    };
+  }
+
+  function localizeApiMessage(message: string) {
+    if (message === "Please complete all required fields.") {
+      return content.validation.requiredFields;
+    }
+
+    return message;
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
+    const nextFieldErrors = getClientValidationErrors();
+    setFieldErrors(nextFieldErrors);
+
+    if (nextFieldErrors.serviceType || nextFieldErrors.projectType) {
+      return;
+    }
 
     if (
       !formState.name.trim() ||
@@ -68,7 +102,7 @@ export function ContactForm({
       !formState.projectType ||
       !formState.message.trim()
     ) {
-      setErrorMessage(content.errorFallback);
+      setErrorMessage(content.validation.requiredFields);
       return;
     }
 
@@ -103,7 +137,9 @@ export function ContactForm({
       router.push(`/${locale}/thanks`);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : content.errorFallback;
+        error instanceof Error
+          ? localizeApiMessage(error.message)
+          : content.errorFallback;
       setErrorMessage(message);
       if (requiresTurnstile) {
         setTurnstileResetCounter((current) => current + 1);
@@ -118,6 +154,18 @@ export function ContactForm({
       ...current,
       [key]: value,
     }));
+
+    if (key === "serviceType" || key === "projectType") {
+      const nextValue = typeof value === "string" ? value : "";
+      setFieldErrors((current) => ({
+        ...current,
+        [key]: nextValue
+          ? ""
+          : key === "serviceType"
+            ? content.validation.serviceTypeRequired
+            : content.validation.projectTypeRequired,
+      }));
+    }
   }
 
   return (
@@ -187,7 +235,12 @@ export function ContactForm({
           <select
             value={formState.serviceType}
             onChange={(event) => updateField("serviceType", event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.serviceType
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.serviceType)}
             required
           >
             <option value="">{locale === "zh" ? "请选择" : "Select"}</option>
@@ -197,13 +250,21 @@ export function ContactForm({
               </option>
             ))}
           </select>
+          {fieldErrors.serviceType ? (
+            <p className="text-sm text-rose-700">{fieldErrors.serviceType}</p>
+          ) : null}
         </label>
         <label className="space-y-2 text-sm font-medium text-slate-800">
           <span>{content.fields.projectType}</span>
           <select
             value={formState.projectType}
             onChange={(event) => updateField("projectType", event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.projectType
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.projectType)}
             required
           >
             <option value="">{locale === "zh" ? "请选择" : "Select"}</option>
@@ -213,6 +274,9 @@ export function ContactForm({
               </option>
             ))}
           </select>
+          {fieldErrors.projectType ? (
+            <p className="text-sm text-rose-700">{fieldErrors.projectType}</p>
+          ) : null}
         </label>
       </div>
 

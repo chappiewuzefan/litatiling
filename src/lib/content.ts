@@ -27,6 +27,11 @@ export type ContactFormContent = {
   submitLabel: string;
   submittingLabel: string;
   successLabel: string;
+  validation: {
+    requiredFields: string;
+    serviceTypeRequired: string;
+    projectTypeRequired: string;
+  };
   securityCheckLabel: string;
   securityCheckRequired: string;
   errorFallback: string;
@@ -592,6 +597,11 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         submitLabel: "Send quote request",
         submittingLabel: "Sending...",
         successLabel: "Thanks. Your quote request has been sent.",
+        validation: {
+          requiredFields: "Please complete the required fields before sending.",
+          serviceTypeRequired: "Please choose a service type.",
+          projectTypeRequired: "Please choose a project type.",
+        },
         securityCheckLabel: "Complete the security check",
         securityCheckRequired:
           "Please complete the security check before sending your enquiry.",
@@ -1062,6 +1072,11 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         submitLabel: "发送询价",
         submittingLabel: "发送中...",
         successLabel: "已提交成功，我们会尽快联系您。",
+        validation: {
+          requiredFields: "请先把必填内容填写完整再提交。",
+          serviceTypeRequired: "请选择服务类型。",
+          projectTypeRequired: "请选择项目类型。",
+        },
         securityCheckLabel: "请先完成人机验证",
         securityCheckRequired: "请先完成人机验证后再提交。",
         errorFallback: "提交失败，请直接电话或邮件联系。",
