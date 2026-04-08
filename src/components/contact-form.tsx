@@ -245,7 +245,6 @@ export function ContactForm({
       </label>
 
       <label className="sr-only" aria-hidden="true">
-        Company
         <input
           type="text"
           tabIndex={-1}
