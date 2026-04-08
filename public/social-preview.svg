@@ -1,0 +1,19 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <rect x="64" y="72" width="280" height="160" rx="32" fill="#1E293B"/>
+  <rect x="376" y="72" width="220" height="160" rx="32" fill="#0EA5E9" fill-opacity="0.2"/>
+  <rect x="628" y="72" width="220" height="160" rx="32" fill="#1E293B"/>
+  <rect x="880" y="72" width="256" height="160" rx="32" fill="#F97316" fill-opacity="0.18"/>
+  <rect x="64" y="264" width="220" height="150" rx="32" fill="#0EA5E9" fill-opacity="0.24"/>
+  <rect x="316" y="264" width="220" height="150" rx="32" fill="#1E293B"/>
+  <rect x="568" y="264" width="280" height="150" rx="32" fill="#F97316" fill-opacity="0.16"/>
+  <rect x="880" y="264" width="256" height="150" rx="32" fill="#1E293B"/>
+  <rect x="64" y="446" width="320" height="120" rx="32" fill="#1E293B"/>
+  <rect x="416" y="446" width="220" height="120" rx="32" fill="#0EA5E9" fill-opacity="0.2"/>
+  <rect x="668" y="446" width="220" height="120" rx="32" fill="#1E293B"/>
+  <rect x="920" y="446" width="216" height="120" rx="32" fill="#F97316" fill-opacity="0.16"/>
+  <text x="96" y="322" fill="white" font-family="Arial, sans-serif" font-size="66" font-weight="700">LITA Tiling</text>
+  <text x="96" y="392" fill="white" font-family="Arial, sans-serif" font-size="66" font-weight="700">Canberra</text>
+  <text x="96" y="450" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="28">Bathrooms · Floors · Waterproofing · Silicone</text>
+  <text x="96" y="500" fill="#7DD3FC" font-family="Arial, sans-serif" font-size="24">Stone cladding · Splashbacks · Pool tiling · English / 中文</text>
+</svg>
