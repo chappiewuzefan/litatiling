@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 import { getAdminFirestore, hasFirebaseAdminConfig } from "@/lib/firebase-admin";
+import { sendLeadNotification } from "@/lib/lead-notifications";
+import { buildPhoneCandidates, normalizePhoneForKey } from "@/lib/phone";
 import { siteConfig } from "@/lib/site-config";
 
 type ContactPayload = {
@@ -26,6 +29,43 @@ function normalizeField(value: unknown, maxLength: number) {
 
 function validateEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function getStringValue(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function getNumberValue(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+async function findExistingLeadDocs(
+  phoneNormalized: string,
+  phoneCandidates: string[],
+) {
+  const db = getAdminFirestore();
+  const collection = db.collection(siteConfig.firebaseCollection);
+  const matches = new Map<string, QueryDocumentSnapshot>();
+
+  const normalizedSnapshot = await collection
+    .where("phoneNormalized", "==", phoneNormalized)
+    .get();
+
+  normalizedSnapshot.docs.forEach((doc) => {
+    matches.set(doc.id, doc);
+  });
+
+  if (phoneCandidates.length > 0) {
+    const phoneSnapshot = await collection
+      .where("phone", "in", phoneCandidates)
+      .get();
+
+    phoneSnapshot.docs.forEach((doc) => {
+      matches.set(doc.id, doc);
+    });
+  }
+
+  return Array.from(matches.values());
 }
 
 export async function POST(request: Request) {
@@ -56,6 +96,7 @@ export async function POST(request: Request) {
     sourcePage: normalizeField(body.sourcePage, 120) || "/",
     createdAt: new Date().toISOString(),
   };
+  const phoneNormalized = normalizePhoneForKey(lead.phone);
 
   if (
     !lead.name ||
@@ -79,6 +120,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!phoneNormalized) {
+    return NextResponse.json(
+      { message: "Please enter a valid phone number." },
+      { status: 400 },
+    );
+  }
+
   if (!hasFirebaseAdminConfig()) {
     if (process.env.NODE_ENV !== "production") {
       console.info("Mock contact lead captured:", lead);
@@ -96,12 +144,54 @@ export async function POST(request: Request) {
 
   try {
     const db = getAdminFirestore();
-    await db.collection(siteConfig.firebaseCollection).add({
+    const collection = db.collection(siteConfig.firebaseCollection);
+    const phoneCandidates = buildPhoneCandidates(lead.phone);
+    const existingDocs = await findExistingLeadDocs(
+      phoneNormalized,
+      phoneCandidates,
+    );
+    const targetDoc = existingDocs[0];
+    const currentData = targetDoc?.data() ?? null;
+    const isDuplicate = Boolean(targetDoc);
+    const targetRef = targetDoc?.ref ?? collection.doc(phoneNormalized);
+    const submissionCount =
+      getNumberValue(currentData?.submissionCount) + 1 || 1;
+    const leadRecord = {
       ...lead,
-      status: "new",
-    });
+      phoneNormalized,
+      status: getStringValue(currentData?.status) || "new",
+      createdAt: getStringValue(currentData?.createdAt) || lead.createdAt,
+      updatedAt: lead.createdAt,
+      lastSubmittedAt: lead.createdAt,
+      submissionCount,
+    };
 
-    return NextResponse.json({ ok: true });
+    await targetRef.set(leadRecord, { merge: true });
+
+    if (existingDocs.length > 1) {
+      const batch = db.batch();
+
+      existingDocs
+        .filter((doc) => doc.ref.path !== targetRef.path)
+        .forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+
+      await batch.commit();
+    }
+
+    if (!isDuplicate) {
+      try {
+        await sendLeadNotification({
+          ...leadRecord,
+          phoneNormalized,
+        });
+      } catch (error) {
+        console.error("Lead notification failed:", error);
+      }
+    }
+
+    return NextResponse.json({ ok: true, duplicate: isDuplicate });
   } catch (error) {
     console.error("Failed to save contact lead:", error);
     return NextResponse.json(

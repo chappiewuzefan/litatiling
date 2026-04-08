@@ -17,6 +17,8 @@ The site currently ships with:
 - `robots.txt` and `sitemap.xml`
 - `LocalBusiness` structured data
 - Firebase-backed contact lead capture
+- phone-based lead deduplication
+- optional SMTP email notifications for new leads
 - privacy and thank-you pages
 - selected project images wired into the homepage
 
@@ -101,10 +103,26 @@ Create `.env.local` from `.env.example`.
 - `FIREBASE_STORAGE_BUCKET`
 - `FIREBASE_CONTACT_COLLECTION`
 
+### SMTP notification variables
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `NOTIFICATION_TO`
+
 If Firebase Admin credentials are missing:
 
 - in development, the contact form returns a mock success response
 - in production, the form returns an error and asks the customer to call or email directly
+
+If SMTP credentials are missing:
+
+- lead data is still written to Firestore
+- email notification is skipped
+- duplicates are still suppressed by phone number
 
 ## Checks
 
@@ -121,6 +139,7 @@ npm run build
 - replace any inferred case study details with exact suburb and scope information if needed
 - review the English and Chinese copy in a browser on desktop and mobile
 - configure Firebase Admin credentials
+- configure SMTP credentials for lead emails
 - submit the sitemap in Google Search Console
 - connect Bing Webmaster Tools and IndexNow
 - confirm the host allows `OAI-SearchBot`
