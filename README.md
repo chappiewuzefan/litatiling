@@ -8,7 +8,7 @@ Public business defaults in this repo:
 - Legal entity: `LITA CONSTRUCTION PTY LTD`
 - Phone: `0435 248 809`
 - Email: `litamia810@gmail.com`
-- Recommended production URL candidate: `https://www.litatiling.com.au`
+- Recommended production URL candidate: `https://www.litatiling.com`
 
 The site currently ships with:
 

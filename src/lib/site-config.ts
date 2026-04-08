@@ -6,7 +6,7 @@ export const defaultLocale: Locale = "en";
 
 const siteUrlValue =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://www.litatiling.com.au";
+  "https://www.litatiling.com";
 const brandNameValue =
   process.env.NEXT_PUBLIC_BRAND_NAME ?? "LITA Tiling Canberra";
 const phoneDisplayValue =
