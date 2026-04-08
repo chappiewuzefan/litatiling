@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
+import {
+  ContactRateLimitError,
+  enforceContactRateLimit,
+  getRequestIpAddress,
+} from "@/lib/contact-rate-limit";
 import { getAdminFirestore, hasFirebaseAdminConfig } from "@/lib/firebase-admin";
 import { sendLeadNotification } from "@/lib/lead-notifications";
 import { buildPhoneCandidates, normalizePhoneForKey } from "@/lib/phone";
 import { siteConfig } from "@/lib/site-config";
+import {
+  hasPartialTurnstileConfig,
+  hasTurnstileConfig,
+  validateTurnstileToken,
+} from "@/lib/turnstile";
 
 type ContactPayload = {
   name?: string;
@@ -17,6 +27,7 @@ type ContactPayload = {
   message?: string;
   sourcePage?: string;
   company?: string;
+  turnstileToken?: string;
 };
 
 function normalizeField(value: unknown, maxLength: number) {
@@ -37,6 +48,19 @@ function getStringValue(value: unknown) {
 
 function getNumberValue(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function getPreferredLocale(body: ContactPayload) {
+  const preferredLanguage = normalizeField(body.preferredLanguage, 10).toLowerCase();
+  if (preferredLanguage === "zh") {
+    return "zh";
+  }
+
+  return getStringValue(body.sourcePage).startsWith("/zh") ? "zh" : "en";
+}
+
+function getLocalizedMessage(locale: "en" | "zh", en: string, zh: string) {
+  return locale === "zh" ? zh : en;
 }
 
 async function findExistingLeadDocs(
@@ -83,6 +107,8 @@ export async function POST(request: Request) {
   if (normalizeField(body.company, 128)) {
     return NextResponse.json({ ok: true });
   }
+
+  const locale = getPreferredLocale(body);
 
   const lead = {
     name: normalizeField(body.name, 120),
@@ -142,7 +168,73 @@ export async function POST(request: Request) {
     );
   }
 
+  if (process.env.NODE_ENV === "production" && hasPartialTurnstileConfig()) {
+    return NextResponse.json(
+      {
+        message: getLocalizedMessage(
+          locale,
+          "The contact form security check is not configured yet. Please call or email directly.",
+          "联系表单安全验证尚未配置完成，请直接电话或邮件联系。",
+        ),
+      },
+      { status: 503 },
+    );
+  }
+
+  const ipAddress = getRequestIpAddress(request);
+
+  if (hasTurnstileConfig()) {
+    const turnstileToken = normalizeField(body.turnstileToken, 4096);
+
+    if (!turnstileToken) {
+      return NextResponse.json(
+        {
+          message: getLocalizedMessage(
+            locale,
+            "Please complete the security check and try again.",
+            "请先完成人机验证后再提交。",
+          ),
+        },
+        { status: 400 },
+      );
+    }
+
+    try {
+      const turnstileResult = await validateTurnstileToken(
+        turnstileToken,
+        ipAddress,
+      );
+
+      if (!turnstileResult.success) {
+        return NextResponse.json(
+          {
+            message: getLocalizedMessage(
+              locale,
+              "Security verification failed. Please try again.",
+              "安全验证失败，请重新尝试。",
+            ),
+          },
+          { status: 400 },
+        );
+      }
+    } catch (error) {
+      console.error("Turnstile verification failed:", error);
+      return NextResponse.json(
+        {
+          message: getLocalizedMessage(
+            locale,
+            "We could not verify the security check. Please try again.",
+            "暂时无法完成安全验证，请稍后再试。",
+          ),
+        },
+        { status: 500 },
+      );
+    }
+  }
+
   try {
+    await enforceContactRateLimit(ipAddress);
+
     const db = getAdminFirestore();
     const collection = db.collection(siteConfig.firebaseCollection);
     const phoneCandidates = buildPhoneCandidates(lead.phone);
@@ -193,6 +285,24 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, duplicate: isDuplicate });
   } catch (error) {
+    if (error instanceof ContactRateLimitError) {
+      return NextResponse.json(
+        {
+          message: getLocalizedMessage(
+            locale,
+            "Too many submissions from this connection. Please wait a little and try again, or call us directly.",
+            "当前提交过于频繁，请稍等再试，或者直接电话联系。",
+          ),
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(error.retryAfterSeconds),
+          },
+        },
+      );
+    }
+
     console.error("Failed to save contact lead:", error);
     return NextResponse.json(
       { message: "We could not save your enquiry. Please try again." },

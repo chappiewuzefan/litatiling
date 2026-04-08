@@ -19,6 +19,8 @@ The site currently ships with:
 - Firebase-backed contact lead capture
 - phone-based lead deduplication
 - optional SMTP email notifications for new leads
+- optional Cloudflare Turnstile bot protection
+- server-side rate limiting for `/api/contact`
 - privacy and thank-you pages
 - selected project images wired into the homepage
 
@@ -113,6 +115,17 @@ Create `.env.local` from `.env.example`.
 - `SMTP_FROM`
 - `NOTIFICATION_TO`
 
+### Turnstile variables
+
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
+
+### Contact API rate limit variables
+
+- `RATE_LIMIT_MAX_REQUESTS`
+- `RATE_LIMIT_WINDOW_SECONDS`
+- `FIREBASE_RATE_LIMIT_COLLECTION`
+
 If Firebase Admin credentials are missing:
 
 - in development, the contact form returns a mock success response
@@ -123,6 +136,28 @@ If SMTP credentials are missing:
 - lead data is still written to Firestore
 - email notification is skipped
 - duplicates are still suppressed by phone number
+
+If Turnstile variables are missing:
+
+- the form still works
+- bot protection stays disabled until both keys are configured and redeployed
+
+If rate limit variables are missing:
+
+- `/api/contact` defaults to `3` submissions per `10` minutes per IP address
+- rate-limit counters are stored in Firestore under `contactRateLimits`
+
+## Cloudflare Turnstile setup
+
+1. In Cloudflare, open `Turnstile`.
+2. Create a widget for:
+   - `www.litatiling.com`
+   - `litatiling--lita-tiling.asia-southeast1.hosted.app` if you still want the default Firebase domain for testing
+3. Copy the `site key` into `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
+4. Copy the `secret key` into `TURNSTILE_SECRET_KEY`.
+5. Redeploy the site after updating App Hosting environment variables.
+
+The form verifies Turnstile server-side before writing the lead to Firestore.
 
 ## Checks
 

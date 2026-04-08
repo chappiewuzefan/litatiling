@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import type { ContactFormContent } from "@/lib/content";
 import type { Locale } from "@/lib/site-config";
 
@@ -23,6 +24,8 @@ type FormState = {
   message: string;
   company: string;
 };
+
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
 
 const initialState: FormState = {
   name: "",
@@ -48,6 +51,9 @@ export function ContactForm({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetCounter, setTurnstileResetCounter] = useState(0);
+  const requiresTurnstile = Boolean(turnstileSiteKey);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,6 +72,11 @@ export function ContactForm({
       return;
     }
 
+    if (requiresTurnstile && !turnstileToken) {
+      setErrorMessage(content.securityCheckRequired);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -78,6 +89,7 @@ export function ContactForm({
           ...formState,
           sourcePage,
           preferredLanguage: formState.preferredLanguage || locale,
+          turnstileToken,
         }),
       });
 
@@ -93,6 +105,9 @@ export function ContactForm({
       const message =
         error instanceof Error ? error.message : content.errorFallback;
       setErrorMessage(message);
+      if (requiresTurnstile) {
+        setTurnstileResetCounter((current) => current + 1);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -239,6 +254,16 @@ export function ContactForm({
           onChange={(event) => updateField("company", event.target.value)}
         />
       </label>
+
+      {requiresTurnstile ? (
+        <TurnstileWidget
+          siteKey={turnstileSiteKey}
+          locale={locale}
+          label={content.securityCheckLabel}
+          resetCounter={turnstileResetCounter}
+          onTokenChange={setTurnstileToken}
+        />
+      ) : null}
 
       <div className="flex flex-col gap-3">
         <button
