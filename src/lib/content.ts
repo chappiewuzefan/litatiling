@@ -227,9 +227,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     trust: {
       eyebrow: "Why homeowners choose LITA",
-      title: "Clear communication, practical quoting and careful workmanship.",
+      title: "Licensed work, clear quoting and careful workmanship.",
       description:
-        "Most homeowners want to know three things first: do you handle this type of job, do you service my suburb, and can I get a clear quote without wasting time? Those answers should be clear from the start.",
+        "If you are comparing trades for a bathroom, floor, wall or waterproofing job, it helps to know early whether the scope fits, whether your suburb is covered and what the quote is likely to include.",
       items: [
         {
           title: "Licensed trade",
@@ -722,9 +722,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     trust: {
       eyebrow: "为什么客户会联系 LITA",
-      title: "先把范围和报价讲清楚，沟通更省时间。",
+      title: "做什么、怎么报价、什么时候安排，都会先说清楚。",
       description:
-        "很多业主最关心的就是做不做这类项目、在不在服务区、报价范围能不能先讲清楚。把这些信息先说清楚，会更容易判断是否适合联系。",
+        "如果您正在比较贴砖、防水或浴室翻新的施工团队，通常最想先知道能不能做、在不在服务区，以及报价大概会包含哪些内容。",
       items: [
         {
           title: "持牌施工",
