@@ -429,6 +429,58 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
             "Quoted based on condition and scope",
           ],
         },
+        {
+          suburb: "Weston Creek",
+          title: "Pattern floor finish for a compact room",
+          summary:
+            "Pattern floor tiles used to lift a smaller room with a more decorative finish while keeping the layout neat and easy to maintain.",
+          result:
+            "Shows patterned floor tiling where spacing, alignment and symmetry all need to stay consistent.",
+          highlights: [
+            "Pattern tile alignment",
+            "Compact room floor layout",
+            "Clean edge and corner finishing",
+          ],
+        },
+        {
+          suburb: "Inner North",
+          title: "Grey bathroom fit-out with feature niche",
+          summary:
+            "Grey bathroom tiling with a recessed niche detail, wall set-out and shower area planning for a cleaner, more modern wet-area finish.",
+          result:
+            "A good reference for customers comparing bathroom wall tiles, niche details and overall wet-area presentation.",
+          highlights: [
+            "Feature shower niche",
+            "Wall tile set-out",
+            "Bathroom fixture coordination",
+          ],
+        },
+        {
+          suburb: "Molonglo Valley",
+          title: "Hallway and step floor tiling",
+          summary:
+            "Floor tiling carried through a hallway and stepped transition where neat cuts, straight joints and clean edges matter more than open-space coverage.",
+          result:
+            "Shows a smaller circulation area finished with tidy step edges and consistent grout lines.",
+          highlights: [
+            "Step and threshold finishing",
+            "Hallway tile alignment",
+            "Consistent grout lines",
+          ],
+        },
+        {
+          suburb: "Weston Creek",
+          title: "Glossy white kitchen splashback update",
+          summary:
+            "Glossy white subway tiles paired with timber cabinetry for a brighter kitchen finish with straightforward maintenance and clean bench lines.",
+          result:
+            "A simple kitchen upgrade where straight lines, corner cuts and under-cabinet finishing stand out.",
+          highlights: [
+            "Glossy subway splashback",
+            "Clean internal corners",
+            "Neat finish under cabinetry",
+          ],
+        },
       ],
     },
     process: {
@@ -903,6 +955,42 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           result:
             "如果是泳池砖或水线砖项目，可以先参考类似环境下的施工方向。",
           highlights: ["泳池砖或水线砖", "室外湿区细节", "按现场状态和范围报价"],
+        },
+        {
+          suburb: "Weston Creek",
+          title: "小空间花砖地面铺贴",
+          summary:
+            "这类花砖地面更看排版、对缝和整体协调，小空间做得整齐，出来的效果会很加分。",
+          result:
+            "适合参考花砖地面这类更讲究对位和细节的项目。",
+          highlights: ["花砖排版", "小空间地面铺贴", "边角收边整齐"],
+        },
+        {
+          suburb: "Inner North",
+          title: "灰色浴室和壁龛细节",
+          summary:
+            "这组灰色浴室案例比较适合看壁龛、墙砖排版和淋浴区整体效果，属于很多业主会关心的浴室细节。",
+          result:
+            "如果您比较在意浴室壁龛、墙砖效果和整体搭配，可以先参考这类做法。",
+          highlights: ["淋浴区壁龛", "墙砖排版", "五金位置配合"],
+        },
+        {
+          suburb: "Molonglo Valley",
+          title: "走道和台阶地砖收边",
+          summary:
+            "走道和台阶这种位置虽然面积不大，但更能看出切割、拼接和收边做得细不细。",
+          result:
+            "适合参考门口、走道和台阶过渡位这类地砖项目。",
+          highlights: ["台阶和过渡位", "走道地砖铺贴", "缝隙更整齐"],
+        },
+        {
+          suburb: "Weston Creek",
+          title: "白色地铁砖厨房挡水板",
+          summary:
+            "这种白色地铁砖挡水板比较常见，重点就是对缝、转角和吊柜下面的收口做得干不干净。",
+          result:
+            "适合想做简洁厨房升级、又比较在意细节收边的客户参考。",
+          highlights: ["白色地铁砖", "转角和插座位处理", "吊柜下方收口"],
         },
       ],
     },

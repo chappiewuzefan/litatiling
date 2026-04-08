@@ -84,6 +84,42 @@ export const projectGallery: GalleryImage[] = [
     originalSource:
       "/public/case-studies/unsorted/微信图片_20260407223645_28388_1476.jpg",
   },
+  {
+    src: "/case-studies/selected/projects/pattern-floor.webp",
+    alt: {
+      en: "Pattern floor tiles installed in a compact residential room.",
+      zh: "小空间花砖地面铺贴案例。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260407221143_28334_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/projects/shower-niche-tiling.webp",
+    alt: {
+      en: "Grey bathroom tiling with a feature niche and shower fitting set-out.",
+      zh: "灰色浴室贴砖与壁龛细节案例。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260407223724_28398_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/projects/hallway-step-tiling.webp",
+    alt: {
+      en: "Hallway and step floor tiling finished with neat edges and transitions.",
+      zh: "走道与台阶地砖铺贴案例。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260407223733_28401_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/projects/white-splashback.webp",
+    alt: {
+      en: "Glossy white subway splashback installed beneath timber kitchen cabinets.",
+      zh: "白色地铁砖厨房挡水板案例。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260407223653_28390_1476.jpg",
+  },
 ];
 
 export const processGallery: GalleryImage = {
