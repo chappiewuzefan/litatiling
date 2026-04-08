@@ -530,9 +530,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     contact: {
       eyebrow: "Contact and quotes",
-      title: "Tell us the suburb and what you would like done.",
+      title: "Send a few details and we can review the job.",
       description:
-        "The form is short on purpose. Send the job type, project stage and a practical summary so the follow-up can happen by phone or email without wasting time.",
+        "Share the suburb, the type of work and a short summary of the job. If you already have photos, plans or measurements, you can mention that as well.",
       cards: [
         {
           title: "Call",
@@ -1005,9 +1005,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     contact: {
       eyebrow: "联系与报价",
-      title: "把 suburb、服务类型和需求发来就行。",
+      title: "把大概情况发来，我们先帮您看范围。",
       description:
-        "表单不用写太长，只要把项目类型、所在区域和希望做的内容说清楚，后续就能更快跟进。",
+        "把 suburb、要做的项目和大概情况发过来就可以。如果已经有现场照片、图纸或尺寸，也可以一起说明。",
       cards: [
         {
           title: "电话",
