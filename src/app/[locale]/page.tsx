@@ -6,6 +6,7 @@ import { ContactForm } from "@/components/contact-form";
 import { FloatingCallButton } from "@/components/floating-call-button";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchWarning } from "@/components/launch-warning";
+import { ProjectCarousel } from "@/components/project-carousel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getContent } from "@/lib/content";
@@ -294,49 +295,11 @@ export default async function LocalePage({ params }: LocalePageProps) {
               {content.projects.notice}
             </div>
           </div>
-          <div className="mt-10 -mx-4 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-            <div className="flex snap-x snap-mandatory gap-6">
-              {content.projects.items.map((project, index) => (
-                <article
-                  key={`${project.suburb}-${project.title}`}
-                  className="basis-full shrink-0 snap-start overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_26px_80px_rgba(15,23,42,0.05)] lg:basis-[calc(50%-0.75rem)]"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-950">
-                    <Image
-                      src={projectGallery[index].src}
-                      alt={projectGallery[index].alt[locale]}
-                      fill
-                      sizes="(min-width: 1024px) 48vw, 100vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">
-                        {project.suburb}
-                      </p>
-                      <h3 className="mt-2 font-heading text-2xl font-semibold">
-                        {project.title}
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="space-y-5 p-7">
-                    <p className="text-sm leading-7 text-slate-600">{project.summary}</p>
-                    <div className="rounded-[1.5rem] bg-slate-50 p-5 text-sm leading-7 text-slate-700">
-                      {project.result}
-                    </div>
-                    <ul className="space-y-3 text-sm text-slate-700">
-                      {project.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-3">
-                          <span className="mt-2 h-2 w-2 rounded-full bg-orange-500" />
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+          <ProjectCarousel
+            locale={locale}
+            items={content.projects.items}
+            images={projectGallery}
+          />
         </section>
 
         <section id="process" className="bg-white py-20">
