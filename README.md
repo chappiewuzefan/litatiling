@@ -120,6 +120,12 @@ Create `.env.local` from `.env.example`.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
 - `TURNSTILE_SECRET_KEY`
 
+### Google Ads conversion variables
+
+- `NEXT_PUBLIC_GOOGLE_ADS_ID`
+- `NEXT_PUBLIC_GOOGLE_ADS_CALL_SEND_TO`
+- `NEXT_PUBLIC_GOOGLE_ADS_LEAD_FORM_SEND_TO`
+
 ### Contact API rate limit variables
 
 - `RATE_LIMIT_MAX_REQUESTS`
@@ -142,6 +148,12 @@ If Turnstile variables are missing:
 - the form still works
 - bot protection stays disabled until both keys are configured and redeployed
 
+If Google Ads variables are missing:
+
+- the site falls back to the current LITA Google Ads conversion IDs baked into the app
+- the website still works normally
+- set the variables only if you want to override those defaults later
+
 If rate limit variables are missing:
 
 - `/api/contact` defaults to `3` submissions per `10` minutes per IP address
@@ -158,6 +170,31 @@ If rate limit variables are missing:
 5. Redeploy the site after updating App Hosting environment variables.
 
 The form verifies Turnstile server-side before writing the lead to Firestore.
+
+## Google Ads conversion setup
+
+This site supports two Google Ads conversions:
+
+- click-to-call on any `tel:` link
+- successful lead-form submission after `/api/contact` returns success
+
+Optionally set these App Hosting environment variables and redeploy if you want to override the built-in values:
+
+1. `NEXT_PUBLIC_GOOGLE_ADS_ID`
+2. `NEXT_PUBLIC_GOOGLE_ADS_CALL_SEND_TO`
+3. `NEXT_PUBLIC_GOOGLE_ADS_LEAD_FORM_SEND_TO`
+
+Current expected values from the configured Google Ads account are:
+
+- `NEXT_PUBLIC_GOOGLE_ADS_ID=AW-18092796140`
+- `NEXT_PUBLIC_GOOGLE_ADS_CALL_SEND_TO=AW-18092796140/Hoo5CJ_S9pwcEOzRqLND`
+- `NEXT_PUBLIC_GOOGLE_ADS_LEAD_FORM_SEND_TO=AW-18092796140/yI9NCOvr9pwcEOzRqLND`
+
+Behavior:
+
+- every phone link click can trigger the click-to-call conversion
+- a lead-form conversion is sent only after the form submission succeeds
+- the customer is then redirected to the thank-you page
 
 ## Checks
 

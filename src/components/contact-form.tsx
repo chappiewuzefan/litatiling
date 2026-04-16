@@ -7,6 +7,12 @@ import { TurnstileWidget } from "@/components/turnstile-widget";
 import type { ContactFormContent } from "@/lib/content";
 import type { Locale } from "@/lib/site-config";
 
+declare global {
+  interface Window {
+    gtag_report_lead_form_conversion?: (callback: () => void) => boolean;
+  }
+}
+
 type ContactFormProps = {
   locale: Locale;
   content: ContactFormContent;
@@ -134,7 +140,27 @@ export function ContactForm({
         throw new Error(payload?.message || content.errorFallback);
       }
 
-      router.push(`/${locale}/thanks`);
+      const thanksPath = `/${locale}/thanks`;
+
+      if (
+        typeof window !== "undefined" &&
+        typeof window.gtag_report_lead_form_conversion === "function"
+      ) {
+        let didNavigate = false;
+        const navigateToThanks = () => {
+          if (didNavigate) {
+            return;
+          }
+
+          didNavigate = true;
+          router.push(thanksPath);
+        };
+
+        window.gtag_report_lead_form_conversion(navigateToThanks);
+        window.setTimeout(navigateToThanks, 1000);
+      } else {
+        router.push(thanksPath);
+      }
     } catch (error) {
       const message =
         error instanceof Error
