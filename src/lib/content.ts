@@ -29,8 +29,13 @@ export type ContactFormContent = {
   successLabel: string;
   validation: {
     requiredFields: string;
+    nameRequired: string;
+    phoneRequired: string;
+    emailRequired: string;
+    suburbRequired: string;
     serviceTypeRequired: string;
     projectTypeRequired: string;
+    messageRequired: string;
   };
   securityCheckLabel: string;
   securityCheckRequired: string;
@@ -651,8 +656,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         successLabel: "Thanks. Your quote request has been sent.",
         validation: {
           requiredFields: "Please complete the required fields before sending.",
+          nameRequired: "Please enter your name.",
+          phoneRequired: "Please enter your phone number.",
+          emailRequired: "Please enter your email address.",
+          suburbRequired: "Please enter your suburb.",
           serviceTypeRequired: "Please choose a service type.",
           projectTypeRequired: "Please choose a project type.",
+          messageRequired: "Please enter a short summary of the job.",
         },
         securityCheckLabel: "Complete the security check",
         securityCheckRequired:
@@ -1162,8 +1172,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         successLabel: "已提交成功，我们会尽快联系您。",
         validation: {
           requiredFields: "请先把必填内容填写完整再提交。",
+          nameRequired: "请输入姓名。",
+          phoneRequired: "请输入电话号码。",
+          emailRequired: "请输入邮箱。",
+          suburbRequired: "请输入所在区域。",
           serviceTypeRequired: "请选择服务类型。",
           projectTypeRequired: "请选择项目类型。",
+          messageRequired: "请简单写一下项目情况。",
         },
         securityCheckLabel: "请先完成人机验证",
         securityCheckRequired: "请先完成人机验证后再提交。",

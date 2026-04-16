@@ -32,8 +32,13 @@ type FormState = {
 };
 
 type FieldErrors = {
+  name: string;
+  phone: string;
+  email: string;
+  suburb: string;
   serviceType: string;
   projectType: string;
+  message: string;
 };
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
@@ -63,8 +68,13 @@ export function ContactForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({
+    name: "",
+    phone: "",
+    email: "",
+    suburb: "",
     serviceType: "",
     projectType: "",
+    message: "",
   });
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetCounter, setTurnstileResetCounter] = useState(0);
@@ -72,12 +82,17 @@ export function ContactForm({
 
   function getClientValidationErrors() {
     return {
+      name: formState.name.trim() ? "" : content.validation.nameRequired,
+      phone: formState.phone.trim() ? "" : content.validation.phoneRequired,
+      email: formState.email.trim() ? "" : content.validation.emailRequired,
+      suburb: formState.suburb.trim() ? "" : content.validation.suburbRequired,
       serviceType: formState.serviceType
         ? ""
         : content.validation.serviceTypeRequired,
       projectType: formState.projectType
         ? ""
         : content.validation.projectTypeRequired,
+      message: formState.message.trim() ? "" : content.validation.messageRequired,
     };
   }
 
@@ -95,19 +110,7 @@ export function ContactForm({
     const nextFieldErrors = getClientValidationErrors();
     setFieldErrors(nextFieldErrors);
 
-    if (nextFieldErrors.serviceType || nextFieldErrors.projectType) {
-      return;
-    }
-
-    if (
-      !formState.name.trim() ||
-      !formState.phone.trim() ||
-      !formState.email.trim() ||
-      !formState.suburb.trim() ||
-      !formState.serviceType ||
-      !formState.projectType ||
-      !formState.message.trim()
-    ) {
+    if (Object.values(nextFieldErrors).some(Boolean)) {
       setErrorMessage(content.validation.requiredFields);
       return;
     }
@@ -192,6 +195,30 @@ export function ContactForm({
             : content.validation.projectTypeRequired,
       }));
     }
+
+    if (
+      key === "name" ||
+      key === "phone" ||
+      key === "email" ||
+      key === "suburb" ||
+      key === "message"
+    ) {
+      const nextValue = typeof value === "string" ? value.trim() : "";
+      setFieldErrors((current) => ({
+        ...current,
+        [key]: nextValue
+          ? ""
+          : key === "name"
+            ? content.validation.nameRequired
+            : key === "phone"
+              ? content.validation.phoneRequired
+              : key === "email"
+                ? content.validation.emailRequired
+                : key === "suburb"
+                  ? content.validation.suburbRequired
+                  : content.validation.messageRequired,
+      }));
+    }
   }
 
   return (
@@ -215,10 +242,18 @@ export function ContactForm({
             value={formState.name}
             onChange={(event) => updateField("name", event.target.value)}
             placeholder={content.placeholders.name}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.name
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.name)}
             autoComplete="name"
             required
           />
+          {fieldErrors.name ? (
+            <p className="text-sm text-rose-700">{fieldErrors.name}</p>
+          ) : null}
         </label>
         <label className="space-y-2 text-sm font-medium text-slate-800">
           <span>{content.fields.phone}</span>
@@ -227,10 +262,18 @@ export function ContactForm({
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder={content.placeholders.phone}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.phone
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.phone)}
             autoComplete="tel"
             required
           />
+          {fieldErrors.phone ? (
+            <p className="text-sm text-rose-700">{fieldErrors.phone}</p>
+          ) : null}
         </label>
         <label className="space-y-2 text-sm font-medium text-slate-800">
           <span>{content.fields.email}</span>
@@ -239,10 +282,18 @@ export function ContactForm({
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder={content.placeholders.email}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.email
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.email)}
             autoComplete="email"
             required
           />
+          {fieldErrors.email ? (
+            <p className="text-sm text-rose-700">{fieldErrors.email}</p>
+          ) : null}
         </label>
         <label className="space-y-2 text-sm font-medium text-slate-800">
           <span>{content.fields.suburb}</span>
@@ -251,10 +302,18 @@ export function ContactForm({
             value={formState.suburb}
             onChange={(event) => updateField("suburb", event.target.value)}
             placeholder={content.placeholders.suburb}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+            className={`w-full rounded-2xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+              fieldErrors.suburb
+                ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+                : "border-slate-200 bg-slate-50 focus:border-sky-500"
+            }`}
+            aria-invalid={Boolean(fieldErrors.suburb)}
             autoComplete="address-level2"
             required
           />
+          {fieldErrors.suburb ? (
+            <p className="text-sm text-rose-700">{fieldErrors.suburb}</p>
+          ) : null}
         </label>
         <label className="space-y-2 text-sm font-medium text-slate-800">
           <span>{content.fields.serviceType}</span>
@@ -329,9 +388,17 @@ export function ContactForm({
           value={formState.message}
           onChange={(event) => updateField("message", event.target.value)}
           placeholder={content.placeholders.message}
-          className="min-h-36 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+          className={`min-h-36 w-full rounded-3xl border px-4 py-3 text-slate-900 outline-none transition focus:bg-white ${
+            fieldErrors.message
+              ? "border-rose-300 bg-rose-50 focus:border-rose-500"
+              : "border-slate-200 bg-slate-50 focus:border-sky-500"
+          }`}
+          aria-invalid={Boolean(fieldErrors.message)}
           required
         />
+        {fieldErrors.message ? (
+          <p className="text-sm text-rose-700">{fieldErrors.message}</p>
+        ) : null}
       </label>
 
       <label className="sr-only" aria-hidden="true">
