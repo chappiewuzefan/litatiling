@@ -25,6 +25,10 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+function sanitizeHeader(value: string) {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
 function getSmtpPort() {
   const parsed = Number(process.env.SMTP_PORT ?? "465");
   return Number.isFinite(parsed) ? parsed : 465;
@@ -141,5 +145,40 @@ export async function sendLeadNotification(lead: LeadNotificationPayload) {
     html: buildHtmlBody(lead),
   });
 
+  return true;
+}
+
+export async function sendQuestionnaireNotification(input: {
+  submissionId: string;
+  customerName: string;
+  phone: string;
+  email: string;
+  address: string;
+  areaNames: string[];
+  submittedAt: string;
+  pdfUrl: string;
+  attachmentLinks: Array<{ name: string; url: string }>;
+}) {
+  if (!hasLeadNotificationConfig()) {
+    console.warn("Questionnaire notification skipped: SMTP_USER / SMTP_PASS are not configured.");
+    return false;
+  }
+  const transport = createTransport();
+  const to = process.env.NOTIFICATION_TO ?? siteConfig.email;
+  const from = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? siteConfig.email;
+  const links = input.attachmentLinks.length
+    ? input.attachmentLinks.map((item) => `<li><a href="${escapeHtml(item.url)}">${escapeHtml(item.name)}</a></li>`).join("")
+    : "<li>No attachments</li>";
+  const textLinks = input.attachmentLinks.length
+    ? input.attachmentLinks.map((item) => `${item.name}: ${item.url}`).join("\n")
+    : "No attachments";
+  await transport.sendMail({
+    from,
+    to,
+    replyTo: input.email ? sanitizeHeader(input.email) : undefined,
+    subject: `[LITA Tiling] Project questionnaire from ${sanitizeHeader(input.customerName)} (${sanitizeHeader(input.phone)})`,
+    text: [`New tiling project questionnaire`, "", `Submission: ${input.submissionId}`, `Customer: ${input.customerName}`, `Phone: ${input.phone}`, `Email: ${input.email || "Not supplied"}`, `Address: ${input.address}`, `Areas: ${input.areaNames.join(", ")}`, `Submitted: ${input.submittedAt}`, "", `Bilingual PDF: ${input.pdfUrl}`, "", "Attachments:", textLinks, "", "Links expire after 7 days."].join("\n"),
+    html: `<div style="font-family:Arial,sans-serif;color:#172033;line-height:1.6"><h2>New tiling project questionnaire</h2><table style="border-collapse:collapse"><tbody><tr><td style="padding:6px 12px;font-weight:700">Submission</td><td>${escapeHtml(input.submissionId)}</td></tr><tr><td style="padding:6px 12px;font-weight:700">Customer</td><td>${escapeHtml(input.customerName)}</td></tr><tr><td style="padding:6px 12px;font-weight:700">Phone</td><td>${escapeHtml(input.phone)}</td></tr><tr><td style="padding:6px 12px;font-weight:700">Email</td><td>${escapeHtml(input.email || "Not supplied")}</td></tr><tr><td style="padding:6px 12px;font-weight:700">Address</td><td>${escapeHtml(input.address)}</td></tr><tr><td style="padding:6px 12px;font-weight:700">Areas</td><td>${escapeHtml(input.areaNames.join(", "))}</td></tr></tbody></table><p><a href="${escapeHtml(input.pdfUrl)}" style="display:inline-block;background:#172033;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none">Open bilingual PDF</a></p><h3>Attachments</h3><ul>${links}</ul><p style="color:#64748b;font-size:12px">Private access links expire after 7 days.</p></div>`,
+  });
   return true;
 }

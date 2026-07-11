@@ -47,7 +47,11 @@ export function getRequestIpAddress(request: Request) {
   return realIp?.trim() || null;
 }
 
-export async function enforceContactRateLimit(ipAddress: string | null) {
+export async function enforceContactRateLimit(
+  ipAddress: string | null,
+  route = "/api/contact",
+  collection = getRateLimitCollection(),
+) {
   if (!ipAddress) {
     return;
   }
@@ -63,9 +67,10 @@ export async function enforceContactRateLimit(ipAddress: string | null) {
     Math.ceil((windowEndsAtMs - nowMs) / 1000),
   );
   const ipHash = hashIpAddress(ipAddress);
-  const docId = `${ipHash}:${windowStartedAtMs}`;
+  const routeHash = createHash("sha256").update(route).digest("hex").slice(0, 8);
+  const docId = `${routeHash}:${ipHash}:${windowStartedAtMs}`;
   const db = getAdminFirestore();
-  const docRef = db.collection(getRateLimitCollection()).doc(docId);
+  const docRef = db.collection(collection).doc(docId);
 
   await db.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(docRef);
@@ -83,7 +88,7 @@ export async function enforceContactRateLimit(ipAddress: string | null) {
     transaction.set(
       docRef,
       {
-        route: "/api/contact",
+        route,
         ipHash,
         count: currentCount + 1,
         windowStartedAt: new Date(windowStartedAtMs).toISOString(),

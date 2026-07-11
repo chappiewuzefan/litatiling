@@ -23,6 +23,8 @@ The site currently ships with:
 - server-side rate limiting for `/api/contact`
 - privacy and thank-you pages
 - selected project images wired into the homepage
+- a bilingual smart project questionnaire at `/quote`
+- private project attachments, Firestore submission records and bilingual PDF summaries
 
 ## Core positioning
 
@@ -36,6 +38,28 @@ The homepage is written for Canberra homeowners looking for:
 - stone cladding and feature columns
 - swimming pool tiling
 - repairs and tile replacement
+
+## Project questionnaire
+
+The questionnaire is designed for `https://quote.litatiling.com` and remains available at `/quote` on the primary backend.
+
+- English is primary, with smaller Chinese translations under every customer-facing question and option.
+- Each selected work area keeps an independent technical scope.
+- Conditional questions hide and clear answers that no longer apply.
+- `POST /api/questionnaire` creates a draft in `questionnaireSubmissions`.
+- Attachments are stored privately under `questionnaire-submissions/{submissionId}/attachments/`.
+- Finalization creates a searchable bilingual PDF under `questionnaire-submissions/{submissionId}/summary/`, marks the record `submitted`, and sends expiring private links to `NOTIFICATION_TO`.
+- Every submission is a new project record, even when a mobile number was previously used.
+- The questionnaire does not calculate or promise a quote or start date.
+
+Accepted uploads are JPG, PNG, WEBP, HEIC/HEIF and PDF, with a maximum of 10 files and 10 MB per file. The server verifies file content instead of trusting the browser MIME value.
+
+Before launch:
+
+1. Add `quote.litatiling.com` to the existing Firebase App Hosting backend.
+2. Copy the Firebase-provided DNS records into Cloudflare and wait for certificate provisioning.
+3. Add `quote.litatiling.com` to the existing Cloudflare Turnstile widget hostnames.
+4. Confirm the App Hosting service account can use Firestore, Storage and signed URLs.
 
 ## Run locally
 
@@ -104,6 +128,8 @@ Create `.env.local` from `.env.example`.
 - `FIREBASE_PRIVATE_KEY`
 - `FIREBASE_STORAGE_BUCKET`
 - `FIREBASE_CONTACT_COLLECTION`
+- `FIREBASE_QUESTIONNAIRE_COLLECTION`
+- `FIREBASE_QUESTIONNAIRE_RATE_LIMIT_COLLECTION`
 
 ### SMTP notification variables
 
@@ -201,6 +227,7 @@ Behavior:
 ```bash
 npm run lint
 npm run typecheck
+npm test
 npm run build
 ```
 

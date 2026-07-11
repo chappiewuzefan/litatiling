@@ -1,5 +1,6 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 function getPrivateKey() {
   return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -13,7 +14,7 @@ export function hasFirebaseAdminConfig() {
   );
 }
 
-export function getAdminFirestore() {
+function getAdminApp() {
   if (!hasFirebaseAdminConfig()) {
     throw new Error("Firebase Admin environment variables are missing.");
   }
@@ -30,5 +31,13 @@ export function getAdminFirestore() {
       storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     });
 
-  return getFirestore(app);
+  return app;
+}
+
+export function getAdminFirestore() {
+  return getFirestore(getAdminApp());
+}
+
+export function getAdminStorageBucket() {
+  return getStorage(getAdminApp()).bucket();
 }
