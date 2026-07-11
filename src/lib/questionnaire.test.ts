@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { clearHiddenAreaAnswers, createArea, createInitialAnswers, getAreaVisibility, validateQuestionnaire } from "@/lib/questionnaire";
-import { detectAllowedFileType, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS, safeFilename } from "@/lib/questionnaire-server";
+import { detectAllowedFileType, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS, normalizeQuestionnaireAnswers, safeFilename } from "@/lib/questionnaire-server";
 
 describe("questionnaire conditional logic", () => {
   it("clears floor-only answers when an area changes to wall-only", () => {
@@ -36,6 +36,13 @@ describe("questionnaire conditional logic", () => {
 });
 
 describe("questionnaire validation", () => {
+  it("normalizes a malformed partial payload without throwing", () => {
+    const answers = normalizeQuestionnaireAnswers({});
+    expect(answers.project.address).toBe("");
+    expect(answers.supplies.tiles).toBe("");
+    expect(validateQuestionnaire(answers)).toContain("Project address is required.");
+  });
+
   it("requires contact, overview, area keys, supplies and consent", () => {
     const answers = createInitialAnswers();
     expect(validateQuestionnaire(answers).length).toBeGreaterThan(4);

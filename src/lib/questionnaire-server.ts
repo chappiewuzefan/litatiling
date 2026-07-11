@@ -1,7 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { AREA_TYPES, clearHiddenAreaAnswers, type AreaAnswers, type QuestionnaireAnswers } from "@/lib/questionnaire";
+import { AREA_TYPES, clearHiddenAreaAnswers, createInitialAnswers, type AreaAnswers, type QuestionnaireAnswers } from "@/lib/questionnaire";
 
 export const QUESTIONNAIRE_COLLECTION = process.env.FIREBASE_QUESTIONNAIRE_COLLECTION ?? "questionnaireSubmissions";
 export const UPLOAD_TOKEN_TTL_MS = 60 * 60 * 1000;
@@ -19,12 +19,13 @@ export type StoredAttachment = {
 export function normalizeQuestionnaireAnswers(value: unknown): QuestionnaireAnswers {
   if (!value || typeof value !== "object") throw new Error("Invalid questionnaire answers.");
   const raw = value as QuestionnaireAnswers;
+  const defaults = createInitialAnswers();
   return {
     ...raw,
     customer: { ...raw.customer, name: String(raw.customer?.name ?? "").trim().slice(0, 120), phone: String(raw.customer?.phone ?? "").trim().slice(0, 80), email: String(raw.customer?.email ?? "").trim().toLowerCase().slice(0, 160), role: String(raw.customer?.role ?? "").slice(0, 80), roleOther: String(raw.customer?.roleOther ?? "").trim().slice(0, 120) },
-    project: Object.fromEntries(Object.entries(raw.project ?? {}).map(([key, entry]) => [key, String(entry ?? "").trim().slice(0, 500)])) as QuestionnaireAnswers["project"],
+    project: { ...defaults.project, ...Object.fromEntries(Object.entries(raw.project ?? {}).map(([key, entry]) => [key, String(entry ?? "").trim().slice(0, 500)])) } as QuestionnaireAnswers["project"],
     areas: Array.isArray(raw.areas) ? raw.areas.slice(0, 10).filter((area): area is AreaAnswers => Boolean(area && AREA_TYPES.includes(area.type))).map((area) => clearHiddenAreaAnswers({ ...area, id: String(area.id).slice(0, 80), customName: String(area.customName ?? "").slice(0, 120), surfaces: Array.isArray(area.surfaces) ? area.surfaces.map(String).slice(0, 2) : [], existingDamage: Array.isArray(area.existingDamage) ? area.existingDamage.map(String).slice(0, 10) : [], extras: Array.isArray(area.extras) ? area.extras.map(String).slice(0, 20) : [], removals: Array.isArray(area.removals) ? area.removals.map(String).slice(0, 20) : [], notes: String(area.notes ?? "").slice(0, 3000) })) : [],
-    supplies: { ...raw.supplies },
+    supplies: { ...defaults.supplies, ...raw.supplies },
     additionalNotes: String(raw.additionalNotes ?? "").trim().slice(0, 5000),
     accuracyConfirmed: raw.accuracyConfirmed === true,
     privacyAccepted: raw.privacyAccepted === true,
