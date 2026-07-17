@@ -152,7 +152,6 @@ export default async function LocalePage({ params }: LocalePageProps) {
                         src={heroGallery[0].src}
                         alt={heroGallery[0].alt[locale]}
                         fill
-                        priority
                         sizes="(max-width: 1024px) 100vw, 28vw"
                         className="object-cover"
                       />

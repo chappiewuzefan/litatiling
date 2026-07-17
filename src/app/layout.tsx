@@ -3,6 +3,7 @@ import { Lexend, Source_Sans_3 } from "next/font/google";
 import Script from "next/script";
 
 import { GoogleAdsCallTracker } from "@/components/google-ads-call-tracker";
+import { GoogleAdsLoader } from "@/components/google-ads-loader";
 import { googleAdsConfig, hasGoogleAdsTracking } from "@/lib/google-ads";
 import {
   absoluteUrl,
@@ -71,11 +72,6 @@ export default function RootLayout({
       <body className={`${lexend.variable} ${sourceSans.variable} antialiased`}>
         {googleAdsEnabled ? (
           <>
-            <Script
-              id="google-ads-gtag-src"
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsConfig.conversionId}`}
-              strategy="afterInteractive"
-            />
             <Script id="google-ads-gtag-config" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
@@ -86,13 +82,18 @@ export default function RootLayout({
 
                 window.googleAdsReportConversion = function(sendTo, options) {
                   options = options || {};
+                  var completed = false;
                   var callback = function () {
+                    if (completed) return;
+                    completed = true;
+                    window.clearTimeout(fallbackTimer);
                     if (typeof options.callback === 'function') {
                       options.callback();
                     } else if (typeof options.url !== 'undefined') {
                       window.location = options.url;
                     }
                   };
+                  var fallbackTimer = window.setTimeout(callback, 1500);
 
                   gtag('event', 'conversion', {
                     'send_to': sendTo,
@@ -120,6 +121,7 @@ export default function RootLayout({
                 };
               `}
             </Script>
+            <GoogleAdsLoader />
             <GoogleAdsCallTracker />
           </>
         ) : null}
