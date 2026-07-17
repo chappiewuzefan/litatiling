@@ -35,7 +35,7 @@ export async function generateMetadata({
   const locale = await resolveLocale(params);
   const content = getContent(locale);
 
-  return buildMetadata({
+  const metadata = buildMetadata({
     locale,
     path: "/thanks",
     title:
@@ -43,8 +43,12 @@ export async function generateMetadata({
         ? `已收到询价 | ${siteConfig.brandName}`
         : `Thanks for your quote request | ${siteConfig.brandName}`,
     description: content.thanks.description,
-    keywords: content.metadata.keywords,
   });
+
+  return {
+    ...metadata,
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function ThanksPage({ params }: LocalePageProps) {

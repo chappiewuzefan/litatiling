@@ -46,7 +46,6 @@ type LocaleContent = {
   metadata: {
     title: string;
     description: string;
-    keywords: string[];
   };
   common: {
     skipToMain: string;
@@ -58,6 +57,8 @@ type LocaleContent = {
   };
   nav: {
     services: string;
+    guides: string;
+    about: string;
     projects: string;
     process: string;
     areas: string;
@@ -131,13 +132,22 @@ type LocaleContent = {
     eyebrow: string;
     title: string;
     description: string;
-    cards: Array<{ title: string; body: string; href?: string; action?: string }>;
+    cards: Array<{
+      title: string;
+      body: string;
+      href?: string;
+      action?: string;
+    }>;
     form: ContactFormContent;
   };
   footer: {
     tagline: string;
     rights: string;
     home: string;
+    services: string;
+    guides: string;
+    areas: string;
+    about: string;
     privacy: string;
   };
   thanks: {
@@ -172,18 +182,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       title: `Canberra Tiler & Waterproofing | Floors, Walls, Bathrooms | ${siteConfig.brandName}`,
       description:
         "Licensed Canberra residential tiling for floor tiling, wall tiling, bathroom tiling, waterproofing, splashbacks, silicone sealing, stone cladding, pool tiling and repairs. Free quotes with English and Chinese support.",
-      keywords: [
-        "Canberra tiler",
-        "Canberra tiling",
-        "Canberra waterproofing",
-        "bathroom tiling Canberra",
-        "floor tiling Canberra",
-        "wall tiling Canberra",
-        "splashback tiling Canberra",
-        "silicone sealing Canberra",
-        "stone cladding Canberra",
-        "pool tiling Canberra",
-      ],
     },
     common: {
       skipToMain: "Skip to main content",
@@ -191,11 +189,12 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       emailUs: "Email",
       requestQuote: "Request a free quote",
       bilingual: "English / 中文 support",
-      placeholderBanner:
-        "",
+      placeholderBanner: "",
     },
     nav: {
       services: "Services",
+      guides: "Guides",
+      about: "About",
       projects: "Case studies",
       process: "Process",
       areas: "Service areas",
@@ -206,7 +205,8 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     hero: {
       eyebrow: "Licensed Canberra tiler | 22+ years | English & Chinese",
-      title: "Canberra tiling, waterproofing and finishing for bathrooms, floors and walls.",
+      title:
+        "Canberra tiling, waterproofing and finishing for bathrooms, floors and walls.",
       description:
         "Tiling, waterproofing, splashbacks, silicone finishing, stone cladding, pool tiling and repairs for Canberra homes. Suitable for bathroom renovations, kitchens, living areas, wet areas and smaller repair jobs.",
       badges: [
@@ -544,17 +544,20 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "A few common questions before sending through photos, measurements or a quote request.",
       items: [
         {
-          question: "Do you handle both waterproofing and tiling for bathrooms?",
+          question:
+            "Do you handle both waterproofing and tiling for bathrooms?",
           answer:
             "Yes. Bathroom work can include waterproofing, wall tiling, floor tiling and silicone finishing as part of one clear scope.",
         },
         {
-          question: "Can I request only silicone, regrouting or a small repair?",
+          question:
+            "Can I request only silicone, regrouting or a small repair?",
           answer:
             "Yes. Small repair work, failed silicone, cracked grout and targeted tile replacement can all be quoted without turning the job into a full renovation.",
         },
         {
-          question: "Do you install stone cladding on feature walls or columns?",
+          question:
+            "Do you install stone cladding on feature walls or columns?",
           answer:
             "Yes. Stone cladding can be quoted for feature walls, pillars, entry details and other residential statement surfaces.",
         },
@@ -580,8 +583,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         },
         {
           question: "Can I enquire in Chinese?",
-          answer:
-            "Yes. We can communicate in both English and Chinese.",
+          answer: "Yes. We can communicate in both English and Chinese.",
         },
       ],
     },
@@ -676,6 +678,10 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "Licensed tiling, waterproofing, silicone finishing, stone cladding and pool tiling across Canberra.",
       rights: `© ${new Date().getFullYear()} ${siteConfig.legalName}. All rights reserved.`,
       home: "Home",
+      services: "Services",
+      guides: "Guides",
+      areas: "Service areas",
+      about: "About",
       privacy: "Privacy",
     },
     thanks: {
@@ -724,18 +730,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       title: `堪培拉贴砖与防水 | 浴室、地砖、墙砖、泳池砖 | ${siteConfig.brandName}`,
       description:
         "LITA 提供 Canberra 住宅贴砖与防水服务，涵盖浴室贴砖、防水、地砖、墙砖、挡水板、Silicone 收边、文化石背景墙 / 包柱、泳池瓷砖与补修，支持中文英文沟通，免费报价。",
-      keywords: [
-        "堪培拉贴砖",
-        "堪培拉瓷砖",
-        "堪培拉防水",
-        "堪培拉浴室贴砖",
-        "堪培拉地砖",
-        "堪培拉墙砖",
-        "堪培拉挡水板",
-        "堪培拉文化石",
-        "堪培拉泳池瓷砖",
-        "堪培拉 silicone",
-      ],
     },
     common: {
       skipToMain: "跳到主要内容",
@@ -743,11 +737,12 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       emailUs: "发邮件",
       requestQuote: "免费报价",
       bilingual: "支持英文 / 中文沟通",
-      placeholderBanner:
-        "",
+      placeholderBanner: "",
     },
     nav: {
       services: "服务",
+      guides: "指南",
+      about: "关于我们",
       projects: "案例",
       process: "流程",
       areas: "服务区域",
@@ -810,8 +805,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         },
         {
           title: "工艺质保",
-          description:
-            "提供工艺质保，具体范围和条件以最终报价和施工范围为准。",
+          description: "提供工艺质保，具体范围和条件以最终报价和施工范围为准。",
         },
       ],
     },
@@ -918,16 +912,14 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       title: "最近做过的住宅项目",
       description:
         "案例涵盖浴室、地砖、挡水板、文化石和泳池砖，方便先看常见项目的完成效果。",
-      notice:
-        "先看几类比较常见的住宅项目，方便判断是不是您要做的类型。",
+      notice: "先看几类比较常见的住宅项目，方便判断是不是您要做的类型。",
       items: [
         {
           suburb: "Belconnen",
           title: "主浴室翻新与防水",
           summary:
             "这组浴室图展示了大理石纹墙砖、地砖、淋浴区和整体湿区的完成效果，适合参考浴室翻新项目。",
-          result:
-            "可以参考浴室翻新、防水和墙地砖整体搭配的完成效果。",
+          result: "可以参考浴室翻新、防水和墙地砖整体搭配的完成效果。",
           highlights: ["浴室防水配合", "墙地砖整体协调", "湿区 Silicone 收边"],
         },
         {
@@ -935,8 +927,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           title: "客厅和通道大规格地砖",
           summary:
             "开放式住宅空间的大规格地砖更能体现平整度、对缝和整体完成度，也适合展示客厅和通道类项目。",
-          result:
-            "能看出不只是做浴室，也可以做整片地面更新。",
+          result: "能看出不只是做浴室，也可以做整片地面更新。",
           highlights: ["大规格地砖", "开放空间铺贴", "门口与过渡位收边"],
         },
         {
@@ -944,35 +935,43 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           title: "厨房挡水板和台面收边",
           summary:
             "厨房挡水板虽然项目不大，但很能体现切割、对缝和台面收边的细节水平。",
-          result:
-            "也适合只想做局部升级的客户先参考完成效果。",
-          highlights: ["厨房挡水板", "台面边 Silicone 收口", "适合局部翻新客户"],
+          result: "也适合只想做局部升级的客户先参考完成效果。",
+          highlights: [
+            "厨房挡水板",
+            "台面边 Silicone 收口",
+            "适合局部翻新客户",
+          ],
         },
         {
           suburb: "Woden Valley",
           title: "文化石背景墙和门口柱子",
           summary:
             "这组文化石案例展示了住宅背景墙、立柱和特色墙面的施工效果，和普通贴砖项目区分得更清楚。",
-          result:
-            "适合参考住宅背景墙、立柱和特色墙面的石材表面效果。",
-          highlights: ["文化石对缝与排版", "背景墙与柱面细节", "住宅特色饰面项目"],
+          result: "适合参考住宅背景墙、立柱和特色墙面的石材表面效果。",
+          highlights: [
+            "文化石对缝与排版",
+            "背景墙与柱面细节",
+            "住宅特色饰面项目",
+          ],
         },
         {
           suburb: "Tuggeranong",
           title: "泳池瓷砖翻新",
           summary:
             "泳池砖项目本身比较细分，但客户通常更关心是否做过类似环境和完成效果。",
-          result:
-            "如果是泳池砖或水线砖项目，可以先参考类似环境下的施工方向。",
-          highlights: ["泳池砖或水线砖", "室外湿区细节", "按现场状态和范围报价"],
+          result: "如果是泳池砖或水线砖项目，可以先参考类似环境下的施工方向。",
+          highlights: [
+            "泳池砖或水线砖",
+            "室外湿区细节",
+            "按现场状态和范围报价",
+          ],
         },
         {
           suburb: "Weston Creek",
           title: "小空间花砖地面铺贴",
           summary:
             "这类花砖地面更看排版、对缝和整体协调，小空间做得整齐，出来的效果会很加分。",
-          result:
-            "适合参考花砖地面这类更讲究对位和细节的项目。",
+          result: "适合参考花砖地面这类更讲究对位和细节的项目。",
           highlights: ["花砖排版", "小空间地面铺贴", "边角收边整齐"],
         },
         {
@@ -989,8 +988,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           title: "走道和台阶地砖收边",
           summary:
             "走道和台阶这种位置虽然面积不大，但更能看出切割、拼接和收边做得细不细。",
-          result:
-            "适合参考门口、走道和台阶过渡位这类地砖项目。",
+          result: "适合参考门口、走道和台阶过渡位这类地砖项目。",
           highlights: ["台阶和过渡位", "走道地砖铺贴", "缝隙更整齐"],
         },
         {
@@ -998,8 +996,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           title: "白色地铁砖厨房挡水板",
           summary:
             "这种白色地铁砖挡水板比较常见，重点就是对缝、转角和吊柜下面的收口做得干不干净。",
-          result:
-            "适合想做简洁厨房升级、又比较在意细节收边的客户参考。",
+          result: "适合想做简洁厨房升级、又比较在意细节收边的客户参考。",
           highlights: ["白色地铁砖", "转角和插座位处理", "吊柜下方收口"],
         },
       ],
@@ -1030,8 +1027,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         },
         {
           title: "4. 基层准备",
-          description:
-            "正式铺贴前，会先确认基层状态、防水需求和整体铺贴方式。",
+          description: "正式铺贴前，会先确认基层状态、防水需求和整体铺贴方式。",
         },
         {
           title: "5. 铺贴与收尾",
@@ -1096,8 +1092,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         },
         {
           question: "可以中文沟通吗？",
-          answer:
-            "可以。中文和英文都可以沟通。",
+          answer: "可以。中文和英文都可以沟通。",
         },
       ],
     },
@@ -1186,10 +1181,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       },
     },
     footer: {
-      tagline:
-        "Canberra 住宅贴砖、防水、Silicone、文化石和泳池砖服务。",
+      tagline: "Canberra 住宅贴砖、防水、Silicone、文化石和泳池砖服务。",
       rights: `© ${new Date().getFullYear()} ${siteConfig.legalName}。保留所有权利。`,
       home: "首页",
+      services: "服务",
+      guides: "指南",
+      areas: "服务区域",
+      about: "关于我们",
       privacy: "隐私",
     },
     thanks: {

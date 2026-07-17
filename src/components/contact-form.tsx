@@ -41,7 +41,8 @@ type FieldErrors = {
   message: string;
 };
 
-const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
+const turnstileSiteKey =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
 
 const initialState: FormState = {
   name: "",
@@ -55,11 +56,7 @@ const initialState: FormState = {
   company: "",
 };
 
-export function ContactForm({
-  locale,
-  content,
-  sourcePage,
-}: ContactFormProps) {
+export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
   const router = useRouter();
   const [formState, setFormState] = useState<FormState>({
     ...initialState,
@@ -78,6 +75,7 @@ export function ContactForm({
   });
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetCounter, setTurnstileResetCounter] = useState(0);
+  const [turnstileEnabled, setTurnstileEnabled] = useState(false);
   const requiresTurnstile = Boolean(turnstileSiteKey);
 
   function getClientValidationErrors() {
@@ -92,7 +90,9 @@ export function ContactForm({
       projectType: formState.projectType
         ? ""
         : content.validation.projectTypeRequired,
-      message: formState.message.trim() ? "" : content.validation.messageRequired,
+      message: formState.message.trim()
+        ? ""
+        : content.validation.messageRequired,
     };
   }
 
@@ -137,9 +137,9 @@ export function ContactForm({
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null;
+        const payload = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         throw new Error(payload?.message || content.errorFallback);
       }
 
@@ -224,6 +224,9 @@ export function ContactForm({
   return (
     <form
       onSubmit={handleSubmit}
+      onFocusCapture={() => {
+        if (requiresTurnstile) setTurnstileEnabled(true);
+      }}
       className="space-y-5 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_rgba(15,23,42,0.08)] md:p-8"
       noValidate
     >
@@ -231,7 +234,9 @@ export function ContactForm({
         <h2 className="font-heading text-2xl font-semibold text-slate-950">
           {content.title}
         </h2>
-        <p className="text-sm leading-6 text-slate-600">{content.description}</p>
+        <p className="text-sm leading-6 text-slate-600">
+          {content.description}
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -411,7 +416,7 @@ export function ContactForm({
         />
       </label>
 
-      {requiresTurnstile ? (
+      {requiresTurnstile && turnstileEnabled ? (
         <TurnstileWidget
           siteKey={turnstileSiteKey}
           locale={locale}
@@ -419,6 +424,14 @@ export function ContactForm({
           resetCounter={turnstileResetCounter}
           onTokenChange={setTurnstileToken}
         />
+      ) : requiresTurnstile ? (
+        <button
+          type="button"
+          onClick={() => setTurnstileEnabled(true)}
+          className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-slate-50 px-4 text-sm font-semibold text-slate-800 transition hover:border-sky-400 hover:bg-sky-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-600"
+        >
+          {content.securityCheckLabel}
+        </button>
       ) : null}
 
       <div className="flex flex-col gap-3">

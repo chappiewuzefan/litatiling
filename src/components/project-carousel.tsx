@@ -71,15 +71,17 @@ export function ProjectCarousel({
     const groupedPages: ProjectPage[] = [];
 
     for (let index = 0; index < items.length; index += cardsPerView) {
-      const pageItems = items.slice(index, index + cardsPerView).map((project, offset) => {
-        const cardIndex = index + offset;
+      const pageItems = items
+        .slice(index, index + cardsPerView)
+        .map((project, offset) => {
+          const cardIndex = index + offset;
 
-        return {
-          project,
-          image: images[cardIndex],
-          key: `${project.suburb}-${project.title}-${cardIndex}`,
-        };
-      });
+          return {
+            project,
+            image: images[cardIndex],
+            key: `${project.suburb}-${project.title}-${cardIndex}`,
+          };
+        });
 
       groupedPages.push(pageItems);
     }
@@ -264,7 +266,11 @@ export function ProjectCarousel({
                 className="h-5 w-5"
                 aria-hidden="true"
               >
-                <path d="M15 6 9 12l6 6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M15 6 9 12l6 6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <button
@@ -281,7 +287,11 @@ export function ProjectCarousel({
                 className="h-5 w-5"
                 aria-hidden="true"
               >
-                <path d="m9 6 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="m9 6 6 6-6 6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
@@ -335,7 +345,10 @@ export function ProjectCarousel({
                       </div>
                       <ul className="space-y-3 text-sm text-slate-700">
                         {project.highlights.map((highlight) => (
-                          <li key={highlight} className="flex items-start gap-3">
+                          <li
+                            key={highlight}
+                            className="flex items-start gap-3"
+                          >
                             <span className="mt-2 h-2 w-2 rounded-full bg-orange-500" />
                             <span>{highlight}</span>
                           </li>
@@ -351,21 +364,23 @@ export function ProjectCarousel({
       </div>
 
       {pageCount > 1 ? (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           {pages.map((_, index) => (
             <button
               key={index}
               type="button"
               aria-label={
-                locale === "zh" ? `跳到第 ${index + 1} 组案例` : `Go to slide ${index + 1}`
+                locale === "zh"
+                  ? `跳到第 ${index + 1} 组案例`
+                  : `Go to slide ${index + 1}`
               }
               onClick={() => scrollToLogicalPage(index)}
-              className={`h-2.5 rounded-full transition ${
-                index === activePage
-                  ? "w-8 bg-sky-600"
-                  : "w-2.5 bg-slate-300 hover:bg-slate-400"
-              }`}
-            />
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-600"
+            >
+              <span
+                className={`h-2.5 rounded-full transition ${index === activePage ? "w-7 bg-sky-700" : "w-2.5 bg-slate-400"}`}
+              />
+            </button>
           ))}
         </div>
       ) : null}

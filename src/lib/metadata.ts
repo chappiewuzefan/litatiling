@@ -5,6 +5,7 @@ import {
   getHtmlLang,
   getLanguageAlternates,
   getLocalizedPath,
+  socialPreviewPath,
   siteConfig,
   type Locale,
 } from "@/lib/site-config";
@@ -14,15 +15,15 @@ export function buildMetadata(options: {
   path?: string;
   title: string;
   description: string;
-  keywords: string[];
+  image?: string;
 }): Metadata {
   const path = options.path ?? "";
   const canonical = absoluteUrl(getLocalizedPath(options.locale, path));
+  const image = absoluteUrl(options.image ?? socialPreviewPath);
 
   return {
     title: options.title,
     description: options.description,
-    keywords: options.keywords,
     alternates: {
       canonical,
       languages: getLanguageAlternates(path),
@@ -36,7 +37,7 @@ export function buildMetadata(options: {
       locale: getHtmlLang(options.locale).replace("-", "_"),
       images: [
         {
-          url: absoluteUrl("/social-preview.svg"),
+          url: image,
           width: 1200,
           height: 630,
           alt: siteConfig.brandName,
@@ -47,7 +48,7 @@ export function buildMetadata(options: {
       card: "summary_large_image",
       title: options.title,
       description: options.description,
-      images: [absoluteUrl("/social-preview.svg")],
+      images: [image],
     },
     other: {
       "content-language": getHtmlLang(options.locale),

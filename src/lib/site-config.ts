@@ -4,6 +4,9 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
+export const contentLastModified = "2026-07-17";
+export const socialPreviewPath = "/social-preview.webp";
+
 const siteUrlValue =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
   "https://www.litatiling.com";
@@ -52,10 +55,10 @@ export const siteConfig = {
   firebaseCollection: process.env.FIREBASE_CONTACT_COLLECTION ?? "contactLeads",
   placeholderChecks: {
     usesExampleDomain:
-      siteUrlValue === "https://example.com" || emailValue.endsWith("@example.com"),
+      siteUrlValue === "https://example.com" ||
+      emailValue.endsWith("@example.com"),
     usesPlaceholderPhone: phoneDisplayValue === "0400 000 000",
-    usesPlaceholderBrand:
-      brandNameValue === "Canberra Tiling & Waterproofing",
+    usesPlaceholderBrand: brandNameValue === "Canberra Tiling & Waterproofing",
   },
 };
 
@@ -64,11 +67,7 @@ export function isLocale(value: string): value is Locale {
 }
 
 export function getLocalizedPath(locale: Locale, path = "") {
-  const normalizedPath = path
-    ? path.startsWith("/")
-      ? path
-      : `/${path}`
-    : "";
+  const normalizedPath = path ? (path.startsWith("/") ? path : `/${path}`) : "";
 
   return `/${locale}${normalizedPath}`;
 }
@@ -83,13 +82,13 @@ export function absoluteUrl(path = "/") {
 }
 
 export function getHtmlLang(locale: Locale) {
-  return locale === "zh" ? "zh-CN" : "en-AU";
+  return locale === "zh" ? "zh-Hans-AU" : "en-AU";
 }
 
 export function getLanguageAlternates(path = "") {
   return {
     "en-AU": getLocaleHref("en", path),
-    "zh-CN": getLocaleHref("zh", path),
+    "zh-Hans-AU": getLocaleHref("zh", path),
     "x-default": getLocaleHref(defaultLocale, path),
   };
 }

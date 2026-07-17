@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ContactForm } from "@/components/contact-form";
 import { FloatingCallButton } from "@/components/floating-call-button";
+import { GuideCard } from "@/components/guide-card";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchWarning } from "@/components/launch-warning";
 import { ProjectCarousel } from "@/components/project-carousel";
+import { ServiceCard } from "@/components/service-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getContent } from "@/lib/content";
+import { getFeaturedGuides } from "@/lib/guides";
 import { heroGallery, processGallery, projectGallery } from "@/lib/gallery";
 import { buildMetadata } from "@/lib/metadata";
-import {
-  hasPlaceholderContent,
-  isLocale,
-  siteConfig,
-} from "@/lib/site-config";
+import { hasPlaceholderContent, isLocale, siteConfig } from "@/lib/site-config";
 import { buildStructuredData } from "@/lib/structured-data";
+import { getServicePages, servicePageUi } from "@/lib/service-pages";
 
 type LocalePageProps = {
   params: Promise<{ locale: string }>;
@@ -43,7 +44,6 @@ export async function generateMetadata({
     locale,
     title: content.metadata.title,
     description: content.metadata.description,
-    keywords: content.metadata.keywords,
   });
 }
 
@@ -70,6 +70,9 @@ export default async function LocalePage({ params }: LocalePageProps) {
   const structuredData = buildStructuredData(locale);
   const showPlaceholderWarning = hasPlaceholderContent();
   const contactPath = `/${locale}`;
+  const servicePages = getServicePages(locale);
+  const serviceUi = servicePageUi[locale];
+  const featuredGuides = getFeaturedGuides(locale);
 
   return (
     <>
@@ -112,7 +115,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
               <div className="flex flex-col gap-4 sm:flex-row">
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center rounded-full bg-orange-500 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-orange-400"
+                  className="inline-flex items-center justify-center rounded-full bg-orange-700 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-orange-600"
                 >
                   {content.hero.primaryCta}
                 </a>
@@ -155,7 +158,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
                     </div>
-                    <div className="relative min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10">
+                    <div className="relative hidden min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10 sm:block">
                       <Image
                         src={heroGallery[1].src}
                         alt={heroGallery[1].alt[locale]}
@@ -165,7 +168,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent" />
                     </div>
-                    <div className="relative min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10">
+                    <div className="relative hidden min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10 sm:block">
                       <Image
                         src={heroGallery[2].src}
                         alt={heroGallery[2].alt[locale]}
@@ -199,7 +202,9 @@ export default async function LocalePage({ params }: LocalePageProps) {
                   </div>
 
                   <ServiceLinks
-                    labels={content.services.items.map((service) => service.title)}
+                    labels={content.services.items.map(
+                      (service) => service.title,
+                    )}
                   />
 
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -234,7 +239,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
                 key={item.title}
                 className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-[0_24px_70px_rgba(15,23,42,0.06)]"
               >
-                <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-sm font-bold text-orange-600">
+                <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-sm font-bold text-orange-700">
                   {item.title.slice(0, 1)}
                 </div>
                 <h3 className="font-heading text-2xl font-semibold text-slate-950">
@@ -256,33 +261,21 @@ export default async function LocalePage({ params }: LocalePageProps) {
               <p className="section-copy">{content.services.description}</p>
             </div>
             <div className="mt-10 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-              {content.services.items.map((service) => (
-                <article
-                  key={service.title}
-                  className="group rounded-[2rem] border border-slate-200 bg-white p-7 shadow-[0_24px_70px_rgba(15,23,42,0.04)] transition hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(15,23,42,0.1)]"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="font-heading text-2xl font-semibold text-slate-950">
-                      {service.title}
-                    </h3>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-700">
-                      <span className="h-2.5 w-2.5 rounded-full bg-sky-600" />
-                    </div>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-slate-600">
-                    {service.description}
-                  </p>
-                  <ul className="mt-6 space-y-3 text-sm text-slate-700">
-                    {service.bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-start gap-3">
-                        <span className="mt-2 h-2 w-2 rounded-full bg-orange-500" />
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
+              {servicePages.map((service) => (
+                <ServiceCard
+                  key={service.slug}
+                  service={service}
+                  label={serviceUi.learnMore}
+                  headingLevel="h3"
+                />
               ))}
             </div>
+            <Link
+              href={`/${locale}/services`}
+              className="mt-8 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-sky-400 hover:text-sky-800"
+            >
+              {locale === "zh" ? "查看全部服务说明" : "Explore all services"} →
+            </Link>
           </div>
         </section>
 
@@ -352,7 +345,9 @@ export default async function LocalePage({ params }: LocalePageProps) {
         <section id="areas" className="bg-slate-950 py-20 text-white">
           <div className="section-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div className="space-y-5">
-              <p className="section-eyebrow text-sky-300">{content.areas.eyebrow}</p>
+              <p className="section-eyebrow text-sky-300">
+                {content.areas.eyebrow}
+              </p>
               <h2 className="font-heading text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl">
                 {content.areas.title}
               </h2>
@@ -380,6 +375,39 @@ export default async function LocalePage({ params }: LocalePageProps) {
                 {content.areas.coverageNote}
               </p>
             </div>
+          </div>
+        </section>
+
+        <section className="bg-slate-100/80 py-20">
+          <div className="section-shell">
+            <div className="space-y-5">
+              <p className="section-eyebrow">
+                {locale === "zh"
+                  ? "贴砖与翻新指南"
+                  : "Tiling and renovation guides"}
+              </p>
+              <h2 className="section-title">
+                {locale === "zh"
+                  ? "开工前，先把关键问题弄明白。"
+                  : "Resolve the important questions before work begins."}
+              </h2>
+              <p className="section-copy">
+                {locale === "zh"
+                  ? "阅读经过澳洲资料复核的防水、选砖、基层、维修和施工准备指南。"
+                  : "Read Australia-checked guidance on waterproofing, tile selection, preparation, repairs and project planning."}
+              </p>
+            </div>
+            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {featuredGuides.map((guide) => (
+                <GuideCard key={guide.slug} guide={guide} headingLevel="h3" />
+              ))}
+            </div>
+            <Link
+              href={`/${locale}/guides`}
+              className="mt-8 inline-flex min-h-11 items-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-800"
+            >
+              {locale === "zh" ? "查看全部指南" : "View all guides"} →
+            </Link>
           </div>
         </section>
 
@@ -449,7 +477,11 @@ export default async function LocalePage({ params }: LocalePageProps) {
               </div>
             </div>
 
-            <ContactForm locale={locale} content={content.contact.form} sourcePage={contactPath} />
+            <ContactForm
+              locale={locale}
+              content={content.contact.form}
+              sourcePage={contactPath}
+            />
           </div>
         </section>
       </main>

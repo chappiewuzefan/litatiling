@@ -92,8 +92,50 @@ The root path redirects to `/en`.
   - contact form labels
 - `src/lib/gallery.ts`
   - selected image mapping and alt text
-- `public/social-preview.svg`
+- `public/social-preview.webp`
   - social share artwork
+
+## SEO and guide publishing
+
+The public marketing site now uses a bilingual, static content structure:
+
+- `/{locale}/services` and `/{locale}/services/{slug}` for high-intent service pages
+- `/{locale}/guides` and `/{locale}/guides/{slug}` for homeowner education
+- `/{locale}/about` for business context
+- `/{locale}/service-areas` for the real Canberra service area
+
+Guide source files live under `src/content/guides/en` and `src/content/guides/zh`.
+Each translation pair uses the same `slug` and `translationKey`. Required frontmatter:
+
+```yaml
+locale: "en"
+slug: "example-guide"
+translationKey: "example-guide"
+title: "Example title"
+description: "Search description"
+excerpt: "Card and article introduction"
+category: "Project planning"
+heroImage: "/case-studies/selected/projects/example.webp"
+heroAlt: "Useful, specific image description"
+publishedAt: "2026-07-17"
+updatedAt: "2026-07-17"
+status: "published"
+featured: false
+sources:
+  - title: "Source title"
+    url: "https://example.gov.au/source"
+    publisher: "Source publisher"
+```
+
+Publishing rules:
+
+- keep drafts as `status: "draft"`; drafts do not receive routes or sitemap entries
+- add both English and Chinese files before publishing
+- use LITA-owned images only
+- use external pages for research and attribution, not copied or lightly translated body text
+- verify technical claims against current Australian primary sources or product documentation
+- do not add prices, fixed completion times, diagnoses, ratings or credentials that have not been confirmed
+- run the full check suite before publishing; content validation checks fields, dates, sources, images, unique routes and language pairs
 
 ## Image workflow
 

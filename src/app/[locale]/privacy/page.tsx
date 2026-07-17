@@ -36,7 +36,6 @@ export async function generateMetadata({
         ? `隐私说明 | ${siteConfig.brandName}`
         : `Privacy | ${siteConfig.brandName}`,
     description: content.privacy.intro,
-    keywords: content.metadata.keywords,
   });
 }
 

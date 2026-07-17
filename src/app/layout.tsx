@@ -4,24 +4,33 @@ import Script from "next/script";
 
 import { GoogleAdsCallTracker } from "@/components/google-ads-call-tracker";
 import { googleAdsConfig, hasGoogleAdsTracking } from "@/lib/google-ads";
-import { absoluteUrl, getLanguageAlternates, siteConfig } from "@/lib/site-config";
+import {
+  absoluteUrl,
+  getLanguageAlternates,
+  siteConfig,
+  socialPreviewPath,
+} from "@/lib/site-config";
 
 import "./globals.css";
 
 const lexend = Lexend({
   variable: "--font-heading",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const sourceSans = Source_Sans_3({
   variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const notoSansSc = Noto_Sans_SC({
   variable: "--font-cjk",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -42,7 +51,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: absoluteUrl("/social-preview.svg"),
+        url: absoluteUrl(socialPreviewPath),
         width: 1200,
         height: 630,
         alt: siteConfig.brandName,
@@ -54,7 +63,7 @@ export const metadata: Metadata = {
     title: siteConfig.brandName,
     description:
       "Canberra floor tiling, wall tiling, bathroom waterproofing, silicone sealing, stone cladding and pool tiling with English and Chinese support.",
-    images: [absoluteUrl("/social-preview.svg")],
+    images: [absoluteUrl(socialPreviewPath)],
   },
 };
 
@@ -67,7 +76,9 @@ export default function RootLayout({
 
   return (
     <html lang="en-AU">
-      <body className={`${lexend.variable} ${sourceSans.variable} ${notoSansSc.variable} antialiased`}>
+      <body
+        className={`${lexend.variable} ${sourceSans.variable} ${notoSansSc.variable} antialiased`}
+      >
         {googleAdsEnabled ? (
           <>
             <Script
