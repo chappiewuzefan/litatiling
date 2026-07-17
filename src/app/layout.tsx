@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lexend, Noto_Sans_SC, Source_Sans_3 } from "next/font/google";
+import { Lexend, Source_Sans_3 } from "next/font/google";
 import Script from "next/script";
 
 import { GoogleAdsCallTracker } from "@/components/google-ads-call-tracker";
@@ -23,14 +23,6 @@ const sourceSans = Source_Sans_3({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
-});
-
-const notoSansSc = Noto_Sans_SC({
-  variable: "--font-cjk",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -76,9 +68,7 @@ export default function RootLayout({
 
   return (
     <html lang="en-AU">
-      <body
-        className={`${lexend.variable} ${sourceSans.variable} ${notoSansSc.variable} antialiased`}
-      >
+      <body className={`${lexend.variable} ${sourceSans.variable} antialiased`}>
         {googleAdsEnabled ? (
           <>
             <Script

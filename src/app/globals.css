@@ -45,7 +45,9 @@ body {
     ),
     var(--color-paper);
   color: var(--color-ink);
-  font-family: var(--font-body), var(--font-cjk), sans-serif;
+  font-family:
+    var(--font-body), "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC",
+    sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -74,7 +76,9 @@ textarea {
 }
 
 .font-heading {
-  font-family: var(--font-heading), var(--font-cjk), sans-serif;
+  font-family:
+    var(--font-heading), "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC",
+    sans-serif;
 }
 
 .section-shell {
@@ -98,7 +102,9 @@ textarea {
 
 .section-title {
   margin: 0;
-  font-family: var(--font-heading), var(--font-cjk), sans-serif;
+  font-family:
+    var(--font-heading), "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC",
+    sans-serif;
   font-size: clamp(2rem, 4vw, 3.5rem);
   line-height: 1.05;
   color: var(--color-ink);
