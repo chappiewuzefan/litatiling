@@ -58,6 +58,7 @@ describe("UI and SEO evolution", () => {
     );
     expect(source).toContain("window.setInterval");
     expect(source).toContain("}, 5000)");
+    expect(source).toContain("IntersectionObserver");
     expect(source).toContain("aria-pressed={isPaused}");
   });
 

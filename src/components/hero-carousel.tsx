@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import type { GalleryImage } from "@/lib/gallery";
 import type { Locale } from "@/lib/site-config";
@@ -23,6 +23,8 @@ export function HeroCarousel({
   const [isPaused, setIsPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isEnhanced, setIsEnhanced] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -35,14 +37,32 @@ export function HeroCarousel({
   }, []);
 
   useEffect(() => {
-    if (isPaused || reducedMotion || slides.length < 2) return;
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.2 },
+    );
+    observer.observe(carousel);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || reducedMotion || !isInView || slides.length < 2) return;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % slides.length);
     }, 5000);
 
     return () => window.clearInterval(timer);
-  }, [isPaused, reducedMotion, slides.length]);
+  }, [isInView, isPaused, reducedMotion, slides.length]);
 
   function showPrevious() {
     setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
@@ -80,6 +100,7 @@ export function HeroCarousel({
   return (
     <div
       id="project-gallery"
+      ref={carouselRef}
       aria-label={labels.carousel}
       aria-roledescription="carousel"
       className="group scroll-mt-24"
@@ -137,7 +158,7 @@ export function HeroCarousel({
                   <span className="relative h-1 w-6 overflow-hidden rounded-full bg-[var(--line)]">
                     <span
                       key={`${activeIndex}-${isPaused}`}
-                      className={`absolute inset-0 bg-[var(--accent)] ${isEnhanced && !isPaused && !reducedMotion ? "carousel-progress" : ""}`}
+                      className={`absolute inset-0 bg-[var(--accent)] ${isEnhanced && isInView && !isPaused && !reducedMotion ? "carousel-progress" : ""}`}
                     />
                   </span>
                 ) : (
