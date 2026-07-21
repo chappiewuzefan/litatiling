@@ -13,7 +13,7 @@ updatedAt: "2026-07-17"
 status: "published"
 featured: false
 sources:
-  - title: "Construction Note 01/2023 — Wet Areas"
+  - title: "Construction Note 01/2023 - Wet Areas"
     url: "https://files.accesscanberra.act.gov.au/files/construction-industry-information/construction-notes/Construction-Note-202301-Wet-Areas.pdf"
     publisher: "Access Canberra"
   - title: "Tile-on-tile: what you need to know"

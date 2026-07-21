@@ -177,9 +177,9 @@ const serviceOptionValues = [
 export const contentByLocale: Record<Locale, LocaleContent> = {
   en: {
     metadata: {
-      title: `Canberra Tiler & Waterproofing | Floors, Walls, Bathrooms | ${siteConfig.brandName}`,
+      title: "Canberra Tiler & Waterproofing | LITA Tiling",
       description:
-        "Licensed Canberra residential tiling for floor tiling, wall tiling, bathroom tiling, waterproofing, splashbacks, silicone sealing, stone cladding, pool tiling and repairs. Free quotes with English and Chinese support.",
+        "Licensed Canberra tiling and waterproofing for bathrooms, floors, walls, splashbacks, pools and repairs. Free quotes in English or Chinese.",
     },
     common: {
       skipToMain: "Skip to main content",
@@ -201,18 +201,17 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       backHome: "Back to home",
     },
     hero: {
-      eyebrow: "Licensed Canberra tiler | 22+ years | English & Chinese",
-      title:
-        "Canberra tiling, waterproofing and finishing for bathrooms, floors and walls.",
+      eyebrow: "Licensed Canberra tiler | 22+ years",
+      title: "Canberra tiling and waterproofing, finished with care.",
       description:
-        "Tiling, waterproofing, splashbacks, silicone finishing, stone cladding, pool tiling and repairs for Canberra homes. Suitable for bathroom renovations, kitchens, living areas, wet areas and smaller repair jobs.",
+        "Bathrooms, floors, walls and repairs for Canberra homes, with clear quotes in English or Chinese.",
       badges: [
         "Bathrooms, floors and walls",
         "Waterproofing, silicone and regrouting",
         "Stone cladding, splashbacks and pool tiling",
       ],
       primaryCta: "Request a free quote",
-      secondaryCta: "See services",
+      secondaryCta: "View recent work",
       stats: [
         { value: "22+ years", label: "Experience" },
         { value: "Licensed", label: "Residential trade" },
@@ -495,32 +494,22 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "This site photo shows the work mid-installation, including preparation, tile layout and finishing details.",
       steps: [
         {
-          title: "1. Send the enquiry",
+          title: "Share the job",
           description:
             "Share the suburb, service type and a short explanation of the job through the form, phone or email.",
         },
         {
-          title: "2. Review the scope",
+          title: "Confirm the scope",
           description:
-            "The job is sorted into bathroom work, floor tiling, wall tiling, waterproofing, stone cladding, pool tiling or repairs.",
+            "Review the site details, surfaces, tile choice and any waterproofing or repair needs before the quote is finalised.",
         },
         {
-          title: "3. Quote and planning",
+          title: "Prepare and install",
           description:
-            "The quote can cover preparation, waterproofing, tiling, silicone finishing and any practical staging notes for the home.",
+            "Confirm the substrate and set-out, then complete the agreed waterproofing, tiling, grouting and silicone finishing.",
         },
         {
-          title: "4. Surface preparation",
-          description:
-            "Before tiling starts, the surface condition, waterproofing needs and layout approach are confirmed.",
-        },
-        {
-          title: "5. Installation and finishing",
-          description:
-            "Tiles are installed, grouted and finished with the same scope that was discussed during quoting.",
-        },
-        {
-          title: "6. Handover and warranty",
+          title: "Finish and hand over",
           description:
             "The finished work is checked, care guidance is shared and workmanship warranty terms stay aligned with the quoted scope.",
         },
@@ -729,9 +718,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
   },
   zh: {
     metadata: {
-      title: `堪培拉贴砖与防水 | 浴室、地砖、墙砖、泳池砖 | ${siteConfig.brandName}`,
+      title: "堪培拉贴砖与防水 | LITA Tiling Canberra",
       description:
-        "LITA 提供 Canberra 住宅贴砖与防水服务，涵盖浴室贴砖、防水、地砖、墙砖、挡水板、Silicone 收边、文化石背景墙 / 包柱、泳池瓷砖与补修，支持中文英文沟通，免费报价。",
+        "LITA 提供堪培拉住宅贴砖、防水、浴室、地面、墙面、挡水板、泳池砖与维修服务，支持中英文沟通和免费报价。",
     },
     common: {
       skipToMain: "跳到主要内容",
@@ -753,17 +742,17 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       backHome: "返回首页",
     },
     hero: {
-      eyebrow: "持牌施工 | 22年以上经验 | 支持中文沟通",
-      title: "Canberra 住宅贴砖、防水和细节收边。",
+      eyebrow: "Canberra 持牌施工 | 22 年以上经验",
+      title: "Canberra 住宅贴砖与防水，细节做到位。",
       description:
-        "适合浴室翻新、地砖墙砖、防水、挡水板、Silicone 收边、文化石背景墙、包柱和泳池砖等住宅项目。可以先看案例，再发来需求免费报价。",
+        "承接浴室、地面、墙面和维修项目，支持中英文沟通与免费报价。",
       badges: [
         "浴室贴砖与防水",
         "地砖 / 墙砖 / 挡水板",
         "Silicone、文化石、泳池砖",
       ],
       primaryCta: "免费报价",
-      secondaryCta: "查看服务",
+      secondaryCta: "查看近期案例",
       stats: [
         { value: "22+ 年", label: "施工经验" },
         { value: "免费报价", label: "先沟通再安排" },
@@ -1012,31 +1001,22 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "这张现场施工图能更直观看到基层、排砖和收边这些细节，不只是最后拍好的成品照。",
       steps: [
         {
-          title: "1. 提交需求",
+          title: "说明项目",
           description:
             "先发 suburb、服务类型和项目概况，电话、邮件或表单都可以。",
         },
         {
-          title: "2. 判断范围",
+          title: "确认范围",
           description:
-            "先判断是浴室、地砖、墙砖、防水、文化石、泳池砖，还是局部维修。",
+            "结合现场信息、基层、瓷砖选择，以及防水或维修需求确认报价范围。",
         },
         {
-          title: "3. 报价与安排",
+          title: "准备与施工",
           description:
-            "报价会把基层、防水、贴砖、Silicone 收边和施工安排尽量讲清楚。",
+            "确认基层和排版后，按约定完成防水、贴砖、勾缝与 Silicone 收边。",
         },
         {
-          title: "4. 基层准备",
-          description: "正式铺贴前，会先确认基层状态、防水需求和整体铺贴方式。",
-        },
-        {
-          title: "5. 铺贴与收尾",
-          description:
-            "按报价确认的范围完成铺贴、勾缝和 Silicone 收边，不让客户临时猜流程。",
-        },
-        {
-          title: "6. 完工交付",
+          title: "收尾与交付",
           description:
             "完工后会一起看最终效果，并把基本维护和工艺质保范围讲清楚。",
         },

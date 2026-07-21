@@ -148,15 +148,12 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         <section className="section-shell py-16 sm:py-20">
           <p className="section-eyebrow">{ui.process}</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {service.process.map((step, index) => (
+            {service.process.map((step) => (
               <article
                 key={step.title}
                 className="rounded-[1.75rem] border border-slate-200 bg-white p-6"
               >
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <h2 className="mt-3 font-heading text-2xl font-semibold text-slate-950">
+                <h2 className="font-heading text-2xl font-semibold text-slate-950">
                   {step.title}
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">

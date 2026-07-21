@@ -47,7 +47,7 @@ describe("guide library", () => {
           path.join(process.cwd(), "public", guide.heroImage.slice(1)),
         ),
       ).toBe(true);
-      expect(renderGuideMarkdown(guide.body)).toContain("<h2>");
+      expect(renderGuideMarkdown(guide.body)).toContain('<h2 id="section-');
     }
   });
 

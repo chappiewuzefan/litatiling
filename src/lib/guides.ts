@@ -273,7 +273,18 @@ export function renderGuideMarkdown(body: string) {
   if (typeof html !== "string") {
     throw new Error("Guide markdown unexpectedly rendered asynchronously.");
   }
-  return html;
+  let sectionIndex = 0;
+  return html.replace(/<h2>(.*?)<\/h2>/g, (_heading, content: string) => {
+    sectionIndex += 1;
+    return `<h2 id="section-${sectionIndex}">${content}</h2>`;
+  });
+}
+
+export function getGuideSections(body: string) {
+  return [...body.matchAll(/^##\s+(.+)$/gm)].map((match, index) => ({
+    id: `section-${index + 1}`,
+    title: match[1].replace(/[*_`]/g, "").trim(),
+  }));
 }
 
 export function validateGuideLibrary() {

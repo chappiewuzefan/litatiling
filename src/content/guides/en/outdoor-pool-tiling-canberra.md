@@ -2,14 +2,14 @@
 locale: "en"
 slug: "outdoor-pool-tiling-canberra"
 translationKey: "outdoor-pool-tiling-canberra"
-title: "Outdoor and Pool Tiling in Canberra: Climate, Drainage and Tile Choice"
-description: "Plan Canberra outdoor and pool tiling around temperature change, wet-use tile selection, drainage, substrate movement, installation systems and curing conditions."
+title: "Outdoor & Pool Tiling Canberra: Climate, Drainage & Tiles"
+description: "Plan Canberra outdoor and pool tiling around temperature changes, wet-use tile selection, drainage, substrate movement and curing conditions."
 excerpt: "Canberra outdoor tiles face wet use, strong sun and seasonal temperature change, while pool interiors add permanent immersion and chemical exposure."
 category: "Outdoor tiling"
 heroImage: "/case-studies/selected/projects/pool-tiling.webp"
 heroAlt: "Blue mosaic tiles installed inside a residential swimming pool."
 publishedAt: "2026-07-17"
-updatedAt: "2026-07-17"
+updatedAt: "2026-07-21"
 status: "published"
 featured: false
 sources:

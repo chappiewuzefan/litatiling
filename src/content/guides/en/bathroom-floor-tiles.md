@@ -2,14 +2,14 @@
 locale: "en"
 slug: "bathroom-floor-tiles"
 translationKey: "bathroom-floor-tiles"
-title: "Bathroom Floor Tiles: Slip Resistance, Falls and Drainage Explained"
-description: "Understand the relationship between bathroom tile finish, slip information, floor falls, wastes, grout joints and cleaning before selecting a Canberra wet-area floor tile."
+title: "Bathroom Floor Tiles: Slip Resistance, Falls & Drainage"
+description: "Choose bathroom floor tiles with slip information, falls, wastes, grout joints and cleaning in mind for a safer Canberra wet area."
 excerpt: "A bathroom floor tile must work with the room geometry and drainage plan; colour and format are only part of the decision."
 category: "Bathroom planning"
 heroImage: "/case-studies/selected/projects/shower-niche-tiling.webp"
 heroAlt: "Grey bathroom floor and wall tiles with a recessed shower niche."
 publishedAt: "2026-07-17"
-updatedAt: "2026-07-17"
+updatedAt: "2026-07-21"
 status: "published"
 featured: false
 sources:

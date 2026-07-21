@@ -16,7 +16,7 @@ sources:
   - title: "Construction notes"
     url: "https://www.accesscanberra.act.gov.au/business-and-work/building-and-construction/construction-notes"
     publisher: "Access Canberra"
-  - title: "Construction Note 01/2023 — Wet Areas"
+  - title: "Construction Note 01/2023 - Wet Areas"
     url: "https://files.accesscanberra.act.gov.au/files/construction-industry-information/construction-notes/Construction-Note-202301-Wet-Areas.pdf"
     publisher: "Access Canberra"
   - title: "Waterproofing in houses"

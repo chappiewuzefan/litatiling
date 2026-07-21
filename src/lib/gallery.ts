@@ -8,6 +8,16 @@ export type GalleryImage = {
   originalSource: string;
 };
 
+export const wideHeroImage: GalleryImage = {
+  src: "/case-studies/selected/hero/kitchen-splashback-wide.webp",
+  alt: {
+    en: "Finished grey kitchen splashback tiles framed by timber cabinetry in a Canberra home.",
+    zh: "堪培拉住宅木纹橱柜之间完成铺贴的灰色厨房挡水板。",
+  },
+  originalSource:
+    "/public/case-studies/unsorted/微信图片_20260407221145_28335_1476.jpg",
+};
+
 export const heroGallery: GalleryImage[] = [
   {
     src: "/case-studies/selected/hero/living-room-floor.webp",

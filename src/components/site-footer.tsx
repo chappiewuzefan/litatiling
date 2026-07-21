@@ -33,13 +33,13 @@ export function SiteFooter({ locale, footer }: SiteFooterProps) {
   ];
 
   return (
-    <footer className="border-t border-slate-800 bg-slate-950 text-slate-200">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.25fr_0.75fr_0.75fr] lg:px-8">
+    <footer className="border-t border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.25fr_0.75fr_0.75fr] lg:px-8">
         <div className="space-y-4">
-          <p className="font-heading text-xl text-white">
+          <p className="font-heading text-xl font-semibold text-[var(--ink)]">
             {siteConfig.brandName}
           </p>
-          <p className="max-w-xl text-sm leading-7 text-slate-300">
+          <p className="max-w-xl text-sm leading-7 text-[var(--muted)]">
             {footer.tagline}
           </p>
           <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-4">
@@ -47,14 +47,14 @@ export function SiteFooter({ locale, footer }: SiteFooterProps) {
               <a
                 key={phone.kind}
                 href={phone.href}
-                className="inline-flex min-h-11 items-center transition hover:text-white"
+                className="inline-flex min-h-11 items-center font-semibold transition hover:text-[var(--accent-strong)]"
               >
                 {phoneLabels[phone.kind].short}: {phone.display}
               </a>
             ))}
             <a
               href={siteConfig.emailHref}
-              className="inline-flex min-h-11 items-center break-all transition hover:text-white"
+              className="inline-flex min-h-11 items-center break-all transition hover:text-[var(--accent-strong)]"
             >
               {siteConfig.email}
             </a>
@@ -69,18 +69,18 @@ export function SiteFooter({ locale, footer }: SiteFooterProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="inline-flex min-h-11 items-center transition hover:text-white"
+              className="inline-flex min-h-11 items-center transition hover:text-[var(--accent-strong)]"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="text-sm leading-7 text-slate-400">
+        <div className="text-sm leading-7 text-[var(--muted)]">
           <p>
             {siteConfig.primaryCity}, {siteConfig.region}
           </p>
-          <p className="mt-3">{siteConfig.serviceAreas.join(" · ")}</p>
+          <p className="mt-3">{siteConfig.serviceAreas.join(" / ")}</p>
           <p className="mt-5">{footer.rights}</p>
         </div>
       </div>

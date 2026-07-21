@@ -14,24 +14,26 @@ export function LocaleSwitcher({ locale, path = "" }: LocaleSwitcherProps) {
   return (
     <nav
       aria-label="Language"
-      className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-slate-950/70 p-1 text-xs font-medium text-slate-200 shadow-lg shadow-slate-950/15 backdrop-blur"
+      className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--surface-muted)] p-1 text-xs font-medium text-[var(--muted)]"
     >
       <Link
+        prefetch={false}
         href={enHref}
-        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300 ${
+        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
           locale === "en"
-            ? "bg-orange-700 text-white"
-            : "text-slate-300 hover:bg-white/10 hover:text-white"
+            ? "bg-[var(--accent)] text-[#251208]"
+            : "text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--ink)]"
         }`}
       >
         EN
       </Link>
       <Link
+        prefetch={false}
         href={zhHref}
-        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300 ${
+        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
           locale === "zh"
-            ? "bg-orange-700 text-white"
-            : "text-slate-300 hover:bg-white/10 hover:text-white"
+            ? "bg-[var(--accent)] text-[#251208]"
+            : "text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--ink)]"
         }`}
       >
         中文

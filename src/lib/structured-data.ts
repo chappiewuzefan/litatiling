@@ -14,6 +14,21 @@ import type { ServicePage } from "@/lib/service-pages";
 const websiteId = `${absoluteUrl("/")}#website`;
 const businessId = `${absoluteUrl("/")}#business`;
 
+export function formatAustralianPhoneForSchema(phone: string) {
+  const trimmed = phone.trim();
+  const digits = trimmed.replace(/\D/g, "");
+
+  if (trimmed.startsWith("+") && digits) {
+    return `+${digits}`;
+  }
+
+  if (digits.startsWith("0")) {
+    return `+61${digits.slice(1)}`;
+  }
+
+  return digits.startsWith("61") ? `+${digits}` : `+61${digits}`;
+}
+
 function businessNode(locale: Locale) {
   const content = getContent(locale);
   const phoneLabels = getPhoneLabels(locale);
@@ -24,7 +39,9 @@ function businessNode(locale: Locale) {
     name: siteConfig.brandName,
     legalName: siteConfig.legalName,
     url: siteConfig.siteUrl,
-    telephone: siteConfig.primaryPhone.display,
+    telephone: formatAustralianPhoneForSchema(
+      siteConfig.primaryPhone.display,
+    ),
     email: siteConfig.email,
     image: absoluteUrl(socialPreviewPath),
     logo: absoluteUrl("/lita-logo.webp"),
@@ -50,7 +67,7 @@ function businessNode(locale: Locale) {
       "@type": "ContactPoint",
       name: phoneLabels[phone.kind].short,
       contactType: "customer service",
-      telephone: phone.display,
+      telephone: formatAustralianPhoneForSchema(phone.display),
       email: siteConfig.email,
       availableLanguage: ["English", "Chinese"],
       areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,

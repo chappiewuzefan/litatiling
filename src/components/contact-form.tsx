@@ -227,7 +227,7 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
       onFocusCapture={() => {
         if (requiresTurnstile) setTurnstileEnabled(true);
       }}
-      className="space-y-5 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_28px_80px_rgba(15,23,42,0.08)] md:p-8"
+      className="contact-form space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-[var(--shadow-soft)] md:p-8"
       noValidate
     >
       <div className="space-y-2">

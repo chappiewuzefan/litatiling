@@ -5,25 +5,25 @@ import { notFound } from "next/navigation";
 
 import { ContactForm } from "@/components/contact-form";
 import { FloatingCallButton } from "@/components/floating-call-button";
-import { GuideCard } from "@/components/guide-card";
+import { HomeMotionLoader } from "@/components/home-motion-loader";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchWarning } from "@/components/launch-warning";
-import { ProjectCarousel } from "@/components/project-carousel";
-import { ServiceCard } from "@/components/service-card";
+import { ProcessStack } from "@/components/process-stack";
+import { ProjectEvidence } from "@/components/project-evidence";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getContent } from "@/lib/content";
-import { getFeaturedGuides } from "@/lib/guides";
-import { heroGallery, processGallery, projectGallery } from "@/lib/gallery";
+import { getFeaturedGuides, getGuidePath } from "@/lib/guides";
+import { processGallery, projectGallery, wideHeroImage } from "@/lib/gallery";
 import { buildMetadata } from "@/lib/metadata";
 import {
-  getPhoneLabels,
+  getLocalizedPath,
   hasPlaceholderContent,
   isLocale,
   siteConfig,
 } from "@/lib/site-config";
-import { buildStructuredData } from "@/lib/structured-data";
 import { getServicePages, servicePageUi } from "@/lib/service-pages";
+import { buildStructuredData } from "@/lib/structured-data";
 
 type LocalePageProps = {
   params: Promise<{ locale: string }>;
@@ -49,36 +49,36 @@ export async function generateMetadata({
     locale,
     title: content.metadata.title,
     description: content.metadata.description,
+    image: wideHeroImage.src,
   });
 }
 
-function ServiceLinks({ labels }: { labels: string[] }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 text-sm text-slate-200 sm:grid-cols-3">
-      {labels.map((item, index) => (
-        <div
-          key={item}
-          className={`rounded-3xl border border-white/10 px-4 py-4 ${
-            index % 2 === 0 ? "bg-white/8" : "bg-sky-500/10"
-          }`}
-        >
-          {item}
-        </div>
-      ))}
-    </div>
-  );
-}
+const featuredServiceSlugs = new Set([
+  "bathroom-tiling-canberra",
+  "waterproofing-canberra",
+  "floor-and-wall-tiling-canberra",
+  "tile-repairs-regrouting-canberra",
+]);
 
 export default async function LocalePage({ params }: LocalePageProps) {
   const locale = await resolveLocale(params);
   const content = getContent(locale);
-  const phoneLabels = getPhoneLabels(locale);
   const structuredData = buildStructuredData(locale);
   const showPlaceholderWarning = hasPlaceholderContent();
-  const contactPath = `/${locale}`;
   const servicePages = getServicePages(locale);
-  const serviceUi = servicePageUi[locale];
+  const featuredServices = servicePages.filter((service) =>
+    featuredServiceSlugs.has(service.slug),
+  );
   const featuredGuides = getFeaturedGuides(locale);
+  const serviceUi = servicePageUi[locale];
+  const homePath = getLocalizedPath(locale);
+  const trustGrid = [
+    "lg:col-span-5 lg:row-span-2",
+    "lg:col-span-4",
+    "lg:col-span-3",
+    "lg:col-span-3",
+    "lg:col-span-4",
+  ];
 
   return (
     <>
@@ -88,411 +88,377 @@ export default async function LocalePage({ params }: LocalePageProps) {
       ) : null}
       <SiteHeader locale={locale} labels={content.nav} currentPath="" isHome />
 
-      <main id="main-content">
-        <section className="relative overflow-hidden bg-slate-950 text-white">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(45deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:72px_72px]" />
-          <div className="absolute right-[-6rem] top-16 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute bottom-[-8rem] left-[-8rem] h-80 w-80 rounded-full bg-sky-500/20 blur-3xl" />
-          <div className="section-shell relative grid gap-14 py-20 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:py-28">
-            <div className="space-y-8">
-              <div className="space-y-5">
-                <p className="section-eyebrow text-sky-300">
-                  {content.hero.eyebrow}
-                </p>
-                <h1 className="font-heading max-w-4xl text-5xl font-semibold tracking-[-0.04em] text-white sm:text-6xl">
-                  {content.hero.title}
-                </h1>
-                <p className="max-w-2xl text-lg leading-8 text-slate-200">
-                  {content.hero.description}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {content.hero.badges.map((badge) => (
-                  <span
-                    key={badge}
-                    className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-slate-100"
-                  >
-                    {badge}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-center rounded-full bg-orange-700 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-orange-600"
-                >
-                  {content.hero.primaryCta}
-                </a>
-                <a
-                  href="#services"
-                  className="inline-flex items-center justify-center rounded-full border border-white/15 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10"
-                >
-                  {content.hero.secondaryCta}
-                </a>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {content.hero.stats.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-[1.75rem] border border-white/10 bg-white/6 px-5 py-5 shadow-[0_20px_50px_rgba(2,6,23,0.24)]"
-                  >
-                    <p className="font-heading text-2xl font-semibold text-white">
-                      {item.value}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-300">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-x-8 bottom-0 top-10 rounded-[2rem] bg-sky-500/10 blur-2xl" />
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/8 p-6 shadow-[0_30px_100px_rgba(2,6,23,0.35)] backdrop-blur">
-                <div className="space-y-6">
-                  <div className="grid gap-3 sm:grid-cols-[1.15fr_0.85fr]">
-                    <div className="relative min-h-[320px] overflow-hidden rounded-[1.75rem] border border-white/10 sm:row-span-2">
-                      <Image
-                        src={heroGallery[0].src}
-                        alt={heroGallery[0].alt[locale]}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 28vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
-                    </div>
-                    <div className="relative hidden min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10 sm:block">
-                      <Image
-                        src={heroGallery[1].src}
-                        alt={heroGallery[1].alt[locale]}
-                        fill
-                        sizes="(max-width: 1024px) 50vw, 18vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent" />
-                    </div>
-                    <div className="relative hidden min-h-[150px] overflow-hidden rounded-[1.75rem] border border-white/10 sm:block">
-                      <Image
-                        src={heroGallery[2].src}
-                        alt={heroGallery[2].alt[locale]}
-                        fill
-                        sizes="(max-width: 1024px) 50vw, 18vw"
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-300">
-                      {content.hero.panelTitle}
-                    </p>
-                    <p className="text-sm leading-7 text-slate-200">
-                      {content.hero.panelDescription}
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    {content.hero.panelPoints.map((point) => (
-                      <div
-                        key={point}
-                        className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-100"
-                      >
-                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-orange-400" />
-                        <span>{point}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <ServiceLinks
-                    labels={content.services.items.map(
-                      (service) => service.title,
-                    )}
-                  />
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {siteConfig.phoneContacts.map((phone) => (
-                      <a
-                        key={phone.kind}
-                        href={phone.href}
-                        className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
-                          phone.kind === "primary"
-                            ? "bg-white text-slate-950 hover:bg-slate-100"
-                            : "border border-orange-300/50 text-orange-100 hover:bg-orange-400/10"
-                        }`}
-                      >
-                        {phoneLabels[phone.kind].action} · {phone.display}
-                      </a>
-                    ))}
-                    <a
-                      href={siteConfig.emailHref}
-                      className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 sm:col-span-2"
-                    >
-                      {content.common.emailUs}
-                    </a>
-                  </div>
-                </div>
-              </div>
+      <main id="main-content" className="w-full max-w-full overflow-x-hidden">
+        <section className="bg-[var(--page)] pb-16 sm:pb-24">
+          <div className="section-shell flex min-h-[calc(100dvh-72px)] flex-col justify-center py-12 text-center">
+            <p className="section-eyebrow">{content.hero.eyebrow}</p>
+            <h1 className="mx-auto mt-6 max-w-6xl font-heading text-[clamp(2.9rem,6.2vw,5.9rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-[var(--ink)]">
+              {content.hero.title}
+            </h1>
+            <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
+              {content.hero.description}
+            </p>
+            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+              <a href="#contact" className="button-primary">
+                {content.hero.primaryCta}
+              </a>
+              <a href="#projects" className="button-secondary">
+                {content.hero.secondaryCta}
+              </a>
             </div>
           </div>
-        </section>
 
-        <section className="section-shell py-20">
-          <div className="space-y-5">
-            <p className="section-eyebrow">{content.trust.eyebrow}</p>
-            <h2 className="section-title">{content.trust.title}</h2>
-            <p className="section-copy">{content.trust.description}</p>
-          </div>
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {content.trust.items.map((item) => (
-              <article
-                key={item.title}
-                className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-[0_24px_70px_rgba(15,23,42,0.06)]"
-              >
-                <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-sm font-bold text-orange-700">
-                  {item.title.slice(0, 1)}
-                </div>
-                <h3 className="font-heading text-2xl font-semibold text-slate-950">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600">
-                  {item.description}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="services" className="bg-slate-100/80 py-20">
           <div className="section-shell">
-            <div className="space-y-5">
-              <p className="section-eyebrow">{content.services.eyebrow}</p>
-              <h2 className="section-title">{content.services.title}</h2>
-              <p className="section-copy">{content.services.description}</p>
+            <div className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-image)] sm:aspect-[16/7]">
+              <Image
+                src={wideHeroImage.src}
+                alt={wideHeroImage.alt[locale]}
+                fill
+                priority
+                fetchPriority="high"
+                decoding="sync"
+                quality={65}
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
             </div>
-            <div className="mt-10 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+          </div>
+        </section>
+
+        <nav
+          aria-label={locale === "zh" ? "服务快速导航" : "Service shortcuts"}
+          className="service-marquee border-y border-[var(--line)] bg-[var(--surface)]"
+        >
+          <div className="service-marquee-track">
+            <div className="service-marquee-group">
               {servicePages.map((service) => (
-                <ServiceCard
+                <Link
                   key={service.slug}
-                  service={service}
-                  label={serviceUi.learnMore}
-                  headingLevel="h3"
-                />
+                  prefetch={false}
+                  href={getLocalizedPath(
+                    locale,
+                    `/services/${service.slug}`,
+                  )}
+                  className="service-marquee-link"
+                >
+                  {service.name}
+                </Link>
               ))}
             </div>
-            <Link
-              href={`/${locale}/services`}
-              className="mt-8 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-sky-400 hover:text-sky-800"
-            >
-              {locale === "zh" ? "查看全部服务说明" : "Explore all services"} →
+            <div className="service-marquee-group" aria-hidden="true">
+              {servicePages.map((service) => (
+                <span
+                  key={`repeat-${service.slug}`}
+                  className="service-marquee-link"
+                >
+                  {service.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </nav>
+
+        <section className="bg-[var(--page)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell">
+            <div className="max-w-4xl">
+              <h2 className="section-title">{content.trust.title}</h2>
+              <p className="section-copy mt-6">{content.trust.description}</p>
+            </div>
+            <div className="mt-12 grid grid-flow-dense gap-4 lg:grid-cols-12 lg:grid-rows-2">
+              {content.trust.items.map((item, index) => (
+                <article
+                  key={item.title}
+                  className={`${trustGrid[index]} relative min-h-52 overflow-hidden rounded-2xl border border-[var(--line)] ${index === 0 ? "flex min-h-[28rem] items-end" : "bg-[var(--surface)] p-7"}`}
+                >
+                  {index === 0 ? (
+                    <>
+                      <Image
+                        src={projectGallery[0].src}
+                        alt={projectGallery[0].alt[locale]}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 42vw"
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+                      <div className="relative p-7 text-white sm:p-9">
+                        <h3 className="font-heading text-3xl font-semibold">
+                          {item.title}
+                        </h3>
+                        <p className="mt-3 max-w-lg text-sm leading-7 text-white/80">
+                          {item.description}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-heading text-2xl font-semibold text-[var(--ink)]">
+                        {item.title}
+                      </h3>
+                      <p className="mt-4 text-sm leading-7 text-[var(--muted)]">
+                        {item.description}
+                      </p>
+                    </>
+                  )}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="services" className="bg-[var(--surface-muted)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell">
+            <div className="max-w-4xl">
+              <p className="section-eyebrow">{content.services.eyebrow}</p>
+              <h2 className="section-title mt-6">{content.services.title}</h2>
+              <p className="section-copy mt-6">{content.services.description}</p>
+            </div>
+            <div className="mt-12 grid gap-4 lg:grid-cols-12">
+              {featuredServices.map((service, index) => (
+                <article
+                  key={service.slug}
+                  className={`group rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-7 transition-transform duration-500 hover:-translate-y-1 sm:p-9 ${index === 0 ? "lg:col-span-7 lg:row-span-2" : index === 3 ? "lg:col-span-12" : "lg:col-span-5"}`}
+                >
+                  <h3 className={`${index === 0 ? "text-4xl sm:text-5xl" : "text-2xl"} font-heading font-semibold tracking-[-0.03em] text-[var(--ink)]`}>
+                    {service.name}
+                  </h3>
+                  <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--muted)]">
+                    {service.intro}
+                  </p>
+                  <Link
+                    prefetch={false}
+                    href={getLocalizedPath(
+                      locale,
+                      `/services/${service.slug}`,
+                    )}
+                    className="mt-7 inline-flex min-h-11 items-center font-semibold text-[var(--accent-strong)] underline decoration-[var(--accent)] decoration-2 underline-offset-8"
+                  >
+                    {serviceUi.learnMore}
+                  </Link>
+                </article>
+              ))}
+            </div>
+            <Link prefetch={false} href={`/${locale}/services`} className="button-secondary mt-8">
+              {locale === "zh" ? "查看全部服务说明" : "Explore all services"}
             </Link>
           </div>
         </section>
 
-        <section id="projects" className="section-shell py-20">
-          <div className="space-y-5">
-            <p className="section-eyebrow">{content.projects.eyebrow}</p>
-            <h2 className="section-title">{content.projects.title}</h2>
-            <p className="section-copy">{content.projects.description}</p>
-            <div className="rounded-2xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-900">
-              {content.projects.notice}
+        <section id="projects" className="bg-[var(--page)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell">
+            <div className="max-w-5xl">
+              <h2 className="section-title">
+                {locale === "zh" ? (
+                  <>
+                    真实项目
+                    <span className="relative mx-3 inline-block h-[0.72em] w-[1.75em] overflow-hidden rounded-full align-baseline">
+                      <Image
+                        src={projectGallery[2].src}
+                        alt=""
+                        fill
+                        sizes="160px"
+                        className="object-cover"
+                      />
+                    </span>
+                    里的细节和完成效果。
+                  </>
+                ) : (
+                  <>
+                    Real project
+                    <span className="relative mx-3 inline-block h-[0.72em] w-[1.75em] overflow-hidden rounded-full align-baseline">
+                      <Image
+                        src={projectGallery[2].src}
+                        alt=""
+                        fill
+                        sizes="160px"
+                        className="object-cover"
+                      />
+                    </span>
+                    evidence, not stock promises.
+                  </>
+                )}
+              </h2>
+              <p className="section-copy mt-6">{content.projects.description}</p>
             </div>
+            <ProjectEvidence
+              locale={locale}
+              items={content.projects.items}
+              images={projectGallery}
+            />
           </div>
-          <ProjectCarousel
+        </section>
+
+        <section id="process">
+          <ProcessStack
             locale={locale}
-            items={content.projects.items}
-            images={projectGallery}
+            steps={content.process.steps}
+            image={processGallery}
+            title={content.process.title}
+            description={content.process.description}
           />
         </section>
 
-        <section id="process" className="bg-white py-20">
-          <div className="section-shell">
-            <div className="space-y-5">
-              <p className="section-eyebrow">{content.process.eyebrow}</p>
-              <h2 className="section-title">{content.process.title}</h2>
-              <p className="section-copy">{content.process.description}</p>
-            </div>
-            <div className="mt-10 grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
-              <div className="grid gap-6 lg:grid-cols-2">
-                {content.process.steps.map((step) => (
-                  <article
-                    key={step.title}
-                    className="rounded-[2rem] border border-slate-200 bg-slate-50 p-7"
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
-                      {step.title}
-                    </p>
-                    <p className="mt-4 text-sm leading-7 text-slate-700">
-                      {step.description}
-                    </p>
-                  </article>
-                ))}
-              </div>
-
-              <aside className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,23,42,0.06)]">
-                <div className="relative aspect-[4/5] overflow-hidden">
-                  <Image
-                    src={processGallery.src}
-                    alt={processGallery.alt[locale]}
-                    fill
-                    sizes="(max-width: 1280px) 100vw, 32vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="space-y-3 p-6">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
-                    {content.process.spotlightTitle}
-                  </p>
-                  <p className="text-sm leading-7 text-slate-700">
-                    {content.process.spotlightDescription}
-                  </p>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        <section id="areas" className="bg-slate-950 py-20 text-white">
-          <div className="section-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div className="space-y-5">
-              <p className="section-eyebrow text-sky-300">
-                {content.areas.eyebrow}
-              </p>
-              <h2 className="font-heading text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl">
-                {content.areas.title}
-              </h2>
-              <p className="max-w-xl text-lg leading-8 text-slate-300">
-                {content.areas.description}
-              </p>
-            </div>
-            <div className="space-y-5">
-              <div className="grid gap-4 sm:grid-cols-2">
-                {siteConfig.serviceAreas.map((area) => (
-                  <div
-                    key={area}
-                    className="rounded-[1.75rem] border border-white/10 bg-white/6 px-5 py-5"
-                  >
-                    <p className="font-heading text-2xl font-semibold text-white">
-                      {area}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-300">
-                      {siteConfig.primaryCity}, {siteConfig.region}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <p className="rounded-[1.75rem] border border-sky-400/20 bg-sky-500/10 px-5 py-4 text-sm leading-7 text-slate-200">
+        <section id="areas" className="bg-[var(--page)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="max-w-xl">
+              <h2 className="section-title">{content.areas.title}</h2>
+              <p className="section-copy mt-6">{content.areas.description}</p>
+              <p className="mt-6 text-sm leading-7 text-[var(--muted)]">
                 {content.areas.coverageNote}
               </p>
             </div>
-          </div>
-        </section>
-
-        <section className="bg-slate-100/80 py-20">
-          <div className="section-shell">
-            <div className="space-y-5">
-              <p className="section-eyebrow">
-                {locale === "zh"
-                  ? "贴砖与翻新指南"
-                  : "Tiling and renovation guides"}
-              </p>
-              <h2 className="section-title">
-                {locale === "zh"
-                  ? "开工前，先把关键问题弄明白。"
-                  : "Resolve the important questions before work begins."}
-              </h2>
-              <p className="section-copy">
-                {locale === "zh"
-                  ? "阅读经过澳洲资料复核的防水、选砖、基层、维修和施工准备指南。"
-                  : "Read Australia-checked guidance on waterproofing, tile selection, preparation, repairs and project planning."}
-              </p>
-            </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {featuredGuides.map((guide) => (
-                <GuideCard key={guide.slug} guide={guide} headingLevel="h3" />
+            <div className="grid content-start gap-x-8 sm:grid-cols-2">
+              {siteConfig.serviceAreas.map((area) => (
+                <div
+                  key={area}
+                  className="border-b border-[var(--line)] py-5 font-heading text-2xl font-semibold text-[var(--ink)]"
+                >
+                  {area}
+                </div>
               ))}
             </div>
-            <Link
-              href={`/${locale}/guides`}
-              className="mt-8 inline-flex min-h-11 items-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-800"
-            >
-              {locale === "zh" ? "查看全部指南" : "View all guides"} →
-            </Link>
           </div>
         </section>
 
-        <section id="faq" className="section-shell py-20">
-          <div className="space-y-5">
-            <p className="section-eyebrow">{content.faq.eyebrow}</p>
-            <h2 className="section-title">{content.faq.title}</h2>
-            <p className="section-copy">{content.faq.description}</p>
-          </div>
-          <div className="mt-10 space-y-4">
-            {content.faq.items.map((item, index) => (
-              <details
-                key={item.question}
-                className="group rounded-[1.75rem] border border-slate-200 bg-white px-6 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.04)]"
-                open={index === 0}
-              >
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
-                  <span className="font-heading text-xl font-semibold text-slate-950">
-                    {item.question}
-                  </span>
-                  <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-700 transition group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-4 max-w-4xl text-sm leading-7 text-slate-600">
-                  {item.answer}
+        {featuredGuides.length ? (
+          <section className="bg-[var(--surface-muted)] py-24 sm:py-32 lg:py-40">
+            <div className="section-shell">
+              <div className="max-w-4xl">
+                <h2 className="section-title">
+                  {locale === "zh"
+                    ? "开工前，先把关键问题弄明白。"
+                    : "Resolve the important questions before work begins."}
+                </h2>
+                <p className="section-copy mt-6">
+                  {locale === "zh"
+                    ? "阅读经过澳洲资料复核的防水、选砖、基层、维修和施工准备指南。"
+                    : "Read Australia-checked guidance on waterproofing, tile selection, preparation, repairs and project planning."}
                 </p>
-              </details>
-            ))}
-          </div>
-        </section>
-
-        <section
-          id="contact"
-          className="bg-[linear-gradient(180deg,rgba(255,255,255,0),rgba(224,242,254,0.5))] py-20"
-        >
-          <div className="section-shell grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-            <div className="space-y-6">
-              <div className="space-y-5">
-                <p className="section-eyebrow">{content.contact.eyebrow}</p>
-                <h2 className="section-title">{content.contact.title}</h2>
-                <p className="section-copy">{content.contact.description}</p>
               </div>
-
-              <div className="grid gap-4">
-                {content.contact.cards.map((card) => (
-                  <article
-                    key={card.title}
-                    className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
-                      {card.title}
+              <div className="mt-12 grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
+                <Link
+                  prefetch={false}
+                  href={getGuidePath(featuredGuides[0])}
+                  className="group overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)]"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={featuredGuides[0].heroImage}
+                      alt={featuredGuides[0].heroAlt}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-7 sm:p-9">
+                    <h3 className="font-heading text-3xl font-semibold leading-tight text-[var(--ink)] sm:text-4xl">
+                      {featuredGuides[0].title}
+                    </h3>
+                    <p className="mt-5 text-sm leading-7 text-[var(--muted)]">
+                      {featuredGuides[0].excerpt}
                     </p>
-                    <p className="mt-2 font-heading text-2xl font-semibold text-slate-950">
-                      {card.body}
-                    </p>
-                    {card.href && card.action ? (
-                      <a
-                        href={card.href}
-                        className="mt-4 inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-                      >
-                        {card.action}
-                      </a>
-                    ) : null}
-                  </article>
-                ))}
+                  </div>
+                </Link>
+                <div className="flex flex-col justify-between gap-6">
+                  {featuredGuides.slice(1, 3).map((guide) => (
+                    <Link
+                      key={guide.slug}
+                      prefetch={false}
+                      href={getGuidePath(guide)}
+                      className="group border-t border-[var(--line)] pt-6 first:border-t-0 first:pt-0 lg:first:border-t lg:first:pt-6"
+                    >
+                      <p className="text-sm font-semibold text-[var(--accent-strong)]">
+                        {guide.category}
+                      </p>
+                      <h3 className="mt-3 font-heading text-2xl font-semibold leading-tight text-[var(--ink)] group-hover:text-[var(--accent-strong)]">
+                        {guide.title}
+                      </h3>
+                      <p className="mt-4 text-sm leading-7 text-[var(--muted)]">
+                        {guide.excerpt}
+                      </p>
+                    </Link>
+                  ))}
+                  <Link prefetch={false} href={`/${locale}/guides`} className="button-secondary self-start">
+                    {locale === "zh" ? "查看全部指南" : "View all guides"}
+                  </Link>
+                </div>
               </div>
             </div>
+          </section>
+        ) : null}
 
+        <section id="faq" className="bg-[var(--page)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="max-w-xl">
+              <h2 className="section-title">{content.faq.title}</h2>
+              <p className="section-copy mt-6">{content.faq.description}</p>
+            </div>
+            <div>
+              {content.faq.items.map((item, index) => (
+                <details
+                  key={item.question}
+                  className="group border-b border-[var(--line)] py-5"
+                  open={index === 0}
+                >
+                  <summary className="flex min-h-11 cursor-pointer items-start justify-between gap-5">
+                    <span className="font-heading text-xl font-semibold text-[var(--ink)]">
+                      {item.question}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="text-2xl text-[var(--accent-strong)] transition-transform group-open:rotate-45"
+                    >
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--muted)]">
+                    {item.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="bg-[var(--surface-muted)] py-24 sm:py-32 lg:py-40">
+          <div className="section-shell grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div className="max-w-xl lg:sticky lg:top-28">
+              <p className="section-eyebrow">{content.contact.eyebrow}</p>
+              <h2 className="section-title mt-6">{content.contact.title}</h2>
+              <p className="section-copy mt-6">{content.contact.description}</p>
+              <div className="mt-9 space-y-1 border-t border-[var(--line)]">
+                {content.contact.cards.map((card) => (
+                  <div
+                    key={card.title}
+                    className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[8rem_1fr]"
+                  >
+                    <span className="text-sm text-[var(--muted)]">{card.title}</span>
+                    {card.href ? (
+                      <a
+                        href={card.href}
+                        className="break-all font-semibold text-[var(--ink)] underline decoration-[var(--accent)] underline-offset-4"
+                      >
+                        {card.body}
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-[var(--ink)]">
+                        {card.body}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <Link
+                href={getLocalizedPath(locale, "/privacy")}
+                className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--accent-strong)] underline underline-offset-4"
+              >
+                {content.nav.privacy}
+              </Link>
+            </div>
             <ContactForm
               locale={locale}
               content={content.contact.form}
-              sourcePage={contactPath}
+              sourcePage={homePath}
             />
           </div>
         </section>
@@ -500,6 +466,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
 
       <SiteFooter locale={locale} footer={content.footer} />
       <FloatingCallButton locale={locale} />
+      <HomeMotionLoader />
     </>
   );
 }

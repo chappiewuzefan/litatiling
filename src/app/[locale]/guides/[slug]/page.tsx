@@ -12,6 +12,7 @@ import { getContent } from "@/lib/content";
 import {
   getAllGuides,
   getGuide,
+  getGuideSections,
   getRelatedGuides,
   renderGuideMarkdown,
 } from "@/lib/guides";
@@ -73,6 +74,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
   const related = getRelatedGuides(guide);
   const ui = servicePageUi[locale];
   const html = renderGuideMarkdown(guide.body);
+  const sections = getGuideSections(guide.body);
   const structuredData = buildGuideStructuredData(guide);
   const labels =
     locale === "zh"
@@ -82,6 +84,8 @@ export default async function GuideDetailPage({ params }: PageProps) {
           updated: "最近更新",
           read: "分钟阅读",
           sources: "资料来源与进一步阅读",
+          summary: "先看结论",
+          contents: "本文内容",
           note: "本文提供一般性项目信息，实际做法应根据现场状态、适用要求和所选产品系统确认。",
           related: "继续阅读",
         }
@@ -91,6 +95,8 @@ export default async function GuideDetailPage({ params }: PageProps) {
           updated: "Updated",
           read: "min read",
           sources: "Sources and further reading",
+          summary: "At a glance",
+          contents: "On this page",
           note: "This guide provides general project information. The actual approach must be confirmed against site conditions, applicable requirements and the selected product system.",
           related: "Continue reading",
         };
@@ -155,6 +161,14 @@ export default async function GuideDetailPage({ params }: PageProps) {
           </div>
           <div className="section-shell grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
             <div>
+              <aside className="mb-10 rounded-2xl border border-[var(--line)] bg-[var(--surface-muted)] p-6 sm:p-7">
+                <h2 className="font-heading text-2xl font-semibold text-[var(--ink)]">
+                  {labels.summary}
+                </h2>
+                <p className="mt-4 text-base leading-8 text-[var(--muted)]">
+                  {guide.excerpt}
+                </p>
+              </aside>
               <div
                 className="guide-prose"
                 dangerouslySetInnerHTML={{ __html: html }}
@@ -178,14 +192,34 @@ export default async function GuideDetailPage({ params }: PageProps) {
                       </a>
                       <span className="text-slate-500">
                         {" "}
-                        — {source.publisher}
+                        - {source.publisher}
                       </span>
                     </li>
                   ))}
                 </ol>
               </section>
             </div>
-            <div className="lg:sticky lg:top-28">
+            <div className="space-y-6 lg:sticky lg:top-28">
+              <nav
+                aria-label={labels.contents}
+                className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6"
+              >
+                <p className="font-heading text-lg font-semibold text-[var(--ink)]">
+                  {labels.contents}
+                </p>
+                <ol className="mt-4 space-y-3 text-sm leading-6 text-[var(--muted)]">
+                  {sections.map((section) => (
+                    <li key={section.id}>
+                      <a
+                        href={`#${section.id}`}
+                        className="hover:text-[var(--accent-strong)]"
+                      >
+                        {section.title}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
               <QuoteCta
                 locale={locale}
                 title={ui.ctaTitle}

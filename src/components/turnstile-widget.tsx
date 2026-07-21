@@ -56,7 +56,7 @@ export function TurnstileWidget({
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: siteKey,
       action: "contact_form",
-      theme: "light",
+      theme: "auto",
       language: locale === "zh" ? "zh-CN" : "en",
       callback: (token: string) => onTokenChange(token),
       "expired-callback": () => onTokenChange(""),

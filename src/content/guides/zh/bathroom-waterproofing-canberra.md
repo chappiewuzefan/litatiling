@@ -16,7 +16,7 @@ sources:
   - title: "Part 10.2 Wet area waterproofing"
     url: "https://ncc.abcb.gov.au/editions/ncc-2022/adopted/housing-provisions/10-health-and-amenity/part-102-wet-area-waterproofing"
     publisher: "Australian Building Codes Board"
-  - title: "Construction Note 01/2023 — Wet Areas"
+  - title: "Construction Note 01/2023 - Wet Areas"
     url: "https://files.accesscanberra.act.gov.au/files/construction-industry-information/construction-notes/Construction-Note-202301-Wet-Areas.pdf"
     publisher: "Access Canberra"
   - title: "Waterproofing in houses"

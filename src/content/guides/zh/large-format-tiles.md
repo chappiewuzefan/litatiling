@@ -13,7 +13,7 @@ updatedAt: "2026-07-17"
 status: "published"
 featured: false
 sources:
-  - title: "Installation of large-format ceramic and heavy stone tiles — TB001"
+  - title: "Installation of large-format ceramic and heavy stone tiles - TB001"
     url: "https://ardexaustralia.com/pdf/tech%20bulletins/TB001.010_Fixing%20Large%20Format%20Tiles.pdf"
     publisher: "ARDEX Australia"
   - title: "Tiling systems technical bulletins"

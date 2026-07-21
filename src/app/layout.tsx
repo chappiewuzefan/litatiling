@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lexend, Source_Sans_3 } from "next/font/google";
+import { Outfit, Source_Sans_3 } from "next/font/google";
 import Script from "next/script";
 
 import { GoogleAdsCallTracker } from "@/components/google-ads-call-tracker";
@@ -14,9 +14,10 @@ import {
 
 import "./globals.css";
 
-const lexend = Lexend({
+const outfit = Outfit({
   variable: "--font-heading",
   subsets: ["latin"],
+  weight: "600",
   display: "swap",
 });
 
@@ -69,7 +70,7 @@ export default function RootLayout({
 
   return (
     <html lang="en-AU">
-      <body className={`${lexend.variable} ${sourceSans.variable} antialiased`}>
+      <body className={`${outfit.variable} ${sourceSans.variable} antialiased`}>
         {googleAdsEnabled ? (
           <>
             <Script id="google-ads-gtag-config" strategy="afterInteractive">
