@@ -39,7 +39,7 @@ export function HeroCarousel({
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % slides.length);
-    }, 6000);
+    }, 5000);
 
     return () => window.clearInterval(timer);
   }, [isPaused, reducedMotion, slides.length]);
@@ -58,12 +58,16 @@ export function HeroCarousel({
           carousel: "LITA 真实项目图片",
           previous: "上一张",
           next: "下一张",
+          pause: "暂停",
+          play: "继续",
           goTo: "查看图片",
         }
       : {
           carousel: "LITA real project gallery",
           previous: "Previous",
           next: "Next",
+          pause: "Pause",
+          play: "Play",
           goTo: "View image",
         };
   const activeSlide = slides[activeIndex];
@@ -79,14 +83,6 @@ export function HeroCarousel({
       aria-label={labels.carousel}
       aria-roledescription="carousel"
       className="group scroll-mt-24"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setIsPaused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          setIsPaused(false);
-        }
-      }}
     >
       <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-image)] sm:aspect-[16/8] lg:aspect-[16/7]">
         {slides.map((slide, index) =>
@@ -119,7 +115,7 @@ export function HeroCarousel({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 sm:justify-end">
+        <div className="flex items-center gap-1 sm:justify-end">
           <button
             type="button"
             onClick={showPrevious}
@@ -135,14 +131,31 @@ export function HeroCarousel({
                 aria-label={`${labels.goTo} ${index + 1}`}
                 aria-current={index === activeIndex ? "true" : undefined}
                 onClick={() => setActiveIndex(index)}
-                className="inline-flex h-11 w-8 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                className="inline-flex h-11 w-7 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
               >
-                <span
-                  className={`h-1 rounded-full transition-all duration-300 ${index === activeIndex ? "w-7 bg-[var(--accent)]" : "w-3 bg-[var(--line)]"}`}
-                />
+                {index === activeIndex ? (
+                  <span className="relative h-1 w-6 overflow-hidden rounded-full bg-[var(--line)]">
+                    <span
+                      key={`${activeIndex}-${isPaused}`}
+                      className={`absolute inset-0 bg-[var(--accent)] ${isEnhanced && !isPaused && !reducedMotion ? "carousel-progress" : ""}`}
+                    />
+                  </span>
+                ) : (
+                  <span className="h-1 w-2 rounded-full bg-[var(--line)]" />
+                )}
               </button>
             ))}
           </div>
+          {isEnhanced && !reducedMotion ? (
+            <button
+              type="button"
+              aria-pressed={isPaused}
+              onClick={() => setIsPaused((current) => !current)}
+              className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-[var(--muted)] transition hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+            >
+              {isPaused ? labels.play : labels.pause}
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={showNext}

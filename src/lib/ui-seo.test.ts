@@ -51,6 +51,14 @@ describe("UI and SEO evolution", () => {
     expect(markup).toContain('aria-roledescription="carousel"');
     expect(markup.match(/<img/g)).toHaveLength(1);
     expect(markup).not.toContain("kitchen-splashback-wide.webp");
+
+    const source = fs.readFileSync(
+      path.join(process.cwd(), "src/components/hero-carousel.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("window.setInterval");
+    expect(source).toContain("}, 5000)");
+    expect(source).toContain("aria-pressed={isPaused}");
   });
 
   it("uses a compact segmented language control", () => {

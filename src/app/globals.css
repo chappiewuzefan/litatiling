@@ -270,6 +270,20 @@ textarea {
   }
 }
 
+@keyframes carousel-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.carousel-progress {
+  transform-origin: left;
+  animation: carousel-progress 5s linear both;
+}
+
 details > summary {
   list-style: none;
 }
