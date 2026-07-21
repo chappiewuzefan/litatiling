@@ -10,6 +10,7 @@ import { getContent } from "@/lib/content";
 import { buildMetadata } from "@/lib/metadata";
 import {
   getLocalizedPath,
+  getPhoneLabels,
   hasPlaceholderContent,
   isLocale,
   siteConfig,
@@ -54,6 +55,7 @@ export async function generateMetadata({
 export default async function ThanksPage({ params }: LocalePageProps) {
   const locale = await resolveLocale(params);
   const content = getContent(locale);
+  const phoneLabels = getPhoneLabels(locale);
 
   return (
     <>
@@ -85,24 +87,31 @@ export default async function ThanksPage({ params }: LocalePageProps) {
             ))}
           </ul>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
             <Link
               href={getLocalizedPath(locale)}
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               {content.thanks.primaryCta}
             </Link>
-            <a
-              href={siteConfig.phoneHref}
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-            >
-              {content.thanks.secondaryCta}
-            </a>
+            {siteConfig.phoneContacts.map((phone) => (
+              <a
+                key={phone.kind}
+                href={phone.href}
+                className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition ${
+                  phone.kind === "primary"
+                    ? "bg-orange-700 text-white hover:bg-orange-600"
+                    : "border border-slate-300 text-slate-900 hover:bg-slate-100"
+                }`}
+              >
+                {phoneLabels[phone.kind].action} · {phone.display}
+              </a>
+            ))}
           </div>
         </div>
       </main>
       <SiteFooter locale={locale} footer={content.footer} />
-      <FloatingCallButton label={content.common.callNow} />
+      <FloatingCallButton locale={locale} />
     </>
   );
 }

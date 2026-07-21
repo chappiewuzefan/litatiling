@@ -14,7 +14,12 @@ import {
   renderGuideMarkdown,
   validateGuideLibrary,
 } from "@/lib/guides";
-import { absoluteUrl, getLanguageAlternates, locales } from "@/lib/site-config";
+import {
+  absoluteUrl,
+  contentLastModified,
+  getLanguageAlternates,
+  locales,
+} from "@/lib/site-config";
 import { getServicePages, serviceSlugs } from "@/lib/service-pages";
 import {
   buildGuideStructuredData,
@@ -116,9 +121,20 @@ describe("service pages and SEO output", () => {
         );
       }),
     ).toBe(false);
-    expect(entries.every((entry) => entry.lastModified === "2026-07-17")).toBe(
-      true,
+    const guideLastModifiedByUrl = new Map(
+      getAllGuides().map((guide) => [
+        absoluteUrl(`/${guide.locale}/guides/${guide.slug}`),
+        guide.updatedAt,
+      ]),
     );
+    expect(
+      entries.every((entry) => {
+        const guideLastModified = guideLastModifiedByUrl.get(entry.url);
+        return (
+          entry.lastModified === (guideLastModified ?? contentLastModified)
+        );
+      }),
+    ).toBe(true);
     expect(
       entries.every((entry) => entry.alternates?.languages?.["en-AU"]),
     ).toBe(true);

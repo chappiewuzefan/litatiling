@@ -1,7 +1,12 @@
 import Link from "next/link";
 
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { getLocalizedPath, siteConfig, type Locale } from "@/lib/site-config";
+import {
+  getLocalizedPath,
+  getPhoneLabels,
+  siteConfig,
+  type Locale,
+} from "@/lib/site-config";
 
 type SiteHeaderProps = {
   locale: Locale;
@@ -26,6 +31,7 @@ export function SiteHeader({
   currentPath = "",
   labels,
 }: SiteHeaderProps) {
+  const phoneLabels = getPhoneLabels(locale);
   const links = [
     { label: labels.services, href: getLocalizedPath(locale, "/services") },
     { label: labels.guides, href: getLocalizedPath(locale, "/guides") },
@@ -45,10 +51,20 @@ export function SiteHeader({
           >
             {siteConfig.brandName}
           </Link>
-          <p className="mt-1 text-xs text-slate-300">
-            {siteConfig.primaryCity}, {siteConfig.region} ·{" "}
-            {siteConfig.phoneDisplay}
-          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-300">
+            <span>
+              {siteConfig.primaryCity}, {siteConfig.region}
+            </span>
+            {siteConfig.phoneContacts.map((phone) => (
+              <a
+                key={phone.kind}
+                href={phone.href}
+                className="transition hover:text-white"
+              >
+                {phoneLabels[phone.kind].short}: {phone.display}
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="hidden items-center gap-5 lg:flex">

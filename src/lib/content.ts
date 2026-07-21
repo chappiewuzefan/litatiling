@@ -49,7 +49,6 @@ type LocaleContent = {
   };
   common: {
     skipToMain: string;
-    callNow: string;
     emailUs: string;
     requestQuote: string;
     bilingual: string;
@@ -155,7 +154,6 @@ type LocaleContent = {
     description: string;
     nextSteps: string[];
     primaryCta: string;
-    secondaryCta: string;
   };
   privacy: {
     title: string;
@@ -185,7 +183,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     common: {
       skipToMain: "Skip to main content",
-      callNow: "Call now",
       emailUs: "Email",
       requestQuote: "Request a free quote",
       bilingual: "English / 中文 support",
@@ -594,10 +591,16 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "Share the suburb, the type of work and a short summary of the job. If you already have photos, plans or measurements, you can mention that as well.",
       cards: [
         {
-          title: "Call",
-          body: siteConfig.phoneDisplay,
-          href: siteConfig.phoneHref,
-          action: "Call now",
+          title: "Primary phone",
+          body: siteConfig.primaryPhone.display,
+          href: siteConfig.primaryPhone.href,
+          action: "Call primary",
+        },
+        {
+          title: "Backup phone",
+          body: siteConfig.backupPhone.display,
+          href: siteConfig.backupPhone.href,
+          action: "Call backup",
         },
         {
           title: "Email",
@@ -694,7 +697,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "You can return to the homepage to review services, project examples and Canberra coverage.",
       ],
       primaryCta: "Back to homepage",
-      secondaryCta: "Call now",
     },
     privacy: {
       title: "Privacy",
@@ -733,7 +735,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     common: {
       skipToMain: "跳到主要内容",
-      callNow: "立即电话",
       emailUs: "发邮件",
       requestQuote: "免费报价",
       bilingual: "支持英文 / 中文沟通",
@@ -1103,10 +1104,16 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "把 suburb、要做的项目和大概情况发过来就可以。如果已经有现场照片、图纸或尺寸，也可以一起说明。",
       cards: [
         {
-          title: "电话",
-          body: siteConfig.phoneDisplay,
-          href: siteConfig.phoneHref,
-          action: "立即拨打",
+          title: "主号码",
+          body: siteConfig.primaryPhone.display,
+          href: siteConfig.primaryPhone.href,
+          action: "拨打主号码",
+        },
+        {
+          title: "备用号码",
+          body: siteConfig.backupPhone.display,
+          href: siteConfig.backupPhone.href,
+          action: "拨打备用号码",
         },
         {
           title: "邮箱",
@@ -1200,7 +1207,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         "您也可以返回首页继续查看服务内容、案例和服务区域。",
       ],
       primaryCta: "返回首页",
-      secondaryCta: "立即电话",
     },
     privacy: {
       title: "隐私说明",

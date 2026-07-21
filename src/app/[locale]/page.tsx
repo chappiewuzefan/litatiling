@@ -16,7 +16,12 @@ import { getContent } from "@/lib/content";
 import { getFeaturedGuides } from "@/lib/guides";
 import { heroGallery, processGallery, projectGallery } from "@/lib/gallery";
 import { buildMetadata } from "@/lib/metadata";
-import { hasPlaceholderContent, isLocale, siteConfig } from "@/lib/site-config";
+import {
+  getPhoneLabels,
+  hasPlaceholderContent,
+  isLocale,
+  siteConfig,
+} from "@/lib/site-config";
 import { buildStructuredData } from "@/lib/structured-data";
 import { getServicePages, servicePageUi } from "@/lib/service-pages";
 
@@ -67,6 +72,7 @@ function ServiceLinks({ labels }: { labels: string[] }) {
 export default async function LocalePage({ params }: LocalePageProps) {
   const locale = await resolveLocale(params);
   const content = getContent(locale);
+  const phoneLabels = getPhoneLabels(locale);
   const structuredData = buildStructuredData(locale);
   const showPlaceholderWarning = hasPlaceholderContent();
   const contactPath = `/${locale}`;
@@ -207,15 +213,22 @@ export default async function LocalePage({ params }: LocalePageProps) {
                   />
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <a
-                      href={siteConfig.phoneHref}
-                      className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
-                    >
-                      {content.common.callNow}
-                    </a>
+                    {siteConfig.phoneContacts.map((phone) => (
+                      <a
+                        key={phone.kind}
+                        href={phone.href}
+                        className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
+                          phone.kind === "primary"
+                            ? "bg-white text-slate-950 hover:bg-slate-100"
+                            : "border border-orange-300/50 text-orange-100 hover:bg-orange-400/10"
+                        }`}
+                      >
+                        {phoneLabels[phone.kind].action} · {phone.display}
+                      </a>
+                    ))}
                     <a
                       href={siteConfig.emailHref}
-                      className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                      className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 sm:col-span-2"
                     >
                       {content.common.emailUs}
                     </a>
@@ -486,7 +499,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
       </main>
 
       <SiteFooter locale={locale} footer={content.footer} />
-      <FloatingCallButton label={content.common.callNow} />
+      <FloatingCallButton locale={locale} />
     </>
   );
 }

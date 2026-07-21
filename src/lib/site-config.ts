@@ -4,16 +4,26 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
-export const contentLastModified = "2026-07-17";
+export const contentLastModified = "2026-07-21";
 export const socialPreviewPath = "/social-preview.webp";
+
+export type PhoneContactKind = "primary" | "backup";
+
+export type PhoneContact = {
+  kind: PhoneContactKind;
+  display: string;
+  href: string;
+};
 
 const siteUrlValue =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
   "https://www.litatiling.com";
 const brandNameValue =
   process.env.NEXT_PUBLIC_BRAND_NAME ?? "LITA Tiling Canberra";
-const phoneDisplayValue =
+const primaryPhoneDisplayValue =
   process.env.NEXT_PUBLIC_PHONE_DISPLAY ?? "0435 248 809";
+const backupPhoneDisplayValue =
+  process.env.NEXT_PUBLIC_BACKUP_PHONE_DISPLAY ?? "0478 516 702";
 const emailValue =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "litamia810@gmail.com";
 
@@ -22,12 +32,23 @@ function toTelHref(phoneNumber: string) {
   return `tel:${cleaned || phoneNumber}`;
 }
 
+function createPhoneContact(
+  kind: PhoneContactKind,
+  display: string,
+): PhoneContact {
+  return { kind, display, href: toTelHref(display) };
+}
+
+const primaryPhone = createPhoneContact("primary", primaryPhoneDisplayValue);
+const backupPhone = createPhoneContact("backup", backupPhoneDisplayValue);
+
 export const siteConfig = {
   brandName: brandNameValue,
   legalName: process.env.NEXT_PUBLIC_LEGAL_NAME ?? "LITA CONSTRUCTION PTY LTD",
   siteUrl: siteUrlValue,
-  phoneDisplay: phoneDisplayValue,
-  phoneHref: toTelHref(phoneDisplayValue),
+  primaryPhone,
+  backupPhone,
+  phoneContacts: [primaryPhone, backupPhone] as const,
   email: emailValue,
   emailHref: `mailto:${emailValue}`,
   primaryCity: "Canberra",
@@ -57,10 +78,26 @@ export const siteConfig = {
     usesExampleDomain:
       siteUrlValue === "https://example.com" ||
       emailValue.endsWith("@example.com"),
-    usesPlaceholderPhone: phoneDisplayValue === "0400 000 000",
+    usesPlaceholderPhone:
+      primaryPhoneDisplayValue === "0400 000 000" ||
+      backupPhoneDisplayValue === "0400 000 000",
     usesPlaceholderBrand: brandNameValue === "Canberra Tiling & Waterproofing",
   },
 };
+
+export function getPhoneLabels(locale: Locale) {
+  if (locale === "zh") {
+    return {
+      primary: { short: "主号码", action: "拨打主号码" },
+      backup: { short: "备用号码", action: "拨打备用号码" },
+    } as const;
+  }
+
+  return {
+    primary: { short: "Primary", action: "Call primary" },
+    backup: { short: "Backup", action: "Call backup" },
+  } as const;
+}
 
 export function isLocale(value: string): value is Locale {
   return locales.includes(value as Locale);

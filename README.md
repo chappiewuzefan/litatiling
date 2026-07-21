@@ -6,7 +6,8 @@ Public business defaults in this repo:
 
 - Brand: `LITA Tiling Canberra`
 - Legal entity: `LITA CONSTRUCTION PTY LTD`
-- Phone: `0435 248 809`
+- Primary phone: `0435 248 809`
+- Backup phone: `0478 516 702`
 - Email: `litamia810@gmail.com`
 - Recommended production URL candidate: `https://www.litatiling.com`
 
@@ -161,6 +162,7 @@ Create `.env.local` from `.env.example`.
 - `NEXT_PUBLIC_BRAND_NAME`
 - `NEXT_PUBLIC_LEGAL_NAME`
 - `NEXT_PUBLIC_PHONE_DISPLAY`
+- `NEXT_PUBLIC_BACKUP_PHONE_DISPLAY`
 - `NEXT_PUBLIC_CONTACT_EMAIL`
 
 ### Firebase Admin variables

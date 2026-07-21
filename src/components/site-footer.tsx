@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-import { getLocalizedPath, siteConfig, type Locale } from "@/lib/site-config";
+import {
+  getLocalizedPath,
+  getPhoneLabels,
+  siteConfig,
+  type Locale,
+} from "@/lib/site-config";
 
 type SiteFooterProps = {
   locale: Locale;
@@ -17,6 +22,7 @@ type SiteFooterProps = {
 };
 
 export function SiteFooter({ locale, footer }: SiteFooterProps) {
+  const phoneLabels = getPhoneLabels(locale);
   const links = [
     { label: footer.home, href: getLocalizedPath(locale) },
     { label: footer.services, href: getLocalizedPath(locale, "/services") },
@@ -37,12 +43,15 @@ export function SiteFooter({ locale, footer }: SiteFooterProps) {
             {footer.tagline}
           </p>
           <div className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-4">
-            <a
-              href={siteConfig.phoneHref}
-              className="inline-flex min-h-11 items-center transition hover:text-white"
-            >
-              {siteConfig.phoneDisplay}
-            </a>
+            {siteConfig.phoneContacts.map((phone) => (
+              <a
+                key={phone.kind}
+                href={phone.href}
+                className="inline-flex min-h-11 items-center transition hover:text-white"
+              >
+                {phoneLabels[phone.kind].short}: {phone.display}
+              </a>
+            ))}
             <a
               href={siteConfig.emailHref}
               className="inline-flex min-h-11 items-center break-all transition hover:text-white"

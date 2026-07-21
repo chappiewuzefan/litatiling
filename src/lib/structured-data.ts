@@ -4,6 +4,7 @@ import {
   absoluteUrl,
   getHtmlLang,
   getLocalizedPath,
+  getPhoneLabels,
   socialPreviewPath,
   siteConfig,
   type Locale,
@@ -15,6 +16,7 @@ const businessId = `${absoluteUrl("/")}#business`;
 
 function businessNode(locale: Locale) {
   const content = getContent(locale);
+  const phoneLabels = getPhoneLabels(locale);
 
   return {
     "@type": "HomeAndConstructionBusiness",
@@ -22,7 +24,7 @@ function businessNode(locale: Locale) {
     name: siteConfig.brandName,
     legalName: siteConfig.legalName,
     url: siteConfig.siteUrl,
-    telephone: siteConfig.phoneDisplay,
+    telephone: siteConfig.primaryPhone.display,
     email: siteConfig.email,
     image: absoluteUrl(socialPreviewPath),
     logo: absoluteUrl("/lita-logo.webp"),
@@ -44,16 +46,15 @@ function businessNode(locale: Locale) {
       opens: entry.opens,
       closes: entry.closes,
     })),
-    contactPoint: [
-      {
-        "@type": "ContactPoint",
-        contactType: "customer service",
-        telephone: siteConfig.phoneDisplay,
-        email: siteConfig.email,
-        availableLanguage: ["English", "Chinese"],
-        areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,
-      },
-    ],
+    contactPoint: siteConfig.phoneContacts.map((phone) => ({
+      "@type": "ContactPoint",
+      name: phoneLabels[phone.kind].short,
+      contactType: "customer service",
+      telephone: phone.display,
+      email: siteConfig.email,
+      availableLanguage: ["English", "Chinese"],
+      areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,
+    })),
   };
 }
 
