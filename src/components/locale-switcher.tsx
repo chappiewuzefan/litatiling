@@ -1,4 +1,5 @@
 import Link from "next/link";
+import React from "react";
 
 import { getLocalizedPath, type Locale } from "@/lib/site-config";
 
@@ -14,15 +15,16 @@ export function LocaleSwitcher({ locale, path = "" }: LocaleSwitcherProps) {
   return (
     <nav
       aria-label="Language"
-      className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--surface-muted)] p-1 text-xs font-medium text-[var(--muted)]"
+      className="inline-flex items-center gap-0.5 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-0.5 text-xs font-semibold text-[var(--muted)]"
     >
       <Link
         prefetch={false}
         href={enHref}
-        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+        aria-current={locale === "en" ? "page" : undefined}
+        className={`inline-flex min-h-11 items-center rounded-[0.625rem] px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
           locale === "en"
-            ? "bg-[var(--accent)] text-[#251208]"
-            : "text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--ink)]"
+            ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+            : "text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--ink)]"
         }`}
       >
         EN
@@ -30,10 +32,11 @@ export function LocaleSwitcher({ locale, path = "" }: LocaleSwitcherProps) {
       <Link
         prefetch={false}
         href={zhHref}
-        className={`inline-flex min-h-11 items-center rounded-full px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+        aria-current={locale === "zh" ? "page" : undefined}
+        className={`inline-flex min-h-11 items-center rounded-[0.625rem] px-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
           locale === "zh"
-            ? "bg-[var(--accent)] text-[#251208]"
-            : "text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--ink)]"
+            ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+            : "text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--ink)]"
         }`}
       >
         中文

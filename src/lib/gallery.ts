@@ -132,6 +132,8 @@ export const projectGallery: GalleryImage[] = [
   },
 ];
 
+export const heroCarouselProjectIndexes = [0, 1, 6, 3, 5] as const;
+
 export const processGallery: GalleryImage = {
   src: "/case-studies/selected/process/floor-installation.webp",
   alt: {

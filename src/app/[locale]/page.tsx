@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { ContactForm } from "@/components/contact-form";
 import { FloatingCallButton } from "@/components/floating-call-button";
+import { HeroCarousel } from "@/components/hero-carousel";
 import { HomeMotionLoader } from "@/components/home-motion-loader";
 import { JsonLd } from "@/components/json-ld";
 import { LaunchWarning } from "@/components/launch-warning";
@@ -14,7 +15,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getContent } from "@/lib/content";
 import { getFeaturedGuides, getGuidePath } from "@/lib/guides";
-import { processGallery, projectGallery, wideHeroImage } from "@/lib/gallery";
+import {
+  heroCarouselProjectIndexes,
+  processGallery,
+  projectGallery,
+} from "@/lib/gallery";
 import { buildMetadata } from "@/lib/metadata";
 import {
   getLocalizedPath,
@@ -49,7 +54,7 @@ export async function generateMetadata({
     locale,
     title: content.metadata.title,
     description: content.metadata.description,
-    image: wideHeroImage.src,
+    image: projectGallery[0].src,
   });
 }
 
@@ -79,6 +84,11 @@ export default async function LocalePage({ params }: LocalePageProps) {
     "lg:col-span-3",
     "lg:col-span-4",
   ];
+  const heroSlides = heroCarouselProjectIndexes.map((index) => ({
+    image: projectGallery[index],
+    title: content.projects.items[index].title,
+    location: content.projects.items[index].suburb,
+  }));
 
   return (
     <>
@@ -109,20 +119,7 @@ export default async function LocalePage({ params }: LocalePageProps) {
           </div>
 
           <div className="section-shell">
-            <div className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-image)] sm:aspect-[16/7]">
-              <Image
-                src={wideHeroImage.src}
-                alt={wideHeroImage.alt[locale]}
-                fill
-                priority
-                fetchPriority="high"
-                decoding="sync"
-                quality={65}
-                sizes="(max-width: 1280px) 100vw, 1280px"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-            </div>
+            <HeroCarousel locale={locale} slides={heroSlides} />
           </div>
         </section>
 

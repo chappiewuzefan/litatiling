@@ -7,7 +7,13 @@ import { describe, expect, it } from "vitest";
 
 import robots from "@/app/robots";
 import { FloatingCallButton } from "@/components/floating-call-button";
+import { HeroCarousel } from "@/components/hero-carousel";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 import { getContent } from "@/lib/content";
+import {
+  heroCarouselProjectIndexes,
+  projectGallery,
+} from "@/lib/gallery";
 import {
   getAllGuides,
   getGuide,
@@ -29,6 +35,34 @@ function sourceFiles(directory: string): string[] {
 }
 
 describe("UI and SEO evolution", () => {
+  it("uses five finished project images in the homepage carousel", () => {
+    const content = getContent("en");
+    const slides = heroCarouselProjectIndexes.map((index) => ({
+      image: projectGallery[index],
+      title: content.projects.items[index].title,
+      location: content.projects.items[index].suburb,
+    }));
+    const markup = renderToStaticMarkup(
+      createElement(HeroCarousel, { locale: "en", slides }),
+    );
+
+    expect(slides).toHaveLength(5);
+    expect(new Set(slides.map((slide) => slide.image.src)).size).toBe(5);
+    expect(markup).toContain('aria-roledescription="carousel"');
+    expect(markup.match(/<img/g)).toHaveLength(1);
+    expect(markup).not.toContain("kitchen-splashback-wide.webp");
+  });
+
+  it("uses a compact segmented language control", () => {
+    const markup = renderToStaticMarkup(
+      createElement(LocaleSwitcher, { locale: "en" }),
+    );
+
+    expect(markup).toContain('aria-current="page"');
+    expect(markup).toContain("bg-[var(--accent-soft)]");
+    expect(markup).not.toContain("rounded-full");
+  });
+
   it("uses the approved bilingual homepage metadata", () => {
     expect(getContent("en").metadata).toEqual({
       title: "Canberra Tiler & Waterproofing | LITA Tiling",
