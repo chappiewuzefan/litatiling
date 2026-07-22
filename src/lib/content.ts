@@ -179,13 +179,13 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     metadata: {
       title: "Canberra Tiler & Waterproofing | LITA Tiling",
       description:
-        "Licensed Canberra tiling and waterproofing for bathrooms, floors, walls, splashbacks, pools and repairs. Free quotes in English or Chinese.",
+        "Licensed Canberra tiling and waterproofing for bathrooms, floors, walls, splashbacks, pools and repairs. Clear scopes and free quotes.",
     },
     common: {
       skipToMain: "Skip to main content",
       emailUs: "Email",
       requestQuote: "Request a free quote",
-      bilingual: "English / 中文 support",
+      bilingual: "Canberra homeowner support",
       placeholderBanner: "",
     },
     nav: {
@@ -204,7 +204,7 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       eyebrow: "Licensed Canberra tiler | 22+ years",
       title: "Canberra tiling and waterproofing, finished with care.",
       description:
-        "Bathrooms, floors, walls and repairs for Canberra homes, with clear quotes in English or Chinese.",
+        "Bathrooms, floors, walls and repairs for Canberra homes, with clear scopes, careful preparation and free quotes.",
       badges: [
         "Bathrooms, floors and walls",
         "Waterproofing, silicone and regrouting",
@@ -567,10 +567,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
           answer:
             "Yes. Workmanship warranty is available, with the final terms aligned to the quoted scope of work.",
         },
-        {
-          question: "Can I enquire in Chinese?",
-          answer: "Yes. We can communicate in both English and Chinese.",
-        },
       ],
     },
     contact: {
@@ -643,7 +639,6 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
         ],
         languageOptions: [
           { value: "en", label: "English" },
-          { value: "zh", label: "中文" },
         ],
         submitLabel: "Send quote request",
         submittingLabel: "Sending...",

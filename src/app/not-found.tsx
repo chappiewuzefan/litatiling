@@ -9,7 +9,7 @@ export default function NotFound() {
           Page not found
         </h1>
         <p className="mt-4 text-base leading-7 text-slate-600">
-          This page does not exist. Return to the English or Chinese homepage.
+          This page does not exist. Choose a homepage to continue.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Link

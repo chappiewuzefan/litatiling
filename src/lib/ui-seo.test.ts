@@ -72,17 +72,47 @@ describe("UI and SEO evolution", () => {
     expect(markup).not.toContain("rounded-full");
   });
 
-  it("uses the approved bilingual homepage metadata", () => {
+  it("uses locale-specific homepage metadata", () => {
     expect(getContent("en").metadata).toEqual({
       title: "Canberra Tiler & Waterproofing | LITA Tiling",
       description:
-        "Licensed Canberra tiling and waterproofing for bathrooms, floors, walls, splashbacks, pools and repairs. Free quotes in English or Chinese.",
+        "Licensed Canberra tiling and waterproofing for bathrooms, floors, walls, splashbacks, pools and repairs. Clear scopes and free quotes.",
     });
     expect(getContent("zh").metadata).toEqual({
       title: "堪培拉贴砖与防水 | LITA Tiling Canberra",
       description:
         "LITA 提供堪培拉住宅贴砖、防水、浴室、地面、墙面、挡水板、泳池砖与维修服务，支持中英文沟通和免费报价。",
     });
+  });
+
+  it("keeps English homepage marketing copy locally focused", () => {
+    const content = getContent("en");
+    const homepageCopy = JSON.stringify({
+      metadata: content.metadata,
+      common: content.common,
+      hero: content.hero,
+      faq: content.faq,
+      contact: content.contact,
+    });
+
+    expect(homepageCopy).not.toMatch(/Chinese|中文/i);
+    expect(
+      fs.readFileSync(
+        path.join(process.cwd(), "src/app/not-found.tsx"),
+        "utf8",
+      ),
+    ).not.toMatch(/Chinese/i);
+
+    const graph = buildStructuredData("en")["@graph"] as Array<
+      Record<string, unknown>
+    >;
+    const business = graph.find(
+      (node) => node["@type"] === "HomeAndConstructionBusiness",
+    );
+    const contacts = business?.contactPoint as Array<Record<string, unknown>>;
+    expect(contacts.every((contact) => !("availableLanguage" in contact))).toBe(
+      true,
+    );
   });
 
   it("keeps guide and service metadata titles unique", () => {

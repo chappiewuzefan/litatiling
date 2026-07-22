@@ -370,22 +370,24 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
         </label>
       </div>
 
-      <label className="space-y-2 text-sm font-medium text-slate-800">
-        <span>{content.fields.preferredLanguage}</span>
-        <select
-          value={formState.preferredLanguage}
-          onChange={(event) =>
-            updateField("preferredLanguage", event.target.value)
-          }
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
-        >
-          {content.languageOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      {locale === "zh" ? (
+        <label className="space-y-2 text-sm font-medium text-slate-800">
+          <span>{content.fields.preferredLanguage}</span>
+          <select
+            value={formState.preferredLanguage}
+            onChange={(event) =>
+              updateField("preferredLanguage", event.target.value)
+            }
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500 focus:bg-white"
+          >
+            {content.languageOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
 
       <label className="space-y-2 text-sm font-medium text-slate-800">
         <span>{content.fields.message}</span>

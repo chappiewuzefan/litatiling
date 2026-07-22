@@ -69,7 +69,6 @@ function businessNode(locale: Locale) {
       contactType: "customer service",
       telephone: formatAustralianPhoneForSchema(phone.display),
       email: siteConfig.email,
-      availableLanguage: ["English", "Chinese"],
       areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,
     })),
   };
