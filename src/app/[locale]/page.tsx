@@ -16,10 +16,12 @@ import { SiteHeader } from "@/components/site-header";
 import { getContent } from "@/lib/content";
 import { getFeaturedGuides, getGuidePath } from "@/lib/guides";
 import {
+  heroGallery,
   heroCarouselProjectIndexes,
   latestBathroomGallery,
   processGallery,
   projectGallery,
+  wideHeroImage,
 } from "@/lib/gallery";
 import { buildMetadata } from "@/lib/metadata";
 import {
@@ -373,35 +375,67 @@ export default async function LocalePage({ params }: LocalePageProps) {
         </section>
 
         <section id="areas" className="bg-[var(--page)] py-24 sm:py-32 lg:py-40">
-          <div className="section-shell grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-            <div className="max-w-xl">
-              <h2 className="section-title">{content.areas.title}</h2>
-              <p className="section-copy mt-6">{content.areas.description}</p>
-              <p className="mt-6 text-sm leading-7 text-[var(--muted)]">
-                {content.areas.coverageNote}
-              </p>
+          <div className="section-shell">
+            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+              <div className="max-w-xl">
+                <h2 className="section-title">{content.areas.title}</h2>
+                <p className="section-copy mt-6">{content.areas.description}</p>
+                <p className="mt-6 text-sm leading-7 text-[var(--muted)]">
+                  {content.areas.coverageNote}
+                </p>
+              </div>
+              <div className="grid content-start gap-x-8 sm:grid-cols-2">
+                {siteConfig.serviceAreas.map((area) => (
+                  <div
+                    key={area}
+                    className="border-b border-[var(--line)] py-5 font-heading text-2xl font-semibold text-[var(--ink)]"
+                  >
+                    {area}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:min-h-[36rem] lg:grid-cols-[1.18fr_0.82fr] lg:grid-rows-2">
               <div
                 data-ambient-image
-                className="relative mt-9 aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-soft)]"
+                data-area-image="primary"
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-soft)] sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:aspect-auto"
               >
                 <Image
                   src={latestBathroomGallery[3].src}
                   alt={latestBathroomGallery[3].alt[locale]}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 35vw"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
                   className="object-cover"
                 />
               </div>
-            </div>
-            <div className="grid content-start gap-x-8 sm:grid-cols-2">
-              {siteConfig.serviceAreas.map((area) => (
-                <div
-                  key={area}
-                  className="border-b border-[var(--line)] py-5 font-heading text-2xl font-semibold text-[var(--ink)]"
-                >
-                  {area}
-                </div>
-              ))}
+              <div
+                data-ambient-image
+                data-area-image="kitchen"
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-soft)] lg:aspect-auto"
+              >
+                <Image
+                  src={wideHeroImage.src}
+                  alt={wideHeroImage.alt[locale]}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 38vw"
+                  className="object-cover"
+                />
+              </div>
+              <div
+                data-ambient-image
+                data-area-image="marble-bathroom"
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-soft)] lg:aspect-auto"
+              >
+                <Image
+                  src={heroGallery[1].src}
+                  alt={heroGallery[1].alt[locale]}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 38vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
         </section>

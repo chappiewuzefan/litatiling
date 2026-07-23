@@ -12,7 +12,10 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { getContent } from "@/lib/content";
 import {
   heroCarouselProjectIndexes,
+  heroGallery,
+  latestBathroomGallery,
   projectGallery,
+  wideHeroImage,
 } from "@/lib/gallery";
 import {
   getAllGuides,
@@ -60,6 +63,20 @@ describe("UI and SEO evolution", () => {
     expect(source).toContain("}, 5000)");
     expect(source).toContain("IntersectionObserver");
     expect(source).toContain("aria-pressed={isPaused}");
+  });
+
+  it("fills the service area section with distinct owned project images", () => {
+    const images = [latestBathroomGallery[3], wideHeroImage, heroGallery[1]];
+    const pageSource = fs.readFileSync(
+      path.join(process.cwd(), "src/app/[locale]/page.tsx"),
+      "utf8",
+    );
+
+    expect(new Set(images.map((image) => image.src)).size).toBe(3);
+    expect(pageSource.match(/data-area-image=/g)).toHaveLength(3);
+    expect(pageSource).toContain("src={latestBathroomGallery[3].src}");
+    expect(pageSource).toContain("src={wideHeroImage.src}");
+    expect(pageSource).toContain("src={heroGallery[1].src}");
   });
 
   it("uses a compact segmented language control", () => {
