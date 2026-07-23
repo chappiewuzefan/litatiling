@@ -75,7 +75,6 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
   });
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetCounter, setTurnstileResetCounter] = useState(0);
-  const [turnstileEnabled, setTurnstileEnabled] = useState(false);
   const requiresTurnstile = Boolean(turnstileSiteKey);
 
   function getClientValidationErrors() {
@@ -224,9 +223,6 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      onFocusCapture={() => {
-        if (requiresTurnstile) setTurnstileEnabled(true);
-      }}
       className="contact-form space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-[var(--shadow-soft)] md:p-8"
       noValidate
     >
@@ -418,7 +414,7 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
         />
       </label>
 
-      {requiresTurnstile && turnstileEnabled ? (
+      {requiresTurnstile ? (
         <TurnstileWidget
           siteKey={turnstileSiteKey}
           locale={locale}
@@ -426,14 +422,6 @@ export function ContactForm({ locale, content, sourcePage }: ContactFormProps) {
           resetCounter={turnstileResetCounter}
           onTokenChange={setTurnstileToken}
         />
-      ) : requiresTurnstile ? (
-        <button
-          type="button"
-          onClick={() => setTurnstileEnabled(true)}
-          className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-slate-50 px-4 text-sm font-semibold text-slate-800 transition hover:border-sky-400 hover:bg-sky-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-600"
-        >
-          {content.securityCheckLabel}
-        </button>
       ) : null}
 
       <div className="flex flex-col gap-3">

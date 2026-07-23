@@ -279,6 +279,13 @@ textarea {
   background: var(--surface) !important;
 }
 
+@media (min-width: 1024px) and (min-height: 1100px) {
+  .guide-sidebar {
+    position: sticky;
+    top: 7rem;
+  }
+}
+
 .contact-form input,
 .contact-form select,
 .contact-form textarea {

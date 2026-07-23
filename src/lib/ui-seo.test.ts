@@ -196,6 +196,38 @@ describe("UI and SEO evolution", () => {
     expect(markup).toContain(">Backup · 0478 516 702</a>");
   });
 
+  it("renders the contact security check without a click-to-enable gate", () => {
+    const source = fs.readFileSync(
+      path.join(process.cwd(), "src/components/contact-form.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain("{requiresTurnstile ? (");
+    expect(source).toContain("<TurnstileWidget");
+    expect(source).not.toContain("turnstileEnabled");
+    expect(source).not.toContain("setTurnstileEnabled");
+  });
+
+  it("only makes the full guide sidebar sticky in tall desktop viewports", () => {
+    const pageSource = fs.readFileSync(
+      path.join(
+        process.cwd(),
+        "src/app/[locale]/guides/[slug]/page.tsx",
+      ),
+      "utf8",
+    );
+    const globalStyles = fs.readFileSync(
+      path.join(process.cwd(), "src/app/globals.css"),
+      "utf8",
+    );
+
+    expect(pageSource).toContain('className="guide-sidebar space-y-6"');
+    expect(pageSource).not.toContain("lg:sticky lg:top-28");
+    expect(globalStyles).toContain(
+      "@media (min-width: 1024px) and (min-height: 1100px)",
+    );
+  });
+
   it("keeps public content free of visible long dash characters", () => {
     const longDash = new RegExp("[\\u2013\\u2014]");
     const offenders = sourceFiles(path.join(process.cwd(), "src")).filter(
