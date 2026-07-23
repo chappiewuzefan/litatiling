@@ -70,15 +70,15 @@ export default async function GuidesPage({ params }: PageProps) {
       <JsonLd data={structuredData} />
       <SiteHeader locale={locale} labels={content.nav} currentPath="/guides" />
       <main id="main-content">
-        <section className="overflow-hidden bg-slate-950 py-20 text-white sm:py-24">
+        <section className="overflow-hidden bg-[var(--surface-muted)] py-20 sm:py-24">
           <div className="section-shell relative">
-            <div className="absolute -left-32 top-0 h-72 w-72 rounded-full bg-orange-500/15 blur-3xl" />
+            <div className="absolute -left-32 top-0 h-72 w-72 rounded-full bg-[var(--accent)]/10 blur-3xl" />
             <div className="relative max-w-4xl">
-              <p className="section-eyebrow text-sky-300">{ui.eyebrow}</p>
-              <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-white sm:text-6xl">
+              <p className="section-eyebrow">{ui.eyebrow}</p>
+              <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--ink)] sm:text-6xl">
                 {ui.title}
               </h1>
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+              <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)]">
                 {ui.description}
               </p>
             </div>

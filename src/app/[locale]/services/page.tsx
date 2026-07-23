@@ -58,15 +58,15 @@ export default async function ServicesPage({ params }: PageProps) {
         currentPath="/services"
       />
       <main id="main-content">
-        <section className="overflow-hidden bg-slate-950 py-20 text-white sm:py-24">
+        <section className="overflow-hidden bg-[var(--surface-muted)] py-20 sm:py-24">
           <div className="section-shell relative">
-            <div className="absolute -right-20 -top-32 h-80 w-80 rounded-full bg-sky-500/15 blur-3xl" />
+            <div className="absolute -right-20 -top-32 h-80 w-80 rounded-full bg-[var(--accent)]/10 blur-3xl" />
             <div className="relative max-w-4xl space-y-5">
-              <p className="section-eyebrow text-sky-300">{ui.indexEyebrow}</p>
-              <h1 className="font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-white sm:text-6xl">
+              <p className="section-eyebrow">{ui.indexEyebrow}</p>
+              <h1 className="font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--ink)] sm:text-6xl">
                 {ui.indexTitle}
               </h1>
-              <p className="max-w-3xl text-lg leading-8 text-slate-300">
+              <p className="max-w-3xl text-lg leading-8 text-[var(--muted)]">
                 {ui.indexDescription}
               </p>
             </div>

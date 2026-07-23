@@ -3,19 +3,19 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
-  --page: #f4f5f3;
-  --surface: #ffffff;
-  --surface-muted: #e9ebe8;
-  --ink: #171918;
-  --ink-soft: #303431;
-  --muted: #5e6660;
-  --line: #d3d8d3;
-  --accent: #f97316;
-  --accent-strong: #c2410c;
-  --accent-soft: #ffedd5;
-  --shadow-soft: 0 20px 60px rgba(20, 26, 22, 0.07);
-  --shadow-image: 0 30px 90px rgba(20, 26, 22, 0.14);
+  color-scheme: light;
+  --page: #fbf7f1;
+  --surface: #fffdf9;
+  --surface-muted: #f2e9de;
+  --ink: #1f2b25;
+  --ink-soft: #3f4d46;
+  --muted: #5e6963;
+  --line: #ddd3c7;
+  --accent: #ee7b3a;
+  --accent-strong: #a4461d;
+  --accent-soft: #ffeadb;
+  --shadow-soft: 0 20px 60px rgba(91, 63, 42, 0.08);
+  --shadow-image: 0 30px 90px rgba(91, 63, 42, 0.16);
   --color-paper: var(--page);
   --color-paper-strong: var(--surface);
   --color-ink: var(--ink);
@@ -55,10 +55,17 @@ body {
 
 .questionnaire-page {
   background:
-    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    #eef1f3;
+    linear-gradient(rgba(165, 125, 91, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(165, 125, 91, 0.08) 1px, transparent 1px),
+    #f7f1e9;
   background-size: 32px 32px;
+}
+
+.home-hero {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(238, 123, 58, 0.13), transparent 28rem),
+    radial-gradient(circle at 8% 82%, rgba(184, 151, 116, 0.11), transparent 24rem),
+    var(--page);
 }
 
 a {
@@ -212,6 +219,37 @@ textarea {
 .text-sky-900,
 .text-sky-950 {
   color: var(--accent-strong) !important;
+}
+
+.text-slate-950,
+.text-slate-900,
+.text-slate-800 {
+  color: var(--ink) !important;
+}
+
+.text-slate-700 {
+  color: var(--ink-soft) !important;
+}
+
+.text-slate-600,
+.text-slate-500,
+.text-slate-400 {
+  color: var(--muted) !important;
+}
+
+.bg-white,
+.bg-slate-50,
+.bg-slate-100\/80 {
+  background-color: var(--surface) !important;
+}
+
+.bg-slate-100 {
+  background-color: var(--surface-muted) !important;
+}
+
+.border-slate-200,
+.border-slate-300 {
+  border-color: var(--line) !important;
 }
 
 .bg-sky-50,
@@ -388,65 +426,6 @@ details > summary::-webkit-details-marker {
 .guide-prose th {
   background: var(--surface-muted);
   color: var(--color-ink);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --page: #111412;
-    --surface: #191d1a;
-    --surface-muted: #222723;
-    --ink: #f4f5f3;
-    --ink-soft: #dce1dc;
-    --muted: #aeb7b0;
-    --line: #343b35;
-    --accent: #fb923c;
-    --accent-strong: #fdba74;
-    --accent-soft: #3d2416;
-    --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.24);
-    --shadow-image: 0 30px 90px rgba(0, 0, 0, 0.36);
-  }
-
-  .bg-white,
-  .bg-slate-50,
-  .bg-slate-100\/80 {
-    background-color: var(--surface) !important;
-  }
-
-  .bg-slate-100,
-  .bg-sky-50,
-  .bg-orange-50 {
-    background-color: var(--surface-muted) !important;
-  }
-
-  .text-slate-950,
-  .text-slate-900,
-  .text-slate-800,
-  .text-slate-700,
-  .text-sky-950,
-  .text-sky-900,
-  .text-sky-800,
-  .text-sky-700 {
-    color: var(--ink) !important;
-  }
-
-  .text-slate-600,
-  .text-slate-500,
-  .text-slate-400 {
-    color: var(--muted) !important;
-  }
-
-  .border-slate-200,
-  .border-slate-300,
-  .border-sky-200,
-  .border-sky-400\/20 {
-    border-color: var(--line) !important;
-  }
-
-  input,
-  select,
-  textarea {
-    color-scheme: dark;
-  }
 }
 
 .guide-prose img {

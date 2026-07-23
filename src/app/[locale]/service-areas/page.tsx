@@ -54,13 +54,13 @@ export default async function ServiceAreasPage({ params }: PageProps) {
         currentPath="/service-areas"
       />
       <main id="main-content">
-        <section className="bg-slate-950 py-20 text-white sm:py-24">
+        <section className="bg-[var(--surface-muted)] py-20 sm:py-24">
           <div className="section-shell max-w-5xl">
-            <p className="section-eyebrow text-sky-300">{page.eyebrow}</p>
-            <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-white sm:text-6xl">
+            <p className="section-eyebrow">{page.eyebrow}</p>
+            <h1 className="mt-5 font-heading text-4xl font-semibold leading-tight tracking-[-0.035em] text-[var(--ink)] sm:text-6xl">
               {page.title}
             </h1>
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)]">
               {page.intro}
             </p>
           </div>

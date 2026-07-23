@@ -44,7 +44,7 @@ export type ServicePage = ServiceCopy & {
 const serviceDefinitions: ServiceDefinition[] = [
   {
     slug: "bathroom-tiling-canberra",
-    heroImage: "/case-studies/selected/projects/bathroom-tiling.webp",
+    heroImage: "/case-studies/selected/details/warm-bathroom-suite.webp",
     relatedGuideKeys: [
       "bathroom-waterproofing-canberra",
       "bathroom-renovation-order",

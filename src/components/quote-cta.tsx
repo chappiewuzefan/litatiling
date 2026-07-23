@@ -23,20 +23,20 @@ export function QuoteCta({
   const phoneLabels = getPhoneLabels(locale);
 
   return (
-    <aside className="rounded-[2rem] border border-sky-400/20 bg-slate-950 p-7 text-white shadow-[0_28px_90px_rgba(2,6,23,0.20)] sm:p-9">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-300">
+    <aside className="rounded-[2rem] border border-[var(--accent)]/30 bg-[var(--accent-soft)] p-7 text-[var(--ink)] shadow-[var(--shadow-soft)] sm:p-9">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent-strong)]">
         LITA Tiling Canberra
       </p>
-      <h2 className="mt-4 font-heading text-3xl font-semibold leading-tight text-white">
+      <h2 className="mt-4 font-heading text-3xl font-semibold leading-tight text-[var(--ink)]">
         {title}
       </h2>
-      <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
+      <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
         {description}
       </p>
       <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Link
           href={`${getLocalizedPath(locale)}#contact`}
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-orange-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[#251208] transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-strong)]"
         >
           {primaryLabel}
         </Link>
@@ -46,8 +46,8 @@ export function QuoteCta({
             href={phone.href}
             className={`inline-flex min-h-11 items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 ${
               phone.kind === "primary"
-                ? "bg-white text-slate-950 hover:bg-slate-100 focus-visible:outline-white"
-                : "border border-white/25 text-white hover:bg-white/10 focus-visible:outline-sky-300"
+                ? "bg-[var(--surface)] text-[var(--ink)] hover:-translate-y-0.5 focus-visible:outline-[var(--accent)]"
+                : "border border-[var(--line)] bg-[var(--surface)]/70 text-[var(--ink)] hover:-translate-y-0.5 focus-visible:outline-[var(--accent)]"
             }`}
           >
             {phoneLabels[phone.kind].action} · {phone.display}

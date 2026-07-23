@@ -17,6 +17,7 @@ import { getContent } from "@/lib/content";
 import { getFeaturedGuides, getGuidePath } from "@/lib/guides";
 import {
   heroCarouselProjectIndexes,
+  latestBathroomGallery,
   processGallery,
   projectGallery,
 } from "@/lib/gallery";
@@ -98,27 +99,85 @@ export default async function LocalePage({ params }: LocalePageProps) {
       ) : null}
       <SiteHeader locale={locale} labels={content.nav} currentPath="" isHome />
 
-      <main id="main-content" className="w-full max-w-full overflow-x-hidden">
-        <section className="bg-[var(--page)] pb-16 sm:pb-24">
-          <div className="section-shell flex min-h-[calc(100dvh-72px)] flex-col justify-center py-12 text-center">
-            <p className="section-eyebrow">{content.hero.eyebrow}</p>
-            <h1 className="mx-auto mt-6 max-w-6xl font-heading text-[clamp(2.9rem,6.2vw,5.9rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-[var(--ink)]">
-              {content.hero.title}
-            </h1>
-            <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
-              {content.hero.description}
-            </p>
-            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href="#contact" className="button-primary">
-                {content.hero.primaryCta}
-              </a>
-              <a href="#projects" className="button-secondary">
-                {content.hero.secondaryCta}
-              </a>
+      <main
+        id="main-content"
+        data-home-page
+        className="w-full max-w-full overflow-x-hidden"
+      >
+        <section className="home-hero pb-16 sm:pb-24">
+          <div className="section-shell grid gap-12 py-12 lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16 lg:py-16">
+            <div data-hero-copy className="max-w-3xl">
+              <p className="section-eyebrow">{content.hero.eyebrow}</p>
+              <h1 className="mt-6 font-heading text-[clamp(3rem,5.4vw,5.8rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-[var(--ink)] text-balance">
+                {content.hero.title}
+              </h1>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--muted)] sm:text-xl">
+                {content.hero.description}
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <a href="#contact" className="button-primary">
+                  {content.hero.primaryCta}
+                </a>
+                <a href="#projects" className="button-secondary">
+                  {content.hero.secondaryCta}
+                </a>
+              </div>
+              <p className="mt-7 flex items-center gap-3 text-sm font-semibold text-[var(--ink-soft)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                {locale === "zh"
+                  ? "全部为 LITA 真实住宅项目图片"
+                  : "Real LITA residential project photography"}
+              </p>
+            </div>
+
+            <div
+              data-hero-mosaic
+              className="grid h-[30rem] grid-cols-[1.08fr_0.92fr] grid-rows-2 gap-3 sm:h-[42rem] sm:gap-4"
+            >
+              <div
+                data-hero-photo
+                className="relative row-span-2 overflow-hidden rounded-[2rem] bg-[var(--surface-muted)] shadow-[var(--shadow-image)]"
+              >
+                <Image
+                  src={latestBathroomGallery[0].src}
+                  alt={latestBathroomGallery[0].alt[locale]}
+                  fill
+                  sizes="(max-width: 1024px) 55vw, 31vw"
+                  className="object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+                <p className="absolute inset-x-0 bottom-0 p-5 text-sm font-semibold text-white sm:p-6">
+                  {locale === "zh" ? "浴室整体完工效果" : "Finished bathroom composition"}
+                </p>
+              </div>
+              <div
+                data-hero-photo
+                className="relative overflow-hidden rounded-[1.5rem] bg-[var(--surface-muted)] shadow-[var(--shadow-soft)]"
+              >
+                <Image
+                  src={latestBathroomGallery[1].src}
+                  alt={latestBathroomGallery[1].alt[locale]}
+                  fill
+                  sizes="(max-width: 1024px) 42vw, 24vw"
+                  className="object-cover"
+                />
+              </div>
+              <div
+                data-hero-photo
+                className="relative overflow-hidden rounded-[1.5rem] bg-[var(--surface-muted)] shadow-[var(--shadow-soft)]"
+              >
+                <Image
+                  src={latestBathroomGallery[2].src}
+                  alt={latestBathroomGallery[2].alt[locale]}
+                  fill
+                  sizes="(max-width: 1024px) 42vw, 24vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="section-shell">
+          <div className="section-shell mt-4 lg:mt-8">
             <HeroCarousel locale={locale} slides={heroSlides} />
           </div>
         </section>
@@ -214,24 +273,42 @@ export default async function LocalePage({ params }: LocalePageProps) {
               {featuredServices.map((service, index) => (
                 <article
                   key={service.slug}
-                  className={`group rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-7 transition-transform duration-500 hover:-translate-y-1 sm:p-9 ${index === 0 ? "lg:col-span-7 lg:row-span-2" : index === 3 ? "lg:col-span-12" : "lg:col-span-5"}`}
+                  className={`group overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)] transition-transform duration-500 hover:-translate-y-1 ${index === 0 ? "lg:col-span-7 lg:row-span-2" : index === 3 ? "lg:col-span-12 lg:grid lg:grid-cols-[0.9fr_1.1fr]" : "lg:col-span-5"}`}
                 >
-                  <h3 className={`${index === 0 ? "text-4xl sm:text-5xl" : "text-2xl"} font-heading font-semibold tracking-[-0.03em] text-[var(--ink)]`}>
-                    {service.name}
-                  </h3>
-                  <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                    {service.intro}
-                  </p>
-                  <Link
-                    prefetch={false}
-                    href={getLocalizedPath(
-                      locale,
-                      `/services/${service.slug}`,
-                    )}
-                    className="mt-7 inline-flex min-h-11 items-center font-semibold text-[var(--accent-strong)] underline decoration-[var(--accent)] decoration-2 underline-offset-8"
+                  <div
+                    data-service-image
+                    className={`relative overflow-hidden bg-[var(--surface-muted)] ${index === 0 ? "aspect-[16/11]" : index === 3 ? "aspect-[16/10] lg:aspect-auto lg:min-h-72" : "aspect-[16/9]"}`}
                   >
-                    {serviceUi.learnMore}
-                  </Link>
+                    <Image
+                      src={service.heroImage}
+                      alt={service.description}
+                      fill
+                      sizes={
+                        index === 3
+                          ? "(max-width: 1024px) 100vw, 45vw"
+                          : "(max-width: 1024px) 100vw, 50vw"
+                      }
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-7 sm:p-9">
+                    <h3 className={`${index === 0 ? "text-4xl sm:text-5xl" : "text-2xl"} font-heading font-semibold tracking-[-0.03em] text-[var(--ink)]`}>
+                      {service.name}
+                    </h3>
+                    <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--muted)]">
+                      {service.intro}
+                    </p>
+                    <Link
+                      prefetch={false}
+                      href={getLocalizedPath(
+                        locale,
+                        `/services/${service.slug}`,
+                      )}
+                      className="mt-7 inline-flex min-h-11 items-center font-semibold text-[var(--accent-strong)] underline decoration-[var(--accent)] decoration-2 underline-offset-8"
+                    >
+                      {serviceUi.learnMore}
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
@@ -303,6 +380,18 @@ export default async function LocalePage({ params }: LocalePageProps) {
               <p className="mt-6 text-sm leading-7 text-[var(--muted)]">
                 {content.areas.coverageNote}
               </p>
+              <div
+                data-ambient-image
+                className="relative mt-9 aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface-muted)] shadow-[var(--shadow-soft)]"
+              >
+                <Image
+                  src={latestBathroomGallery[3].src}
+                  alt={latestBathroomGallery[3].alt[locale]}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 35vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
             <div className="grid content-start gap-x-8 sm:grid-cols-2">
               {siteConfig.serviceAreas.map((area) => (

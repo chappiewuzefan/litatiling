@@ -48,6 +48,45 @@ export const heroGallery: GalleryImage[] = [
   },
 ];
 
+export const latestBathroomGallery: GalleryImage[] = [
+  {
+    src: "/case-studies/selected/details/warm-bathroom-suite.webp",
+    alt: {
+      en: "Warm-toned bathroom with a freestanding bath, full-height textured tiles and a stone vanity.",
+      zh: "暖色调浴室完工效果，包含独立浴缸、通高肌理墙砖和石材洗手台。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260723141944_37936_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/details/textured-shower-wall.webp",
+    alt: {
+      en: "Full-height textured shower tiles with carefully aligned twin fittings and a linear drain.",
+      zh: "通高肌理淋浴墙砖、对称五金定位与线性地漏细节。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260723141940_37935_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/details/freestanding-bath-detail.webp",
+    alt: {
+      en: "Freestanding bath beside curved tiled joinery and a bronze floor-mounted tap.",
+      zh: "独立浴缸、弧形贴砖台体与古铜色落地龙头细节。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260723142014_37940_1476.jpg",
+  },
+  {
+    src: "/case-studies/selected/details/curved-tile-vanity.webp",
+    alt: {
+      en: "Curved tiled bathroom column, walk-in shower and twin vanity in a residential project.",
+      zh: "住宅浴室的弧形贴砖立柱、步入式淋浴区与双台盆洗手台。",
+    },
+    originalSource:
+      "/public/case-studies/unsorted/微信图片_20260723131635_37928_1476.jpg",
+  },
+];
+
 export const projectGallery: GalleryImage[] = [
   {
     src: "/case-studies/selected/projects/bathroom-tiling.webp",
