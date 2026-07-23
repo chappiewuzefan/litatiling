@@ -49,6 +49,7 @@ const serviceDefinitions: ServiceDefinition[] = [
       "bathroom-waterproofing-canberra",
       "bathroom-renovation-order",
       "bathroom-floor-tiles",
+      "shower-niche-tile-planning",
     ],
     en: {
       name: "Bathroom tiling",
@@ -329,7 +330,8 @@ const serviceDefinitions: ServiceDefinition[] = [
     relatedGuideKeys: [
       "large-format-tiles",
       "porcelain-vs-ceramic-tiles",
-      "prepare-tiling-quote-canberra",
+      "tile-layout-grout-movement-joints",
+      "tiled-stairs-thresholds",
     ],
     en: {
       name: "Floor and wall tiling",
@@ -467,6 +469,7 @@ const serviceDefinitions: ServiceDefinition[] = [
     slug: "kitchen-splashback-tiling-canberra",
     heroImage: "/case-studies/selected/projects/kitchen-splashback.webp",
     relatedGuideKeys: [
+      "kitchen-splashback-planning",
       "porcelain-vs-ceramic-tiles",
       "prepare-tiling-quote-canberra",
       "large-format-tiles",
