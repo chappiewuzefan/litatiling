@@ -199,7 +199,7 @@ export default async function GuideDetailPage({ params }: PageProps) {
                 </ol>
               </section>
             </div>
-            <div className="guide-sidebar space-y-6">
+            <div className="guide-sidebar">
               <nav
                 aria-label={labels.contents}
                 className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6"

@@ -279,10 +279,68 @@ textarea {
   background: var(--surface) !important;
 }
 
-@media (min-width: 1024px) and (min-height: 1100px) {
+@media (min-width: 1024px) {
   .guide-sidebar {
+    align-self: start;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 1.5rem;
+    max-height: calc(100dvh - 7rem);
     position: sticky;
-    top: 7rem;
+    top: 5.5rem;
+  }
+
+  .guide-sidebar > nav {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--line) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .guide-sidebar > aside {
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .guide-sidebar > aside > h2 {
+    margin-top: 0.75rem;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .guide-sidebar > aside > h2 + p {
+    margin-top: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .guide-sidebar > aside > div {
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .guide-sidebar > aside > div > a {
+    padding: 0.625rem 1rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 599px) {
+  .guide-sidebar {
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--line) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .guide-sidebar > nav {
+    overflow: visible;
+  }
+
+  .guide-sidebar > aside {
+    margin-top: 1.5rem;
   }
 }
 

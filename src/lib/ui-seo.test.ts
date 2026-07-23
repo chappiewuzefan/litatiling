@@ -208,7 +208,7 @@ describe("UI and SEO evolution", () => {
     expect(source).not.toContain("setTurnstileEnabled");
   });
 
-  it("only makes the full guide sidebar sticky in tall desktop viewports", () => {
+  it("keeps the guide sidebar sticky without overlapping its cards", () => {
     const pageSource = fs.readFileSync(
       path.join(
         process.cwd(),
@@ -221,11 +221,19 @@ describe("UI and SEO evolution", () => {
       "utf8",
     );
 
-    expect(pageSource).toContain('className="guide-sidebar space-y-6"');
+    expect(pageSource).toContain('className="guide-sidebar"');
     expect(pageSource).not.toContain("lg:sticky lg:top-28");
+    expect(globalStyles).toContain("@media (min-width: 1024px)");
     expect(globalStyles).toContain(
-      "@media (min-width: 1024px) and (min-height: 1100px)",
+      "grid-template-rows: minmax(0, 1fr) auto",
     );
+    expect(globalStyles).toContain("max-height: calc(100dvh - 7rem)");
+    expect(globalStyles).toContain(".guide-sidebar > nav");
+    expect(globalStyles).toContain("overflow-y: auto");
+    expect(globalStyles).toContain(
+      "@media (min-width: 1024px) and (max-height: 599px)",
+    );
+    expect(globalStyles).not.toContain("min-height: 1100px");
   });
 
   it("keeps public content free of visible long dash characters", () => {
