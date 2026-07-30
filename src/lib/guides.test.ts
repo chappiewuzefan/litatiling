@@ -27,12 +27,12 @@ import {
 } from "@/lib/structured-data";
 
 describe("guide library", () => {
-  it("contains twelve published, paired guides per locale", () => {
+  it("contains sixteen published, paired guides per locale", () => {
     const guides = validateGuideLibrary();
 
-    expect(guides).toHaveLength(24);
+    expect(guides).toHaveLength(32);
     for (const locale of locales) {
-      expect(getGuides(locale)).toHaveLength(12);
+      expect(getGuides(locale)).toHaveLength(16);
     }
 
     for (const guide of guides) {
@@ -106,12 +106,12 @@ describe("service pages and SEO output", () => {
     ).toBe(true);
   });
 
-  it("emits only the forty-eight intended canonical sitemap URLs", () => {
+  it("emits only the fifty-six intended canonical sitemap URLs", () => {
     const entries = sitemap();
     const urls = entries.map((entry) => entry.url);
 
-    expect(entries).toHaveLength(48);
-    expect(new Set(urls).size).toBe(48);
+    expect(entries).toHaveLength(56);
+    expect(new Set(urls).size).toBe(56);
     expect(
       urls.some((url) => {
         const pathname = new URL(url).pathname;
