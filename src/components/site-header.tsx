@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import {
   getLocalizedPath,
   getPhoneLabels,
@@ -28,7 +27,6 @@ type SiteHeaderProps = {
 
 export function SiteHeader({
   locale,
-  currentPath = "",
   labels,
 }: SiteHeaderProps) {
   const phoneLabels = getPhoneLabels(locale);
@@ -76,11 +74,9 @@ export function SiteHeader({
               </a>
             ))}
           </div>
-          <LocaleSwitcher locale={locale} path={currentPath} />
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <LocaleSwitcher locale={locale} path={currentPath} />
           <details className="group relative">
             <summary className="flex min-h-11 cursor-pointer list-none items-center rounded-full border border-[var(--line)] px-4 text-xs font-semibold text-[var(--ink)] transition hover:bg-[var(--surface-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
               {locale === "zh" ? "菜单" : "Menu"}
