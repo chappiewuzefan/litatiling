@@ -127,6 +127,13 @@ export default function RootLayout({
           </>
         ) : null}
         {children}
+        <Script
+          id="cloudflare-web-analytics"
+          type="module"
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token":"e8372be3336c4f0cb1e3e49b077c0fb3"}'
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
