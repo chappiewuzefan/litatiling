@@ -27,16 +27,12 @@ describe("invoice totals", () => {
 });
 
 describe("payment state", () => {
-  const issued = (paidCents: number, dueDate = "2026-10-04") => ({ status: "issued" as const, totals: calculateTotals([item("1", "100")]), paidCents, input: input({ dueDate }) });
+  const issued = (paidCents: number) => ({ status: "issued" as const, totals: calculateTotals([item("1", "100")]), paidCents });
   it("tracks unpaid, partial, paid and overpaid balances", () => {
-    expect(paymentState(issued(0), "2026-09-27")).toMatchObject({ status: "unpaid", balance: 11000, overdue: false });
-    expect(paymentState(issued(5000), "2026-09-27")).toMatchObject({ status: "partial", balance: 6000 });
-    expect(paymentState(issued(11000), "2026-09-27")).toMatchObject({ status: "paid", balance: 0 });
-    expect(paymentState(issued(12000), "2026-09-27")).toMatchObject({ status: "overpaid", balance: -1000 });
-  });
-  it("marks unpaid balances overdue only after the due date", () => {
-    expect(paymentState(issued(5000, "2026-09-26"), "2026-09-27").overdue).toBe(true);
-    expect(paymentState(issued(11000, "2026-09-26"), "2026-09-27").overdue).toBe(false);
+    expect(paymentState(issued(0))).toEqual({ status: "unpaid", balance: 11000 });
+    expect(paymentState(issued(5000))).toMatchObject({ status: "partial", balance: 6000 });
+    expect(paymentState(issued(11000))).toMatchObject({ status: "paid", balance: 0 });
+    expect(paymentState(issued(12000))).toMatchObject({ status: "overpaid", balance: -1000 });
   });
 });
 
@@ -59,7 +55,8 @@ describe("issue validation", () => {
     expect(() => englishReason("数量错误")).toThrow(/英文/);
   });
   it("rejects invalid dates, zero quantities and customer ABNs", () => {
-    expect(() => validateIssue(input({ dueDate: "2026-09-01" }), company)).toThrow(/日期/);
+    expect(() => validateIssue(input({ date: "2026-02-30" }), company)).toThrow(/日期/);
+    expect(() => validateIssue(input({ dueDate: "" }), company)).not.toThrow();
     expect(() => validateIssue(input({ items: [item("0", "100")] }), company)).toThrow();
     expect(() => validateIssue(input({ customer: { ...input().customer, abn: "12345678901" } }), company)).toThrow(/ABN/);
   });

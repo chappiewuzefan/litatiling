@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Checkbox, Empty, Form, Input, InputNumber, Modal, Pagination, Select, Space, Spin, Tag } from "antd";
+import { Alert, Button, Checkbox, Empty, Form, Input, Modal, Pagination, Select, Space, Spin, Tag } from "antd";
 import { aud, blankInvoice, defaultCompany, emptyCustomer, paymentState, sydneyDate, type Company, type Customer, type InvoiceInput, type InvoiceRecord, type Preset } from "@/lib/invoice/domain";
 import { api, createCommandSender, errorText, uid, type Bootstrap, type CustomerEntry, type Detail, type PresetEntry } from "./client";
 import { ExportButtons } from "./exports";
@@ -11,7 +11,7 @@ const statusNames = { draft: "草稿", issued: "已开票", void: "已作废" };
 const paymentNames: Record<string, string> = { unpaid: "未付", partial: "部分已付", paid: "已付", overpaid: "多收款" };
 export function StatusTags({ invoice }: { invoice: InvoiceRecord }) {
   const payment = paymentState(invoice);
-  return <Space size={4} wrap><Tag>{statusNames[invoice.status]}</Tag>{invoice.status !== "draft" && <Tag color={payment.status === "paid" ? "green" : payment.status === "overpaid" ? "orange" : "blue"}>{paymentNames[payment.status]}</Tag>}{payment.overdue && <Tag color="red">逾期</Tag>}</Space>;
+  return <Space size={4} wrap><Tag>{statusNames[invoice.status]}</Tag>{invoice.status !== "draft" && <Tag color={payment.status === "paid" ? "green" : payment.status === "overpaid" ? "orange" : "blue"}>{paymentNames[payment.status]}</Tag>}</Space>;
 }
 
 export function InvoiceHistory({ onOpen }: { onOpen: (id: string) => void }) {
@@ -21,13 +21,13 @@ export function InvoiceHistory({ onOpen }: { onOpen: (id: string) => void }) {
   useEffect(load, []);
   const filtered = (rows || []).filter(r => {
     const p = paymentState(r);
-    const match = status === "all" || r.status === status || (r.status === "issued" && (p.status === status || status === "overdue" && p.overdue));
+    const match = status === "all" || r.status === status || (r.status === "issued" && p.status === status);
     return match && (!from || r.input.date >= from) && (!to || r.input.date <= to) && [r.number, r.input.customer.name, r.input.siteAddress].join(" ").toLowerCase().includes(search.toLowerCase());
   });
   return <>
     <div className="invoice-section-heading"><div><h1>历史发票</h1><p>查找、收款、更正，所有版本都有记录。</p></div><Button href="/api/invoice/export">导出 CSV 清单</Button></div>
     {error && <Alert type="error" title={error} action={<Button onClick={load}>重试</Button>} />}
-    <div className="invoice-filters"><Input.Search allowClear placeholder="搜索编号、客户、工地" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} /><Select value={status} onChange={s => { setStatus(s); setPage(1); }} options={[['all', '全部'], ['draft', '草稿'], ['issued', '已开票'], ['unpaid', '未付'], ['partial', '部分已付'], ['paid', '已付'], ['overpaid', '多收款'], ['overdue', '逾期'], ['void', '作废']].map(([value, label]) => ({ value, label }))} /><Input type="date" aria-label="起始日期" value={from} onChange={e => { setFrom(e.target.value); setPage(1); }} /><Input type="date" aria-label="结束日期" value={to} onChange={e => { setTo(e.target.value); setPage(1); }} /></div>
+    <div className="invoice-filters"><Input.Search allowClear placeholder="搜索编号、客户、工地" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} /><Select value={status} onChange={s => { setStatus(s); setPage(1); }} options={[['all', '全部'], ['draft', '草稿'], ['issued', '已开票'], ['unpaid', '未付'], ['partial', '部分已付'], ['paid', '已付'], ['overpaid', '多收款'], ['void', '作废']].map(([value, label]) => ({ value, label }))} /><Input type="date" aria-label="起始日期" value={from} onChange={e => { setFrom(e.target.value); setPage(1); }} /><Input type="date" aria-label="结束日期" value={to} onChange={e => { setTo(e.target.value); setPage(1); }} /></div>
     {!rows && !error && <Spin />}
     {rows && !filtered.length && <Empty description="还没有符合条件的发票" />}
     <div className="invoice-record-list">{filtered.slice((page - 1) * 20, page * 20).map(r => <button className="invoice-record-row" key={r.id} onClick={() => onOpen(r.id)}><div><strong>{r.number || "未开票草稿"}</strong><span>{r.input.customer.name || "未填写客户"}</span><small>{r.input.siteAddress || "未填写施工地址"}</small></div><div><StatusTags invoice={r} /><small>{r.input.date}</small></div><div className="invoice-record-amount"><strong>{aud(r.totals.total)}</strong><small>余额 {aud(paymentState(r).balance)}</small></div></button>)}</div>
@@ -107,6 +107,6 @@ export function CompanySettings({ data, refresh }: { data: Bootstrap; refresh: (
   return <><div className="invoice-section-heading"><div><h1>公司与开票设置</h1><p>用于之后开出的发票，历史文件保持不变。</p></div></div><section className="invoice-panel invoice-settings">{error && <Alert type="error" title={error} />}{saved && <Alert type="success" title="设置已保存" />}<Form form={form} layout="vertical" onFinish={save}>
     <Form.Item name="name" label="公司法定名称（英文）" rules={[{ required: true }]}><Input /></Form.Item><Form.Item name="abn" label="ABN（11 位）"><Input inputMode="numeric" /></Form.Item><Form.Item name="address" label="公司地址（英文）"><Input.TextArea /></Form.Item><div className="invoice-fields"><Form.Item name="email" label="邮箱"><Input type="email" /></Form.Item><Form.Item name="phone" label="电话"><Input type="tel" /></Form.Item></div>
     <h2>收款账户</h2><Form.Item name="bankAccountName" label="账户名称（英文）"><Input /></Form.Item><div className="invoice-fields"><Form.Item name="bsb" label="BSB（6 位）"><Input inputMode="numeric" /></Form.Item><Form.Item name="bankAccountNumber" label="账号"><Input inputMode="numeric" /></Form.Item></div>
-    <Form.Item name="defaultTermsDays" label="默认付款期限（天）"><InputNumber min={0} max={90} /></Form.Item><Form.Item name="gstRegistered" valuePropName="checked"><Checkbox>公司已登记 GST，所有项目按未税价格另加 10% GST</Checkbox></Form.Item><Form.Item name="verified" valuePropName="checked"><Checkbox>我已核实公司名称、ABN、GST 登记状态和收款账户</Checkbox></Form.Item><Button type="primary" htmlType="submit" loading={busy}>保存设置</Button>
+    <Form.Item name="gstRegistered" valuePropName="checked"><Checkbox>公司已登记 GST，所有项目按未税价格另加 10% GST</Checkbox></Form.Item><Form.Item name="verified" valuePropName="checked"><Checkbox>我已核实公司名称、ABN、GST 登记状态和收款账户</Checkbox></Form.Item><Button type="primary" htmlType="submit" loading={busy}>保存设置</Button>
   </Form></section></>;
 }

@@ -9,12 +9,13 @@ import { ExportButtons } from "./exports";
 export type EditorHandle = { flush: () => Promise<void> };
 type Props = { data: Bootstrap; initial?: InvoiceRecord; copy?: InvoiceInput; onDone: (id: string) => void; onReload: () => void; refresh: () => Promise<void> };
 export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEditor({ data, initial, copy, onDone, onReload, refresh }, ref) {
-  const [input, setInput] = useState<InvoiceInput>(() => initial?.input || copy || blankInvoice(data.settings.company.defaultTermsDays));
+  const [input, setInput] = useState<InvoiceInput>(() => initial?.input || copy || blankInvoice());
   const [record, setRecord] = useState(initial);
   const [saveState, setSaveState] = useState(initial ? "已保存" : "填写后自动保存");
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [conflict, setConflict] = useState(false), [reason, setReason] = useState("");
   const inputRef = useRef(input), recordRef = useRef(record), idRef = useRef(initial?.id || uid());
-  const saved = useRef(initial ? JSON.stringify(initial.input) : "");
+  // A fresh blank invoice starts as "saved" so leaving it untouched never creates an empty draft; copies still save at once.
+  const saved = useRef(initial ? JSON.stringify(initial.input) : copy ? "" : JSON.stringify(input));
   const pending = useRef<Record<string, unknown> | null>(null), flight = useRef<Promise<void> | null>(null), blocked = useRef(false);
   const send = useRef(createCommandSender());
   const revision = initial?.status === "issued";
@@ -28,7 +29,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
     }
     if (blocked.current) throw new Error("请先重新打开服务器上的最新版本");
     if (flight.current) await flight.current;
-    if (saved.current === JSON.stringify(inputRef.current) && recordRef.current) return;
+    if (saved.current === JSON.stringify(inputRef.current) && (recordRef.current || !copy)) return;
     flight.current = (async () => {
       while (saved.current !== JSON.stringify(inputRef.current) || !recordRef.current || pending.current) {
         const command = pending.current || { action: "save", id: idRef.current, expectedVersion: recordRef.current?.lockVersion || 0, input: structuredClone(inputRef.current) };
@@ -45,7 +46,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
       }
     })();
     try { await flight.current; } finally { flight.current = null; }
-  }, [revision, initial]);
+  }, [revision, initial, copy]);
   useImperativeHandle(ref, () => ({ flush }), [flush]);
   useEffect(() => {
     if (revision || conflict || (saveState !== "待保存…" && !copy)) return;
@@ -63,7 +64,8 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
     setBusy(true); setError("");
     try {
       if (!revision) await flush();
-      const current = recordRef.current!;
+      if (!recordRef.current) { setError("请先填写发票内容"); return; }
+      const current = recordRef.current;
       const result = await send.current(revision ? { action: "revise", id: current.id, expectedVersion: current.lockVersion, input: inputRef.current, reason } : { action: "issue", id: current.id, expectedVersion: current.lockVersion });
       saved.current = JSON.stringify(inputRef.current);
       onDone(result.invoice.id);
@@ -91,7 +93,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
           <div className="invoice-fields"><label className="invoice-field">客户邮箱（选填）<Input type="email" value={input.customer.email} onChange={e => field("customer", { ...input.customer, email: e.target.value })} /></label><label className="invoice-field">客户电话（选填）<Input type="tel" value={input.customer.phone} onChange={e => field("customer", { ...input.customer, phone: e.target.value })} /></label></div>
           <Button size="small" disabled={busy || !input.customer.name} onClick={() => void saveCustomer()}>保存为常用客户</Button>
           <label className="invoice-field">施工地址（英文）<Input value={input.siteAddress} onChange={e => field("siteAddress", e.target.value)} /></label>
-          <div className="invoice-fields"><label className="invoice-field">开票日期<Input type="date" value={input.date} onChange={e => field("date", e.target.value)} /></label><label className="invoice-field">付款到期日<Input type="date" value={input.dueDate} onChange={e => field("dueDate", e.target.value)} /></label></div>
+          <label className="invoice-field">开票日期<Input type="date" value={input.date} onChange={e => field("date", e.target.value)} /></label>
           <label className="invoice-field">PO / 订单号（选填）<Input value={input.purchaseOrder} onChange={e => field("purchaseOrder", e.target.value)} /></label>
         </section>
         <section className="invoice-panel"><h2>施工项目 <small>单价均不含 GST</small></h2>
@@ -121,7 +123,7 @@ export function InvoicePaper({ input, company, number }: { input: InvoiceInput; 
   const siteAsRecipient = !customer.name && !customer.billingAddress && !customer.abn;
   return <div className="invoice-paper" lang="en-AU">
     <div className="invoice-paper-heading"><div><strong className="invoice-paper-company">{company.name}</strong><p>{company.abn && <>ABN {formatAbn(company.abn)}<br /></>}{company.address && <>{company.address}<br /></>}{[company.email, company.phone].filter(Boolean).join(" · ")}</p></div>
-      <div><h2>TAX INVOICE</h2><dl className="invoice-paper-details">{reference && <div><dt>Invoice No.</dt><dd><b>{reference}</b></dd></div>}<div><dt>Date</dt><dd>{formatDate(input.date)}</dd></div><div><dt>Due date</dt><dd>{formatDate(input.dueDate)}</dd></div>{input.purchaseOrder && <div><dt>Order No.</dt><dd><b>{input.purchaseOrder}</b></dd></div>}</dl></div></div>
+      <div><h2>TAX INVOICE</h2><dl className="invoice-paper-details">{reference && <div><dt>Invoice No.</dt><dd><b>{reference}</b></dd></div>}<div><dt>Date</dt><dd>{formatDate(input.date)}</dd></div>{input.purchaseOrder && <div><dt>Order No.</dt><dd><b>{input.purchaseOrder}</b></dd></div>}</dl></div></div>
     <div className="invoice-paper-parties"><div><h3>BILL TO</h3>{customer.name && <strong>{customer.name}</strong>}<p>{customer.billingAddress}{customer.abn && <><br />ABN {formatAbn(customer.abn)}</>}{siteAsRecipient && (input.siteAddress || "Customer or work site")}</p></div>
       {input.siteAddress && !siteAsRecipient && <div><h3>WORK SITE</h3><p>{input.siteAddress}</p></div>}</div>
     <table><thead><tr><th>Qty</th><th>Description</th><th>Unit price</th><th>Amount (ex GST)</th></tr></thead><tbody>{input.items.map((item, i) => <tr key={i}><td>{item.quantity} {item.unit}</td><td>{item.description || "Description"}</td><td>{aud(Math.round(Number(item.unitPrice || 0) * 100))}</td><td>{aud(totals.lines[i] || 0)}</td></tr>)}</tbody></table>
