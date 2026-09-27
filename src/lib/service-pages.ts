@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/site-config";
+import type { Locale, ServiceAreaScope } from "@/lib/site-config";
 
 export const serviceSlugs = [
   "bathroom-tiling-canberra",
@@ -1182,16 +1182,20 @@ export const serviceAreasContent: Record<
     intro: string;
     beforeContact: string;
     checklist: string[];
+    groups: Record<
+      ServiceAreaScope,
+      { title: string; description: string }
+    >;
   }
 > = {
   en: {
-    metadataTitle: "Canberra Tiling Service Areas | LITA Tiling",
+    metadataTitle: "Canberra, ACT & Nearby NSW Tiling Areas | LITA Tiling",
     description:
-      "LITA Tiling serves residential projects across Canberra, including Belconnen, Gungahlin, Woden, Tuggeranong, Inner North, Inner South, Molonglo and Weston Creek.",
-    eyebrow: "Canberra service areas",
-    title: "Residential tiling across Canberra's main districts.",
+      "Tiling and waterproofing across Canberra and the ACT, plus nearby NSW areas including Queanbeyan, Googong, Bungendore, Murrumbateman, Yass and Goulburn.",
+    eyebrow: "ACT and regional service areas",
+    title: "Residential tiling across Canberra, the ACT and nearby NSW.",
     intro:
-      "The listed districts describe the normal Canberra service area rather than separate local offices. Projects outside these areas can still be checked by sending the suburb and a short description of the work.",
+      "Core coverage includes homes across all Canberra and ACT suburbs. Projects in the listed nearby NSW towns can also be checked based on travel, schedule and scope. These areas describe where LITA travels for work, not separate office locations.",
     beforeContact: "To confirm whether the location and scope fit, include:",
     checklist: [
       "The suburb and property type",
@@ -1200,15 +1204,27 @@ export const serviceAreasContent: Record<
       "Approximate dimensions and tile information",
       "Any access, parking or timing constraints",
     ],
+    groups: {
+      act: {
+        title: "Canberra and the ACT",
+        description:
+          "All Canberra and ACT suburbs across the eight main residential regions.",
+      },
+      "nearby-nsw": {
+        title: "Nearby NSW",
+        description:
+          "Surrounding NSW projects are confirmed according to the job scope, travel and current availability.",
+      },
+    },
   },
   zh: {
-    metadataTitle: "堪培拉贴砖服务区域 | LITA Tiling",
+    metadataTitle: "Canberra、全 ACT 与周边 NSW 贴砖服务区域 | LITA Tiling",
     description:
-      "LITA Tiling 服务堪培拉各主要住宅区域，包括 Belconnen、Gungahlin、Woden、Tuggeranong、Inner North、Inner South、Molonglo 和 Weston Creek。",
-    eyebrow: "堪培拉服务区域",
-    title: "服务堪培拉各主要区域的住宅贴砖项目。",
+      "LITA Tiling 覆盖 Canberra 和全 ACT，并服务 Queanbeyan、Googong、Bungendore、Murrumbateman、Yass、Goulburn 等周边 NSW 地区。",
+    eyebrow: "ACT 与周边服务区域",
+    title: "住宅贴砖服务覆盖 Canberra、全 ACT 及周边 NSW。",
     intro:
-      "以下区域代表日常上门服务范围，并不表示在每个区域都有办公室。其他 suburb 也可以发送位置和项目简介，先确认是否适合安排。",
+      "核心范围包括 Canberra 和 ACT 的所有 suburb。所列周边 NSW 地区也可根据路程、档期和工程范围确认。以下区域表示可上门施工的范围，并不代表每个地区都有办公室。",
     beforeContact: "为了确认位置和项目是否合适，请提供：",
     checklist: [
       "Suburb 和房屋类型",
@@ -1217,6 +1233,16 @@ export const serviceAreasContent: Record<
       "大概尺寸和瓷砖资料",
       "进出、停车或时间方面的限制",
     ],
+    groups: {
+      act: {
+        title: "Canberra 与全 ACT",
+        description: "覆盖 Canberra 和 ACT 八个主要住宅区域内的所有 suburb。",
+      },
+      "nearby-nsw": {
+        title: "周边 NSW",
+        description: "周边 NSW 项目会根据工程范围、路程和当前档期确认。",
+      },
+    },
   },
 };
 

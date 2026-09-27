@@ -11,6 +11,7 @@ type SiteFooterProps = {
   locale: Locale;
   footer: {
     tagline: string;
+    coverage: string;
     rights: string;
     home: string;
     services: string;
@@ -80,7 +81,7 @@ export function SiteFooter({ locale, footer }: SiteFooterProps) {
           <p>
             {siteConfig.primaryCity}, {siteConfig.region}
           </p>
-          <p className="mt-3">{siteConfig.serviceAreas.join(" / ")}</p>
+          <p className="mt-3">{footer.coverage}</p>
           <p className="mt-5">{footer.rights}</p>
         </div>
       </div>

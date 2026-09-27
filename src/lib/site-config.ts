@@ -4,8 +4,16 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
-export const contentLastModified = "2026-07-21";
+export const contentLastModified = "2026-07-30";
 export const socialPreviewPath = "/social-preview.webp";
+
+export type ServiceAreaScope = "act" | "nearby-nsw";
+
+export type ServiceArea = {
+  name: string;
+  region: "ACT" | "NSW";
+  scope: ServiceAreaScope;
+};
 
 export type PhoneContactKind = "primary" | "backup";
 
@@ -42,6 +50,24 @@ function createPhoneContact(
 const primaryPhone = createPhoneContact("primary", primaryPhoneDisplayValue);
 const backupPhone = createPhoneContact("backup", backupPhoneDisplayValue);
 
+const serviceAreas: ServiceArea[] = [
+  { name: "Belconnen", region: "ACT", scope: "act" },
+  { name: "Gungahlin", region: "ACT", scope: "act" },
+  { name: "Molonglo Valley", region: "ACT", scope: "act" },
+  { name: "North Canberra", region: "ACT", scope: "act" },
+  { name: "South Canberra", region: "ACT", scope: "act" },
+  { name: "Tuggeranong", region: "ACT", scope: "act" },
+  { name: "Weston Creek", region: "ACT", scope: "act" },
+  { name: "Woden Valley", region: "ACT", scope: "act" },
+  { name: "Queanbeyan", region: "NSW", scope: "nearby-nsw" },
+  { name: "Jerrabomberra", region: "NSW", scope: "nearby-nsw" },
+  { name: "Googong", region: "NSW", scope: "nearby-nsw" },
+  { name: "Bungendore", region: "NSW", scope: "nearby-nsw" },
+  { name: "Murrumbateman", region: "NSW", scope: "nearby-nsw" },
+  { name: "Yass", region: "NSW", scope: "nearby-nsw" },
+  { name: "Goulburn", region: "NSW", scope: "nearby-nsw" },
+];
+
 export const siteConfig = {
   brandName: brandNameValue,
   legalName: process.env.NEXT_PUBLIC_LEGAL_NAME ?? "LITA CONSTRUCTION PTY LTD",
@@ -55,16 +81,7 @@ export const siteConfig = {
   region: "ACT",
   countryCode: "AU",
   priceRange: "$$",
-  serviceAreas: [
-    "Belconnen",
-    "Gungahlin",
-    "Woden Valley",
-    "Tuggeranong",
-    "Inner North",
-    "Inner South",
-    "Molonglo Valley",
-    "Weston Creek",
-  ],
+  serviceAreas,
   openingHours: [
     { day: "Monday", opens: "07:30", closes: "17:30" },
     { day: "Tuesday", opens: "07:30", closes: "17:30" },

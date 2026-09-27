@@ -13,6 +13,14 @@ import type { ServicePage } from "@/lib/service-pages";
 
 const websiteId = `${absoluteUrl("/")}#website`;
 const businessId = `${absoluteUrl("/")}#business`;
+const serviceAreaSummary = "Canberra and the ACT, plus nearby NSW, Australia";
+
+function serviceAreaNodes() {
+  return siteConfig.serviceAreas.map((area) => ({
+    "@type": area.scope === "act" ? "AdministrativeArea" : "Place",
+    name: `${area.name}, ${area.region}, Australia`,
+  }));
+}
 
 export function formatAustralianPhoneForSchema(phone: string) {
   const trimmed = phone.trim();
@@ -47,10 +55,7 @@ function businessNode(locale: Locale) {
     logo: absoluteUrl("/lita-logo.webp"),
     description: content.metadata.description,
     priceRange: siteConfig.priceRange,
-    areaServed: siteConfig.serviceAreas.map((area) => ({
-      "@type": "AdministrativeArea",
-      name: `${area}, ${siteConfig.primaryCity}, ${siteConfig.region}`,
-    })),
+    areaServed: serviceAreaNodes(),
     address: {
       "@type": "PostalAddress",
       addressLocality: siteConfig.primaryCity,
@@ -69,7 +74,7 @@ function businessNode(locale: Locale) {
       contactType: "customer service",
       telephone: formatAustralianPhoneForSchema(phone.display),
       email: siteConfig.email,
-      areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,
+      areaServed: serviceAreaSummary,
     })),
   };
 }
@@ -123,7 +128,7 @@ export function buildStructuredData(locale: Locale, path = "") {
               "@type": "Service",
               name: service.title,
               description: service.description,
-              areaServed: `${siteConfig.primaryCity}, ${siteConfig.region}`,
+              areaServed: serviceAreaSummary,
             },
           })),
         },
@@ -164,10 +169,7 @@ export function buildServiceStructuredData(service: ServicePage) {
         description: service.description,
         url: pageUrl,
         provider: { "@id": businessId },
-        areaServed: {
-          "@type": "AdministrativeArea",
-          name: `${siteConfig.primaryCity}, ${siteConfig.region}`,
-        },
+        areaServed: serviceAreaNodes(),
         serviceType: service.name,
       },
       {

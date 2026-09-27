@@ -141,6 +141,7 @@ type LocaleContent = {
   };
   footer: {
     tagline: string;
+    coverage: string;
     rights: string;
     home: string;
     services: string;
@@ -516,12 +517,12 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     areas: {
-      eyebrow: "Canberra service area",
-      title: "Residential work across Canberra.",
+      eyebrow: "ACT and regional service areas",
+      title: "Residential work across Canberra, the ACT and nearby NSW.",
       description:
-        "Work is focused on Canberra homes, with regular service across the main districts and nearby suburbs.",
+        "Core coverage includes every Canberra and ACT suburb. Nearby NSW projects can also be checked based on location, travel and scope.",
       coverageNote:
-        "Core coverage includes Belconnen, Gungahlin, Woden Valley, Tuggeranong, Inner North, Inner South, Molonglo Valley and Weston Creek. If the property is nearby, send the suburb and we can confirm.",
+        "ACT coverage spans Belconnen, Gungahlin, Molonglo Valley, North Canberra, South Canberra, Tuggeranong, Weston Creek and Woden Valley. Nearby NSW areas include Queanbeyan, Jerrabomberra, Googong, Bungendore, Murrumbateman, Yass and Goulburn, subject to project fit and availability.",
     },
     faq: {
       eyebrow: "FAQ",
@@ -662,7 +663,9 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
     },
     footer: {
       tagline:
-        "Licensed tiling, waterproofing, silicone finishing, stone cladding and pool tiling across Canberra.",
+        "Licensed tiling, waterproofing, silicone finishing, stone cladding and pool tiling across Canberra, the ACT and selected nearby NSW areas.",
+      coverage:
+        "All Canberra and ACT suburbs / Queanbeyan-Palerang / Yass Valley / Goulburn region",
       rights: `© ${new Date().getFullYear()} ${siteConfig.legalName}. All rights reserved.`,
       home: "Home",
       services: "Services",
@@ -1018,12 +1021,12 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       ],
     },
     areas: {
-      eyebrow: "服务区域",
-      title: "主要服务 Canberra 各区住宅项目。",
+      eyebrow: "ACT 与周边服务区域",
+      title: "覆盖 Canberra、全 ACT 及周边 NSW 住宅项目。",
       description:
-        "目前主要服务 Canberra 住宅项目，常做区域包括主城区和周边常见 suburb。",
+        "核心范围覆盖 Canberra 和 ACT 的所有 suburb，周边 NSW 项目也可根据位置、路程和工程范围确认。",
       coverageNote:
-        "当前重点覆盖 Belconnen、Gungahlin、Woden Valley、Tuggeranong、Inner North、Inner South、Molonglo Valley 和 Weston Creek。周边区域也可以先发 suburb 来确认。",
+        "ACT 覆盖 Belconnen、Gungahlin、Molonglo Valley、North Canberra、South Canberra、Tuggeranong、Weston Creek 和 Woden Valley。周边 NSW 包括 Queanbeyan、Jerrabomberra、Googong、Bungendore、Murrumbateman、Yass 和 Goulburn，需根据项目和档期确认。",
     },
     faq: {
       eyebrow: "常见问题",
@@ -1163,7 +1166,10 @@ export const contentByLocale: Record<Locale, LocaleContent> = {
       },
     },
     footer: {
-      tagline: "Canberra 住宅贴砖、防水、Silicone、文化石和泳池砖服务。",
+      tagline:
+        "Canberra、全 ACT 及部分周边 NSW 住宅贴砖、防水、Silicone、文化石和泳池砖服务。",
+      coverage:
+        "Canberra 全 ACT / Queanbeyan-Palerang / Yass Valley / Goulburn 周边",
       rights: `© ${new Date().getFullYear()} ${siteConfig.legalName}。保留所有权利。`,
       home: "首页",
       services: "服务",

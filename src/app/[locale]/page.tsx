@@ -387,10 +387,15 @@ export default async function LocalePage({ params }: LocalePageProps) {
               <div className="grid content-start gap-x-8 sm:grid-cols-2">
                 {siteConfig.serviceAreas.map((area) => (
                   <div
-                    key={area}
-                    className="border-b border-[var(--line)] py-5 font-heading text-2xl font-semibold text-[var(--ink)]"
+                    key={`${area.name}-${area.region}`}
+                    className="flex items-baseline justify-between gap-4 border-b border-[var(--line)] py-5"
                   >
-                    {area}
+                    <span className="font-heading text-2xl font-semibold text-[var(--ink)]">
+                      {area.name}
+                    </span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+                      {area.region}
+                    </span>
                   </div>
                 ))}
               </div>

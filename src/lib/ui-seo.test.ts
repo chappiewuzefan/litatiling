@@ -25,9 +25,11 @@ import {
 } from "@/lib/guides";
 import { getServicePages } from "@/lib/service-pages";
 import {
+  buildServiceStructuredData,
   buildStructuredData,
   formatAustralianPhoneForSchema,
 } from "@/lib/structured-data";
+import { siteConfig } from "@/lib/site-config";
 
 function sourceFiles(directory: string): string[] {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -200,6 +202,39 @@ describe("UI and SEO evolution", () => {
       "+61435248809",
       "+61478516702",
     ]);
+  });
+
+  it("keeps ACT and nearby NSW service areas aligned in visible copy and schema", () => {
+    const expectedNames = siteConfig.serviceAreas.map(
+      (area) => `${area.name}, ${area.region}, Australia`,
+    );
+    const graph = buildStructuredData("en")["@graph"] as Array<
+      Record<string, unknown>
+    >;
+    const business = graph.find(
+      (node) => node["@type"] === "HomeAndConstructionBusiness",
+    );
+    const businessAreas = business?.areaServed as Array<
+      Record<string, unknown>
+    >;
+    const service = getServicePages("en")[0];
+    const serviceGraph = buildServiceStructuredData(service)[
+      "@graph"
+    ] as Array<Record<string, unknown>>;
+    const serviceNode = serviceGraph.find(
+      (node) => node["@type"] === "Service",
+    );
+
+    expect(
+      siteConfig.serviceAreas.filter((area) => area.scope === "act"),
+    ).toHaveLength(8);
+    expect(
+      siteConfig.serviceAreas.filter((area) => area.scope === "nearby-nsw"),
+    ).toHaveLength(7);
+    expect(businessAreas.map((area) => area.name)).toEqual(expectedNames);
+    expect(serviceNode?.areaServed).toEqual(businessAreas);
+    expect(expectedNames).toContain("Queanbeyan, NSW, Australia");
+    expect(getContent("en").areas.coverageNote).toContain("Goulburn");
   });
 
   it("keeps the visible phone labels inside each accessible name", () => {

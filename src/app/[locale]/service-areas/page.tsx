@@ -35,14 +35,19 @@ export default async function ServiceAreasPage({ params }: PageProps) {
   const content = getContent(locale);
   const page = serviceAreasContent[locale];
   const ui = servicePageUi[locale];
+  const areaGroups = (["act", "nearby-nsw"] as const).map((scope) => ({
+    scope,
+    ...page.groups[scope],
+    areas: siteConfig.serviceAreas.filter((area) => area.scope === scope),
+  }));
   const structuredData = buildCollectionStructuredData({
     locale,
     path: "/service-areas",
     name: page.metadataTitle,
     description: page.description,
     items: siteConfig.serviceAreas.map((area) => ({
-      name: `${area}, Canberra`,
-      path: `${getLocalizedPath(locale, "/service-areas")}#${area.toLowerCase().replaceAll(" ", "-")}`,
+      name: `${area.name}, ${area.region}`,
+      path: `${getLocalizedPath(locale, "/service-areas")}#${area.name.toLowerCase().replaceAll(" ", "-")}-${area.region.toLowerCase()}`,
     })),
   });
   return (
@@ -66,19 +71,36 @@ export default async function ServiceAreasPage({ params }: PageProps) {
           </div>
         </section>
         <section className="section-shell py-16 sm:py-20">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {siteConfig.serviceAreas.map((area) => (
-              <article
-                id={area.toLowerCase().replaceAll(" ", "-")}
-                key={area}
-                className="scroll-mt-28 rounded-[1.75rem] border border-slate-200 bg-white p-6"
-              >
-                <span className="h-3 w-3 rounded-full bg-orange-500" />
-                <h2 className="mt-4 font-heading text-2xl font-semibold text-slate-950">
-                  {area}
-                </h2>
-                <p className="mt-2 text-sm text-slate-500">Canberra, ACT</p>
-              </article>
+          <div className="space-y-14">
+            {areaGroups.map((group) => (
+              <section key={group.scope} aria-labelledby={`${group.scope}-areas`}>
+                <div className="max-w-3xl">
+                  <h2
+                    id={`${group.scope}-areas`}
+                    className="font-heading text-3xl font-semibold text-slate-950"
+                  >
+                    {group.title}
+                  </h2>
+                  <p className="mt-3 text-base leading-7 text-slate-600">
+                    {group.description}
+                  </p>
+                </div>
+                <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                  {group.areas.map((area) => (
+                    <article
+                      id={`${area.name.toLowerCase().replaceAll(" ", "-")}-${area.region.toLowerCase()}`}
+                      key={`${area.name}-${area.region}`}
+                      className="scroll-mt-28 rounded-[1.75rem] border border-slate-200 bg-white p-6"
+                    >
+                      <span className="block h-3 w-3 rounded-full bg-orange-500" />
+                      <h3 className="mt-4 font-heading text-2xl font-semibold text-slate-950">
+                        {area.name}
+                      </h3>
+                      <p className="mt-2 text-sm text-slate-500">{area.region}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
           <div className="mt-12 rounded-[2rem] border border-sky-200 bg-sky-50 p-7">
