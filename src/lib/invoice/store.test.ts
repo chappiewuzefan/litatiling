@@ -159,4 +159,9 @@ describe("invoice store", () => {
     const saved = await store.saveCatalog("items", "preset-custom-1", { label: "找平", description: "Screed", quantity: "2.", unit: "m²", unitPrice: "." }, 0) as unknown as { quantity: string; unitPrice: string };
     expect(saved).toMatchObject({ quantity: "2", unitPrice: "" });
   });
+  it("saves settings submitted without the retired payment terms field", async () => {
+    const { defaultTermsDays: _unused, ...withoutTerms } = company; void _unused;
+    const saved = await store.saveSettings({ ...withoutTerms, bankAccountName: "LITA CONTRACTION PTY LTD" }, 1);
+    expect(saved.company).toMatchObject({ bankAccountName: "LITA CONTRACTION PTY LTD", defaultTermsDays: 7 });
+  });
 });

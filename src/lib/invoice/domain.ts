@@ -23,7 +23,8 @@ export const draftSchema = z.object({
 export const companySchema = z.object({
   name: text(), abn: text(30), address: text(500), email: text(), phone: text(50),
   bankAccountName: text(), bsb: text(10), bankAccountNumber: text(20),
-  gstRegistered: z.boolean(), verified: z.boolean(), defaultTermsDays: z.number().int().min(0).max(90),
+  // defaultTermsDays is no longer edited in the UI; keep accepting stored values but do not require it.
+  gstRegistered: z.boolean(), verified: z.boolean(), defaultTermsDays: z.number().int().min(0).max(90).default(7),
 }).strict();
 export const presetSchema = z.object({ label: text(100).min(1), ...itemSchema.shape }).strict();
 export type Customer = z.infer<typeof customerSchema>;

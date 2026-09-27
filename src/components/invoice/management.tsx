@@ -153,7 +153,8 @@ export function CompanySettings({ data, refresh }: { data: Bootstrap; refresh: (
   useEffect(() => form.setFieldsValue(data.settings.company), [data.settings.company, form]);
   async function save(company: Company) {
     setBusy(true); setError("");
-    try { await api("settings", { company, version: data.settings.version }); await refresh(); message.success("设置已保存，之后开出的发票会使用新资料"); }
+    // The form only holds visible fields; keep stored fields that are no longer shown.
+    try { await api("settings", { company: { ...data.settings.company, ...company }, version: data.settings.version }); await refresh(); message.success("设置已保存，之后开出的发票会使用新资料"); }
     catch (e) { setError(errorText(e)); } finally { setBusy(false); }
   }
   return <><div className="invoice-section-heading"><div><h1>公司与开票设置</h1><p>用于之后开出的发票，已开出的发票保持不变。</p></div></div><section className="invoice-panel invoice-settings">{error && <Alert className="invoice-alert" type="error" title={error} />}{!data.settings.company.verified && <Alert className="invoice-alert" type="info" title="填写并核实以下资料后，才能正式开票。" />}<Form form={form} layout="vertical" requiredMark={false} onFinish={save}>
