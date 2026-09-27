@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getAdminAuth, getAdminFirestore } from "@/lib/firebase-admin";
 import { assertAllowedUid, checkWriteOrigin, cookieOptions, CSRF, csrfToken, privateJson, publicFirebaseConfig, requireInvoiceUser, SESSION, sessionSeconds } from "@/lib/invoice/auth";
 import { csvCell, InvoiceError, paymentState, type InvoiceVersion } from "@/lib/invoice/domain";
-import { archivedPdf, generateInvoicePdf } from "@/lib/invoice/pdf";
+import { archivedPdf, describeError, generateInvoicePdf } from "@/lib/invoice/pdf";
 import { commandSchema, InvoiceStore } from "@/lib/invoice/store";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ const responsePdf = (buffer: Buffer, filename: string) => new NextResponse(new U
 function fail(error: unknown) {
   if (error instanceof z.ZodError) return privateJson({ error: error.issues.map(i => `${i.path.join(".")}: ${i.message}`).slice(0, 3).join("; ") }, 400);
   if (error instanceof InvoiceError) return privateJson({ error: error.message }, error.status);
-  console.error("Invoice request failed", error instanceof Error ? error.name : "UnknownError");
+  console.error("Invoice request failed", describeError(error));
   return privateJson({ error: "服务暂时不可用。请重试；已保存的数据不会重复创建。" }, 503);
 }
 async function body(request: NextRequest) {
@@ -89,9 +89,9 @@ export async function POST(request: NextRequest, context: Context) {
       if (["issue", "revise", "void"].includes(command.action)) {
         try {
           const version = await store.getVersion(invoice.id, invoice.version);
-          await archivedPdf(invoice.id, version, "invoice");
-          if (version.adjustment) await archivedPdf(invoice.id, version, "adjustment");
-        } catch { archiveReady = false; }
+          await archivedPdf(invoice.id, version, "invoice", true);
+          if (version.adjustment) await archivedPdf(invoice.id, version, "adjustment", true);
+        } catch (error) { archiveReady = false; console.error("Invoice archive failed after command", describeError(error)); }
       }
       return privateJson({ invoice, archiveReady });
     }

@@ -225,7 +225,13 @@ export async function generateInvoicePdf(v: InvoiceVersion, kind: "invoice" | "a
   return Buffer.from(await pdf.save());
 }
 
-export async function archivedPdf(id: string, version: InvoiceVersion, kind: "invoice" | "adjustment") {
+export function describeError(error: unknown) {
+  const e = error as { name?: string; message?: string; code?: unknown };
+  return `${e?.name || "Error"}${e?.code !== undefined ? ` [${String(e.code)}]` : ""}: ${String(e?.message || "").slice(0, 300)}`;
+}
+
+// Stores the original PDF once (create-only) and verifies it on every read.
+async function storedPdf(id: string, version: InvoiceVersion, kind: "invoice" | "adjustment") {
   const file = getAdminStorageBucket().file(`invoices/${id}/v${version.version}/${kind}.pdf`);
   const [exists] = await file.exists();
   if (!exists) {
@@ -242,4 +248,15 @@ export async function archivedPdf(id: string, version: InvoiceVersion, kind: "in
   const [metadata] = await file.getMetadata();
   if (metadata.metadata?.sha256 !== createHash("sha256").update(buffer).digest("hex")) throw new InvoiceError("归档文件校验失败，请联系管理员", 503);
   return buffer;
+}
+
+// `strict` is used right after issuing to report whether archiving worked. Downloads fall back to rendering
+// the immutable Firestore snapshot so an unavailable Storage bucket never blocks sending an invoice.
+export async function archivedPdf(id: string, version: InvoiceVersion, kind: "invoice" | "adjustment", strict = false) {
+  try { return await storedPdf(id, version, kind); }
+  catch (error) {
+    if (strict || error instanceof InvoiceError) throw error;
+    console.error("Invoice archive unavailable; serving snapshot render", describeError(error));
+    return generateInvoicePdf(version, kind);
+  }
 }

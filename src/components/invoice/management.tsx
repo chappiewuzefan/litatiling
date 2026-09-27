@@ -65,7 +65,7 @@ export function InvoiceDetail({ id, onEdit, onCopy, onDeleted }: { id: string; o
       const result = await send.current({ ...data, id, expectedVersion: detail.invoice.lockVersion });
       await load(); setPaymentOpen(false); setAction(null); setReason("");
       message.success(done);
-      if (!result.archiveReady) setError("数据已保存，文件暂未生成。点击导出会重试，不会重复开票。");
+      if (!result.archiveReady) setError("已保存。原始文件存档暂未完成，导出和分享不受影响。");
     } catch (e) { setError(errorText(e)); }
     finally { setBusy(false); }
   }

@@ -1,7 +1,7 @@
 import { PDFDocument } from "pdf-lib";
 import { describe, expect, it, vi } from "vitest";
 import { calculateTotals, defaultCompany, type InvoiceVersion } from "./domain";
-import { generateInvoicePdf } from "./pdf";
+import { archivedPdf, generateInvoicePdf } from "./pdf";
 
 vi.mock("@/lib/firebase-admin", () => ({ getAdminStorageBucket: () => { throw new Error("not used"); } }));
 
@@ -41,5 +41,13 @@ describe("multi-line addresses", () => {
   it("renders English addresses containing line breaks", async () => {
     const v = version(1, "Tiling");
     expect(await pages(await generateInvoicePdf({ ...v, company: { ...v.company, address: "55 Blackman Cres\nMacquarie ACT 2614" } }))).toBe(1);
+  }, 20_000);
+});
+
+describe("archived PDF", () => {
+  it("serves a snapshot render when storage is unavailable, but reports it in strict mode", async () => {
+    const v = version(2, "Tiling");
+    expect(await pages(await archivedPdf("invoice-id", v, "invoice"))).toBe(1);
+    await expect(archivedPdf("invoice-id", v, "invoice", true)).rejects.toThrow();
   }, 20_000);
 });
