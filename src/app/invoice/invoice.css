@@ -32,16 +32,29 @@
 .invoice-preview-note { margin-top: 14px !important; text-align: center; font-size: 12px; color: #75817f; }
 .invoice-paper { background: #fff; border: 1px solid #dce3e2; padding: 30px; color: #243330; font: 12px/1.6 Arial, sans-serif; box-shadow: 0 6px 24px #183e2e08; overflow-wrap: anywhere; }
 .invoice-paper-heading { display: flex; justify-content: space-between; margin-bottom: 26px; gap: 16px; }
-.invoice-paper-heading > b { font-size: 29px; letter-spacing: -1.5px; }
+.invoice-paper-company { font-size: 15px; }
+.invoice-paper-heading p { color: #5e6d69; margin: 4px 0 0; }
+.invoice-paper-details { margin: 8px 0 0; }
+.invoice-paper-details > div { display: flex; justify-content: flex-end; gap: 12px; }
+.invoice-paper-details dt { color: #7a8783; }
+.invoice-paper-details dd { margin: 0; min-width: 88px; }
+.invoice-paper-parties { display: flex; flex-wrap: wrap; gap: 0 24px; border-top: 1px solid #e8eceb; }
+.invoice-paper-parties > div { flex: 1; }
+.invoice-paper-bank { background: #f4f6f6; border-left: 4px solid #234d48; padding: 2px 14px 12px; }
+.invoice-paper-bank > div { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.invoice-paper-bank span { display: flex; flex-direction: column; color: #7a8783; font-size: 10px; }
+.invoice-paper-bank b { color: #243330; font-size: 12px; }
+.invoice-paper-bank .invoice-paper-big { font-size: 16px; }
 .invoice-paper-heading > div { text-align: right; }
-.invoice-paper-heading h2 { font-size: 16px; margin: 0; letter-spacing: 1px; }
+.invoice-paper-heading h2 { font-size: 18px; margin: 0; letter-spacing: 0.5px; color: #234d48; }
 .invoice-paper h3 { margin-top: 22px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.3px; color: #687b75; }
 .invoice-paper p { white-space: pre-wrap; margin-bottom: 12px; }
 .invoice-paper-meta { display: flex; gap: 25px; padding: 15px 0; border-top: 1px solid #e8eceb; }
 .invoice-paper table { border-collapse: collapse; width: 100%; margin-top: 20px; table-layout: fixed; }
 .invoice-paper th { background: #eff3f2; text-align: right; padding: 8px 4px; font-size: 10px; }
 .invoice-paper td { vertical-align: top; text-align: right; padding: 10px 4px; border-bottom: 1px solid #e5ebe8; font-size: 10px; }
-.invoice-paper th:first-child, .invoice-paper td:first-child { text-align: left; width: 42%; }
+.invoice-paper th:first-child, .invoice-paper td:first-child { text-align: left; width: 16%; }
+.invoice-paper th:nth-child(2), .invoice-paper td:nth-child(2) { text-align: left; width: 44%; }
 .invoice-paper dl { margin: 22px 0 30px auto; max-width: 280px; }
 .invoice-paper dl > div { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
 .invoice-paper dd { margin: 0; font-variant-numeric: tabular-nums; }

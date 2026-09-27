@@ -2,7 +2,7 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Alert, Button, Input, Select, Space, Tag } from "antd";
-import { aud, blankInvoice, calculateTotals, type Company, type InvoiceInput, type InvoiceRecord } from "@/lib/invoice/domain";
+import { aud, blankInvoice, calculateTotals, formatAbn, formatBsb, formatDate, type Company, type InvoiceInput, type InvoiceRecord } from "@/lib/invoice/domain";
 import { api, ApiError, createCommandSender, errorText, uid, type Bootstrap } from "./client";
 import { ExportButtons } from "./exports";
 
@@ -86,7 +86,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
       <div className="invoice-form-column">
         <section className="invoice-panel"><h2>客户与工地</h2>
           <label className="invoice-field">选择已有客户<Select allowClear showSearch optionFilterProp="label" placeholder="搜索姓名、公司或最近客户" options={data.customers.map(c => ({ value: c.id, label: c.name }))} onChange={id => { const c = data.customers.find(c => c.id === id); if (c) field("customer", { name: c.name, billingAddress: c.billingAddress, abn: c.abn, email: c.email, phone: c.phone }); }} /></label>
-          <div className="invoice-fields"><label className="invoice-field">客户姓名 / 公司名称（英文）<Input value={input.customer.name} maxLength={200} onChange={e => field("customer", { ...input.customer, name: e.target.value })} /></label><label className="invoice-field">客户 ABN（选填）<Input value={input.customer.abn} onChange={e => field("customer", { ...input.customer, abn: e.target.value })} /></label></div>
+          <div className="invoice-fields"><label className="invoice-field">客户姓名 / 公司名称（英文，A$1,000 以上需填名称或 ABN）<Input value={input.customer.name} maxLength={200} onChange={e => field("customer", { ...input.customer, name: e.target.value })} /></label><label className="invoice-field">客户 ABN（选填）<Input value={input.customer.abn} onChange={e => field("customer", { ...input.customer, abn: e.target.value })} /></label></div>
           <label className="invoice-field">账单地址（英文，选填）<Input value={input.customer.billingAddress} onChange={e => field("customer", { ...input.customer, billingAddress: e.target.value })} /></label>
           <div className="invoice-fields"><label className="invoice-field">客户邮箱（选填）<Input type="email" value={input.customer.email} onChange={e => field("customer", { ...input.customer, email: e.target.value })} /></label><label className="invoice-field">客户电话（选填）<Input type="tel" value={input.customer.phone} onChange={e => field("customer", { ...input.customer, phone: e.target.value })} /></label></div>
           <Button size="small" disabled={busy || !input.customer.name} onClick={() => void saveCustomer()}>保存为常用客户</Button>
@@ -115,13 +115,18 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
 
 export function InvoicePaper({ input, company, number }: { input: InvoiceInput; company: Company; number: string }) {
   let totals; try { totals = calculateTotals(input.items); } catch { totals = { lines: [], subtotal: 0, gst: 0, total: 0 }; }
-  return <div className="invoice-paper" lang="en-AU"><div className="invoice-paper-heading"><b>LITA</b><div><h2>TAX INVOICE</h2><small>{number}</small></div></div>
-    <strong>{company.name}</strong><p>ABN {company.abn || "-"}<br />{company.address}<br />{company.email}<br />{company.phone}</p>
-    <div className="invoice-paper-meta"><div>Invoice date<br /><b>{input.date}</b></div><div>Payment due<br /><b>{input.dueDate}</b></div></div>
-    <h3>BILL TO</h3><strong>{input.customer.name || "Customer name"}</strong><p>{input.customer.billingAddress}{input.customer.abn && <><br />ABN {input.customer.abn}</>}</p>
-    {input.siteAddress && <><h3>WORK SITE</h3><p>{input.siteAddress}</p></>}{input.purchaseOrder && <p>Purchase order: {input.purchaseOrder}</p>}
-    <table><thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>{input.items.map((item, i) => <tr key={i}><td>{item.description || "Description"}</td><td>{item.quantity} {item.unit}</td><td>{aud(Number(item.unitPrice || 0) * 100)}</td><td>{aud(totals.lines[i] || 0)}</td></tr>)}</tbody></table>
-    <dl><div><dt>Subtotal</dt><dd>{aud(totals.subtotal)}</dd></div><div><dt>GST (10%)</dt><dd>{aud(totals.gst)}</dd></div><div className="invoice-paper-total"><dt>TOTAL AUD</dt><dd>{aud(totals.total)}</dd></div></dl>
-    {input.notes && <><h3>NOTES</h3><p>{input.notes}</p></>}<h3>PAYMENT DETAILS</h3><p>{company.bankAccountName || "Account name"}<br />BSB {company.bsb || "-"} · Account {company.bankAccountNumber || "-"}<br />Reference: {number}</p>
+  // Mirrors the PDF template: drafts show no number or payment reference.
+  const reference = number === "DRAFT" ? "" : number;
+  const { customer } = input;
+  const siteAsRecipient = !customer.name && !customer.billingAddress && !customer.abn;
+  return <div className="invoice-paper" lang="en-AU">
+    <div className="invoice-paper-heading"><div><strong className="invoice-paper-company">{company.name}</strong><p>{company.abn && <>ABN {formatAbn(company.abn)}<br /></>}{company.address && <>{company.address}<br /></>}{[company.email, company.phone].filter(Boolean).join(" · ")}</p></div>
+      <div><h2>TAX INVOICE</h2><dl className="invoice-paper-details">{reference && <div><dt>Invoice No.</dt><dd><b>{reference}</b></dd></div>}<div><dt>Date</dt><dd>{formatDate(input.date)}</dd></div><div><dt>Due date</dt><dd>{formatDate(input.dueDate)}</dd></div>{input.purchaseOrder && <div><dt>Order No.</dt><dd><b>{input.purchaseOrder}</b></dd></div>}</dl></div></div>
+    <div className="invoice-paper-parties"><div><h3>BILL TO</h3>{customer.name && <strong>{customer.name}</strong>}<p>{customer.billingAddress}{customer.abn && <><br />ABN {formatAbn(customer.abn)}</>}{siteAsRecipient && (input.siteAddress || "Customer or work site")}</p></div>
+      {input.siteAddress && !siteAsRecipient && <div><h3>WORK SITE</h3><p>{input.siteAddress}</p></div>}</div>
+    <table><thead><tr><th>Qty</th><th>Description</th><th>Unit price</th><th>Amount (ex GST)</th></tr></thead><tbody>{input.items.map((item, i) => <tr key={i}><td>{item.quantity} {item.unit}</td><td>{item.description || "Description"}</td><td>{aud(Math.round(Number(item.unitPrice || 0) * 100))}</td><td>{aud(totals.lines[i] || 0)}</td></tr>)}</tbody></table>
+    <dl><div><dt>Subtotal (excluding GST)</dt><dd>{aud(totals.subtotal)}</dd></div><div><dt>GST (10%)</dt><dd>{aud(totals.gst)}</dd></div><div className="invoice-paper-total"><dt>TOTAL (inc. GST)</dt><dd>{aud(totals.total)}</dd></div></dl>
+    <div className="invoice-paper-bank"><h3>PAYMENT BY BANK TRANSFER</h3><div><span>Account name<b>{company.bankAccountName || "-"}</b></span><span>BSB<b className="invoice-paper-big">{company.bsb ? formatBsb(company.bsb) : "-"}</b></span><span>Account number<b className="invoice-paper-big">{company.bankAccountNumber || "-"}</b></span>{reference && <span>Reference<b>{reference}</b></span>}</div></div>
+    {input.notes && <><h3>NOTES</h3><p>{input.notes}</p></>}
   </div>;
 }

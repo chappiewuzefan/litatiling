@@ -44,9 +44,15 @@ describe("issue validation", () => {
   it("accepts a complete English invoice", () => {
     expect(() => validateIssue(input(), company)).not.toThrow();
   });
-  it("requires verified company details and a customer name", () => {
+  it("requires verified company details", () => {
     expect(() => validateIssue(input(), { ...company, verified: false })).toThrow(/核实/);
-    expect(() => validateIssue(input({ customer: { ...input().customer, name: " " } }), company)).toThrow(/客户/);
+  });
+  it("requires the buyer's name or ABN only from A$1,000 (ATO rule)", () => {
+    const noName = { ...input().customer, name: "" };
+    expect(() => validateIssue(input({ customer: noName }), company)).not.toThrow();
+    expect(() => validateIssue(input({ customer: noName, items: [item("1", "1000")] }), company)).toThrow(/1,000/);
+    expect(() => validateIssue(input({ customer: { ...noName, abn: "51 824 753 556" }, items: [item("1", "1000")] }), company)).not.toThrow();
+    expect(() => validateIssue(input({ customer: noName, siteAddress: "" }), company)).toThrow(/地址/);
   });
   it("rejects Chinese text on the English document", () => {
     expect(() => validateIssue(input({ items: [{ ...item("1", "100"), description: "铺砖" }] }), company)).toThrow(/英文/);

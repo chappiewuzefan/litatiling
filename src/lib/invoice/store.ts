@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { Firestore, Transaction } from "firebase-admin/firestore";
 import { z } from "zod";
-import { calculateTotals, cents, companySchema, customerSchema, defaultCompany, defaultPresets, draftSchema, englishReason, InvoiceError, presetSchema, sydneyDate, validDate, validateCompany, validateIssue, type Company, type InvoiceRecord, type InvoiceVersion, type Payment } from "./domain";
+import { calculateTotals, cents, companySchema, customerSchema, defaultCompany, defaultPresets, draftSchema, englishReason, InvoiceError, presetSchema, sydneyDate, templateVersion, validDate, validateCompany, validateIssue, type Company, type InvoiceRecord, type InvoiceVersion, type Payment } from "./domain";
 
 const idSchema = z.string().regex(/^[a-zA-Z0-9_-]{8,100}$/);
 const lockSchema = z.number().int().min(0);
@@ -117,7 +117,7 @@ export class InvoiceStore {
           const targetTotal = cmd.action === "void" ? 0 : result.totals.total;
           const targetGst = cmd.action === "void" ? 0 : result.totals.gst;
           version = {
-            version: result.version, number: result.number!, input: result.input, company: existing.company, totals: result.totals, createdAt: timestamp, reason, templateVersion: 1, void: result.status === "void",
+            version: result.version, number: result.number!, input: result.input, company: existing.company, totals: result.totals, createdAt: timestamp, reason, templateVersion, void: result.status === "void",
             adjustment: targetTotal !== existing.totals.total || targetGst !== existing.totals.gst ? { previousVersion: existing.version, previousTotal: existing.totals.total, previousGst: existing.totals.gst, deltaTotal: targetTotal - existing.totals.total, deltaGst: targetGst - existing.totals.gst, reason } : null,
           };
         } else if (cmd.action === "payment") {
@@ -135,7 +135,7 @@ export class InvoiceStore {
           tx.update(pRef, { reversedAt: timestamp, reversalReason: cmd.reason });
           result.paidCents -= payment.cents;
         }
-        if (cmd.action === "issue") version = { version: 1, number: result.number!, input: result.input, company: result.company!, totals: result.totals, createdAt: timestamp, reason: "Original issue", templateVersion: 1, void: false, adjustment: null };
+        if (cmd.action === "issue") version = { version: 1, number: result.number!, input: result.input, company: result.company!, totals: result.totals, createdAt: timestamp, reason: "Original issue", templateVersion, void: false, adjustment: null };
       }
       if (version) tx.create(ref.collection("versions").doc(String(version.version)), version);
       tx.set(ref, result);

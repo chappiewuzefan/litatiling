@@ -36,3 +36,10 @@ describe("draft PDF", () => {
     expect(await pages(await generateInvoicePdf({ ...draft, number: "DRAFT", version: 0 }, "invoice", true))).toBe(1);
   }, 20_000);
 });
+
+describe("multi-line addresses", () => {
+  it("renders English addresses containing line breaks", async () => {
+    const v = version(1, "Tiling");
+    expect(await pages(await generateInvoicePdf({ ...v, company: { ...v.company, address: "55 Blackman Cres\nMacquarie ACT 2614" } }))).toBe(1);
+  }, 20_000);
+});

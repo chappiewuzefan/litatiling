@@ -38,12 +38,12 @@ export type InvoiceRecord = {
 };
 export type InvoiceVersion = {
   version: number; number: string; input: InvoiceInput; company: Company; totals: Totals;
-  createdAt: string; reason: string; templateVersion: 1; void: boolean;
+  createdAt: string; reason: string; templateVersion: 1 | 2; void: boolean;
   adjustment: null | { previousVersion: number; previousTotal: number; previousGst: number; deltaTotal: number; deltaGst: number; reason: string };
 };
 export const emptyCustomer: Customer = { name: "", email: "", phone: "", billingAddress: "", abn: "" };
 export const defaultCompany: Company = {
-  name: "LITA CONSTRUCTION PTY LTD", abn: "", address: "", email: "litamia810@gmail.com", phone: "0435 248 809",
+  name: "LITA CONTRACTION PTY LTD", abn: "", address: "", email: "litamia810@gmail.com", phone: "0435 248 809",
   bankAccountName: "", bsb: "", bankAccountNumber: "", gstRegistered: true, verified: false, defaultTermsDays: 7,
 };
 export const defaultPresets: Preset[] = [
@@ -69,6 +69,11 @@ export function calculateTotals(items: InvoiceItem[]): Totals {
   const gst = new Decimal(subtotal).mul("0.1").toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
   return { lines, subtotal, gst, total: subtotal + gst };
 }
+export const templateVersion = 2 as const;
+const digits = (value: string) => value.replace(/\D/g, "");
+export function formatDate(value: string) { return /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)}` : value; }
+export function formatAbn(value: string) { const d = digits(value); return d.length === 11 ? `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 8)} ${d.slice(8)}` : value; }
+export function formatBsb(value: string) { const d = digits(value); return d.length === 6 ? `${d.slice(0, 3)}-${d.slice(3)}` : value; }
 export const aud = (value: number) => new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(value / 100);
 export function isValidAbn(value: string) {
   const digits = value.replace(/\s/g, "");
@@ -89,11 +94,14 @@ export function validateCompany(company: Company) {
 }
 export function validateIssue(input: InvoiceInput, company: Company) {
   validateCompany(company);
-  if (!input.customer.name.trim()) throw new InvoiceError("请输入客户姓名或公司名称，施工地址不能代替客户名称");
   if (!validDate(input.date) || !validDate(input.dueDate) || input.dueDate < input.date) throw new InvoiceError("请检查开票日期和到期日期");
   if (input.customer.abn && !isValidAbn(input.customer.abn)) throw new InvoiceError("客户 ABN 格式不正确");
   if (input.items.some(i => !i.description || !i.quantity || new Decimal(i.quantity).lte(0) || !i.unitPrice)) throw new InvoiceError("请完善每项英文描述、数量和单价");
-  if (calculateTotals(input.items).total <= 0) throw new InvoiceError("发票总额必须大于零");
+  const { total } = calculateTotals(input.items);
+  if (total <= 0) throw new InvoiceError("发票总额必须大于零");
+  // ATO: a tax invoice of A$1,000 or more must show the buyer's identity or ABN.
+  if (total >= 100000 && !input.customer.name.trim() && !input.customer.abn.trim()) throw new InvoiceError("A$1,000 及以上的发票必须填写客户名称或客户 ABN");
+  if (!input.customer.name.trim() && !input.customer.billingAddress.trim() && !input.siteAddress.trim()) throw new InvoiceError("请至少填写客户名称、账单地址或施工地址");
   for (const v of [input.customer.name, input.customer.billingAddress, input.siteAddress, input.purchaseOrder, input.notes, ...input.items.map(i => i.description)]) requireEnglish(v, "发票内容");
 }
 export function englishReason(reason: string) {
