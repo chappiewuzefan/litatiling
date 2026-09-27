@@ -1,0 +1,7 @@
+# Values here merge with the App Hosting console; console values win on conflicts.
+env:
+  # Public Firebase web API key used by the internal invoice login screen.
+  - variable: INVOICE_FIREBASE_API_KEY
+    value: AIzaSyCCXc_UYTfTeP0q5XCFhkUoMvE9SVjycQI
+    availability:
+      - RUNTIME

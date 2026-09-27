@@ -1,6 +1,7 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
+import { getAuth } from "firebase-admin/auth";
 
 function getPrivateKey() {
   return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
@@ -40,4 +41,8 @@ export function getAdminFirestore() {
 
 export function getAdminStorageBucket() {
   return getStorage(getAdminApp()).bucket();
+}
+
+export function getAdminAuth() {
+  return getAuth(getAdminApp());
 }

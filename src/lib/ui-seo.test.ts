@@ -302,6 +302,8 @@ describe("UI and SEO evolution", () => {
       userAgent: string | string[];
       allow?: string | string[];
     }>;
-    expect(rules).toContainEqual({ userAgent: "OAI-SearchBot", allow: "/" });
+    expect(rules).toContainEqual(
+      expect.objectContaining({ userAgent: "OAI-SearchBot", allow: "/" }),
+    );
   });
 });
