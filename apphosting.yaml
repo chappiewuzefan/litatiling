@@ -10,3 +10,8 @@ env:
     value: wyXXdkzqNJQFC9UrI1Hez54PSVu1
     availability:
       - RUNTIME
+  # Default Firebase Storage bucket for private invoice archives and questionnaire uploads (created 2026-09-27).
+  - variable: FIREBASE_STORAGE_BUCKET
+    value: lita-tiling.firebasestorage.app
+    availability:
+      - RUNTIME
