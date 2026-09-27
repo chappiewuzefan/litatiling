@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Modal, Space, Spin } from "antd";
-import { errorText } from "./client";
+import { errorText, sessionExpiredEvent } from "./client";
 
 async function imagesFromPdf(buffer: ArrayBuffer, name: string) {
   const pdfjs = await import("pdfjs-dist");
@@ -25,37 +25,43 @@ async function imagesFromPdf(buffer: ArrayBuffer, name: string) {
   } finally { await pdf.destroy(); }
   return files;
 }
-export function ExportButtons({ url, name, label = "导出" }: { url: string; name: string; label?: string }) {
+type ExportProps = { url: string; name: string; label?: string; primary?: boolean; size?: "small" | "middle" | "large" };
+export function ExportButtons({ url, name, label = "导出 / 分享", primary = false, size = "middle" }: ExportProps) {
   const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState("");
   const [files, setFiles] = useState<{ file: File; url: string }[]>([]);
-  const urls = useRef<string[]>([]);
+  const urls = useRef<string[]>([]), controller = useRef<AbortController | null>(null);
   const revoke = () => { urls.current.forEach(URL.revokeObjectURL); urls.current = []; };
   useEffect(() => () => { urls.current.forEach(URL.revokeObjectURL); }, []);
   async function prepare(images: boolean) {
-    setOpen(true); setBusy(true); setError(""); revoke(); setFiles([]);
+    setBusy(true); setError(""); revoke(); setFiles([]);
+    const abort = new AbortController(); controller.current = abort;
     try {
-      const response = await fetch(url, { cache: "no-store" });
-      if (!response.ok) throw new Error((await response.json()).error || "文件生成失败，请重试");
+      const response = await fetch(url, { cache: "no-store", signal: abort.signal });
+      if (response.status === 401) window.dispatchEvent(new Event(sessionExpiredEvent));
+      if (!response.ok) throw new Error((await response.json().catch(() => ({}))).error || "文件生成失败，请重试");
       const buffer = await response.arrayBuffer();
       const results = images ? await imagesFromPdf(buffer, name) : [new File([buffer], `${name}.pdf`, { type: "application/pdf" })];
+      if (abort.signal.aborted) return;
       setFiles(results.map(file => { const u = URL.createObjectURL(file); urls.current.push(u); return { file, url: u }; }));
-      // Desktop downloads immediately; mobile can use the prepared files with a fresh share gesture.
-      if (!images && !/iPhone|iPad|Android/i.test(navigator.userAgent)) {
-        const a = document.createElement("a"); a.href = urls.current[0]; a.download = results[0].name; a.click();
-      }
-    } catch (e) { setError(errorText(e)); } finally { setBusy(false); }
+    } catch (e) { if (!abort.signal.aborted) setError(errorText(e)); } finally { if (controller.current === abort) { controller.current = null; setBusy(false); } }
   }
+  // Closing also cancels a slow download so the dialog never traps the user.
+  const close = () => { controller.current?.abort(); controller.current = null; setBusy(false); setOpen(false); revoke(); setFiles([]); setError(""); };
   const canShare = files.length > 0 && typeof navigator !== "undefined" && !!navigator.canShare?.({ files: files.map(f => f.file) });
   return <>
-    <Space wrap><Button onClick={() => void prepare(false)}>{label} PDF</Button><Button onClick={() => void prepare(true)}>{label}图片</Button></Space>
-    <Modal title="英文发票文件" open={open} onCancel={() => { setOpen(false); revoke(); setFiles([]); }} footer={null} destroyOnHidden>
-      {busy && <Spin tip="正在准备文件…"><div style={{ height: 80 }} /></Spin>}
-      {error && <Alert type="error" title={error} />}
-      {!busy && files.length > 0 && <Space orientation="vertical" style={{ width: "100%" }}>
-        <p>文件已准备好。可以保存后转发，或使用系统分享。</p>
-        {canShare && <Button type="primary" size="large" onClick={() => { void navigator.share({ files: files.map(f => f.file) }).catch(e => { if (e.name !== "AbortError") setError("此浏览器暂不支持分享，请使用下面的保存或打开按钮。"); }); }}>分享文件</Button>}
-        {files.map((f, i) => <Space key={f.file.name} wrap><a className="invoice-download" href={f.url} download={f.file.name}>保存{files.length > 1 ? `第 ${i + 1} 页` : "文件"}</a><a className="invoice-download" href={f.url} target="_blank" rel="noreferrer">打开{files.length > 1 ? `第 ${i + 1} 页` : "文件"}</a></Space>)}
-        <small>微信内无法保存时，请在系统浏览器中打开。多页图片请逐页保存。</small>
+    <Button type={primary ? "primary" : "default"} size={size} onClick={() => setOpen(true)}>{label}</Button>
+    <Modal title="导出英文发票" open={open} onCancel={close} footer={null} destroyOnHidden>
+      {!files.length && !busy && <div className="invoice-export-choices">
+        <button type="button" onClick={() => void prepare(false)}><strong>PDF 文件</strong><span>推荐。A4 排版，文字可搜索，适合邮件和打印。</span></button>
+        <button type="button" onClick={() => void prepare(true)}><strong>图片（PNG）</strong><span>适合微信直接发送。多页发票会生成多张图片。</span></button>
+      </div>}
+      {busy && <div className="invoice-export-busy"><Spin /> <span>正在生成文件…</span></div>}
+      {error && <Alert type="error" title={error} action={<Button size="small" onClick={() => setError("")}>重新选择</Button>} />}
+      {!busy && files.length > 0 && <Space orientation="vertical" size={12} style={{ width: "100%" }}>
+        {canShare && <Button block type="primary" size="large" onClick={() => { void navigator.share({ files: files.map(f => f.file) }).catch(e => { if (e.name !== "AbortError") setError("此浏览器暂不支持分享，请使用下面的保存或打开。"); }); }}>分享给客户</Button>}
+        {files.map((f, i) => <div className="invoice-export-file" key={f.file.name}><span>{files.length > 1 ? `第 ${i + 1} 页` : f.file.name}</span><Space><a className="invoice-download" href={f.url} download={f.file.name}>保存</a><a className="invoice-download" href={f.url} target="_blank" rel="noreferrer">打开</a></Space></div>)}
+        <Button type="link" onClick={() => { revoke(); setFiles([]); }}>换一种格式</Button>
+        <small>在微信里无法保存时，请点右上角用系统浏览器打开。</small>
       </Space>}
     </Modal>
   </>;

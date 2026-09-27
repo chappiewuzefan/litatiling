@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, calculateTotals, csvCell, defaultCompany, englishReason, isValidAbn, paymentState, validateIssue, validDate, type InvoiceInput } from "./domain";
+import { addDays, calculateTotals, cleanNumber, csvCell, defaultCompany, englishReason, isValidAbn, issueProblems, numberInput, paymentState, validateIssue, validDate, type InvoiceInput } from "./domain";
 
 const item = (quantity: string, unitPrice: string) => ({ description: "Tiling", quantity, unit: "m²" as const, unitPrice });
 const company = { ...defaultCompany, abn: "51 824 753 556", address: "Canberra ACT", bankAccountName: "LITA CONSTRUCTION PTY LTD", bsb: "062-000", bankAccountNumber: "12345678", verified: true };
@@ -82,5 +82,26 @@ describe("helpers", () => {
   it("neutralises spreadsheet formulas in CSV", () => {
     expect(csvCell('=HYPERLINK("x")')).toBe(`"'=HYPERLINK(""x"")"`);
     expect(csvCell("Smith, Jane")).toBe('"Smith, Jane"');
+  });
+  it("cleans typed and pasted numbers", () => {
+    expect(numberInput("$1,200.50")).toBe("1200.50");
+    expect(numberInput("12.5.3")).toBe("12.53");
+    expect(cleanNumber("12.")).toBe("12");
+    expect(cleanNumber(".5")).toBe("0.5");
+    expect(calculateTotals([item("12.", "10")]).subtotal).toBe(12000);
+    expect(calculateTotals([item(".", "")]).subtotal).toBe(0);
+  });
+  it("lists every issue problem at once", () => {
+    const problems = issueProblems(input({ items: [item("1", ""), { ...item("2", "5"), description: "铺砖" }], siteAddress: "", customer: { ...input().customer, name: "" } }), { ...company, verified: false });
+    expect(problems.some(p => p.includes("核实"))).toBe(true);
+    expect(problems.some(p => p.startsWith("项目 1"))).toBe(true);
+    expect(problems.some(p => p.includes("地址"))).toBe(true);
+    expect(problems.some(p => p.includes("英文"))).toBe(true);
+    expect(issueProblems(input(), company)).toEqual([]);
+  });
+  it("allows zero-priced lines but not blank prices", () => {
+    expect(issueProblems(input({ items: [item("1", "100"), { ...item("1", "0"), description: "Included at no charge" }] }), company)).toEqual([]);
+    expect(issueProblems(input({ items: [item("1", "100"), item("1", "")] }), company).some(p => p.startsWith("项目 2"))).toBe(true);
+    expect(numberInput("12.3456", 2)).toBe("12.34");
   });
 });

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import type { Firestore, Transaction } from "firebase-admin/firestore";
+import type { DocumentReference, Firestore, Transaction } from "firebase-admin/firestore";
 import { z } from "zod";
-import { calculateTotals, cents, companySchema, customerSchema, defaultCompany, defaultPresets, draftSchema, englishReason, InvoiceError, presetSchema, sydneyDate, templateVersion, validDate, validateCompany, validateIssue, type Company, type InvoiceRecord, type InvoiceVersion, type Payment } from "./domain";
+import { calculateTotals, cents, companySchema, customerSchema, defaultCompany, defaultPresets, draftSchema, englishReason, InvoiceError, cleanNumber, normalizeInput, presetSchema, sydneyDate, templateVersion, validDate, validateCompany, validateIssue, type Company, type InvoiceRecord, type InvoiceVersion, type Payment } from "./domain";
 
 const idSchema = z.string().regex(/^[a-zA-Z0-9_-]{8,100}$/);
 const lockSchema = z.number().int().min(0);
@@ -37,21 +37,43 @@ export class InvoiceStore {
       tx.set(ref, result); return result;
     });
   }
+  private catalogMarker() { return this.db.collection("invoiceSettings").doc("catalog"); }
   async catalog(kind: "customers" | "items") {
     const result = await this.db.collection(kind === "customers" ? "invoiceCustomers" : "invoiceItems").orderBy("updatedAt", "desc").get();
-    if (kind === "items" && result.empty) return defaultPresets.map((p, i) => ({ ...p, id: `default-${i}`, version: 0 }));
-    return result.docs.map(d => ({ ...d.data(), id: d.id }));
+    const rows = result.docs.map(d => ({ ...d.data(), id: d.id }));
+    if (kind === "customers" || (await this.catalogMarker().get()).data()?.itemsSeeded) return rows;
+    // Until the first preset change, built-in presets are shown virtually alongside any stored ones.
+    const stored = new Set(rows.map(r => r.id));
+    return [...rows, ...defaultPresets.map((p, i) => ({ ...p, id: `default-${i}`, version: 0 })).filter(p => !stored.has(p.id))];
   }
   async saveCatalog(kind: "customers" | "items", id: string, input: unknown, version: number) {
-    idSchema.parse(id);
-    const data = (kind === "customers" ? customerSchema : presetSchema).parse(input);
-    if (kind === "customers" && !(data as { name: string }).name) throw new InvoiceError("请输入客户名称");
-    const ref = this.db.collection(kind === "customers" ? "invoiceCustomers" : "invoiceItems").doc(id);
-    return this.db.runTransaction(async tx => {
-      const previous = await tx.get(ref);
-      if ((previous.data()?.version || 0) !== version) throw new InvoiceError("资料已修改，请刷新", 409);
+    let data: Record<string, unknown> = (kind === "customers" ? customerSchema : presetSchema).parse(input);
+    if (kind === "customers" && !data.name) throw new InvoiceError("请输入客户名称");
+    if (kind === "items") data = { ...data, quantity: cleanNumber(String(data.quantity)), unitPrice: cleanNumber(String(data.unitPrice)) };
+    return this.catalogWrite(kind, id, version, (tx, ref) => {
       const result = { ...data, version: version + 1, updatedAt: now() };
       tx.set(ref, result); return { ...result, id };
+    });
+  }
+  async deleteCatalog(kind: "customers" | "items", id: string, version: number) {
+    return this.catalogWrite(kind, id, version, (tx, ref) => { tx.delete(ref); return { id }; });
+  }
+  // Built-in presets are only virtual until the first preset change; seed them all then (once, tracked by a
+  // marker) so editing or deleting one never makes the others disappear, and deleting all keeps them deleted.
+  private async catalogWrite<T>(kind: "customers" | "items", id: string, version: number, apply: (tx: Transaction, ref: DocumentReference) => T) {
+    idSchema.parse(id);
+    const collection = this.db.collection(kind === "customers" ? "invoiceCustomers" : "invoiceItems");
+    const ref = collection.doc(id), marker = this.catalogMarker();
+    return this.db.runTransaction(async tx => {
+      const previous = await tx.get(ref);
+      const seed = kind === "items" && !(await tx.get(marker)).data()?.itemsSeeded;
+      const seeds = seed ? defaultPresets.map((preset, i) => ({ preset, ref: collection.doc(`default-${i}`), id: `default-${i}` })).filter(s => s.id !== id) : [];
+      const existing = await Promise.all(seeds.map(s => tx.get(s.ref)));
+      if ((previous.data()?.version || 0) !== version) throw new InvoiceError("资料已在其他设备修改，请刷新后再试", 409);
+      const seededAt = new Date(0).toISOString();
+      seeds.forEach((s, i) => { if (!existing[i].exists) tx.set(s.ref, { ...s.preset, version: 0, updatedAt: seededAt }); });
+      if (seed) tx.set(marker, { itemsSeeded: true });
+      return apply(tx, ref);
     });
   }
   async list() {
@@ -93,7 +115,8 @@ export class InvoiceStore {
       let version: InvoiceVersion | null = null;
       if (cmd.action === "save") {
         if (existing && existing.status !== "draft") throw new InvoiceError("已开票请使用更正功能", 409);
-        result = { id: cmd.id, input: cmd.input, totals: calculateTotals(cmd.input.items), status: "draft", number: null, company: null, version: 0, paidCents: 0, createdAt: existing?.createdAt || timestamp, updatedAt: timestamp, lockVersion: cmd.expectedVersion + 1 };
+        const input = normalizeInput(cmd.input);
+        result = { id: cmd.id, input, totals: calculateTotals(input.items), status: "draft", number: null, company: null, version: 0, paidCents: 0, createdAt: existing?.createdAt || timestamp, updatedAt: timestamp, lockVersion: cmd.expectedVersion + 1 };
       } else {
         if (!existing) throw new InvoiceError("请先保存草稿", 404);
         result = { ...existing, updatedAt: timestamp, lockVersion: existing.lockVersion + 1 };
@@ -113,8 +136,9 @@ export class InvoiceStore {
           if (existing.status !== "issued" || !existing.company) throw new InvoiceError("只有已开票的发票可以更正或作废", 409);
           const reason = englishReason(cmd.reason);
           if (cmd.action === "revise") {
-            validateIssue(cmd.input, existing.company);
-            result = { ...result, input: cmd.input, totals: calculateTotals(cmd.input.items), version: existing.version + 1 };
+            const input = normalizeInput(cmd.input);
+            validateIssue(input, existing.company);
+            result = { ...result, input, totals: calculateTotals(input.items), version: existing.version + 1 };
           } else result = { ...result, status: "void", version: existing.version + 1, voidReason: reason };
           const targetTotal = cmd.action === "void" ? 0 : result.totals.total;
           const targetGst = cmd.action === "void" ? 0 : result.totals.gst;

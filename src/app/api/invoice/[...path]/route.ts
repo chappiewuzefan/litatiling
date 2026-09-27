@@ -110,6 +110,11 @@ export async function DELETE(request: NextRequest, context: Context) {
   try {
     checkWriteOrigin(request);
     const { path } = await context.params;
+    if ((path[0] === "customers" || path[0] === "items") && path.length === 2) {
+      await requireInvoiceUser(request);
+      const { version } = z.object({ version: z.number().int().min(0) }).parse(await body(request));
+      return privateJson(await new InvoiceStore(getAdminFirestore()).deleteCatalog(path[0], path[1], version));
+    }
     if (path.join("/") !== "session") throw new InvoiceError("不支持删除历史记录", 405);
     const response = privateJson({ ok: true });
     response.cookies.set(SESSION, "", { ...cookieOptions, maxAge: 0 });

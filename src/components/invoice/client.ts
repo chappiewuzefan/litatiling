@@ -8,11 +8,17 @@ export class ApiError extends Error { constructor(message: string, public status
 let csrf = "";
 export function setCsrf(token: string) { csrf = token; }
 export async function api<T>(path: string, data?: unknown, method = "POST"): Promise<T> {
-  const response = await fetch(`/api/invoice/${path}`, { method: data === undefined ? "GET" : method, credentials: "same-origin", cache: "no-store", headers: data === undefined ? {} : { "Content-Type": "application/json", "x-csrf-token": csrf }, body: data === undefined ? undefined : JSON.stringify(data) });
-  const result = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(`/api/invoice/${path}`, { method: data === undefined ? "GET" : method, credentials: "same-origin", cache: "no-store", headers: data === undefined ? {} : { "Content-Type": "application/json", "x-csrf-token": csrf }, body: data === undefined ? undefined : JSON.stringify(data) });
+  } catch { throw new ApiError("网络连接失败，请检查网络后重试。已填写的内容仍在页面上。", 0); }
+  const result = await response.json().catch(() => ({}));
+  // Let the app show a re-login dialog over the current screen so unsaved work stays in place.
+  if (response.status === 401 && path !== "session") window.dispatchEvent(new Event(sessionExpiredEvent));
   if (!response.ok) throw new ApiError(result.error || "操作失败，请重试", response.status);
   return result;
 }
+export const sessionExpiredEvent = "lita-invoice-session-expired";
 export const errorText = (error: unknown) => error instanceof Error ? error.message : "操作失败，请重试";
 export const uid = () => crypto.randomUUID();
 

@@ -5,10 +5,12 @@ export class InvoiceError extends Error {
   constructor(message: string, public status = 400) { super(message); }
 }
 const text = (max = 200) => z.string().trim().max(max);
-const decimalInput = z.string().regex(/^(?:\d{1,8}(?:\.\d{1,4})?)?$/, "请输入有效数字，最多四位小数");
-const moneyInput = z.string().regex(/^(?:\d{1,8}(?:\.\d{1,2})?)?$/, "金额最多两位小数");
+// Half-typed numbers such as "12." or ".5" are valid drafts; they are normalised when saved.
+const decimalInput = z.string().regex(/^(?:\d{0,8}(?:\.\d{0,4})?)?$/, "数量最多四位小数");
+const moneyInput = z.string().regex(/^(?:\d{0,8}(?:\.\d{0,2})?)?$/, "单价最多两位小数");
 export const customerSchema = z.object({
-  name: text(), email: z.union([z.literal(""), z.string().email()]), phone: text(50),
+  // Email is not printed on invoices; accept half-typed values so autosave never blocks on it.
+  name: text(), email: text(200), phone: text(50),
   billingAddress: text(500), abn: text(30),
 }).strict();
 export const itemSchema = z.object({
@@ -64,9 +66,16 @@ export function blankInvoice(): InvoiceInput {
   const date = sydneyDate();
   return { customer: { ...emptyCustomer }, siteAddress: "", date, dueDate: "", purchaseOrder: "", notes: "", items: [{ description: "", quantity: "1", unit: "job", unitPrice: "" }] };
 }
-export function cents(value: string) { return new Decimal(value || "0").mul(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber(); }
+const numeric = (value: string) => { const v = value.replace(/\.$/, ""); return v && v !== "." ? v : "0"; };
+export function cleanNumber(value: string) { const v = value.replace(/\.$/, ""); return v.startsWith(".") ? `0${v}` : v; }
+// Keeps only digits and the first decimal point, so pasted "$1,200.50" becomes "1200.50".
+export function numberInput(value: string, decimals = 4) { const [whole, ...rest] = value.replace(/[^\d.]/g, "").split("."); return (rest.length ? `${whole.slice(0, 8)}.${rest.join("").slice(0, decimals)}` : whole.slice(0, 8)); }
+export function normalizeInput(input: InvoiceInput): InvoiceInput {
+  return { ...input, items: input.items.map(i => ({ ...i, quantity: cleanNumber(i.quantity), unitPrice: cleanNumber(i.unitPrice) })) };
+}
+export function cents(value: string) { return new Decimal(numeric(value)).mul(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber(); }
 export function calculateTotals(items: InvoiceItem[]): Totals {
-  const lines = items.map(i => new Decimal(i.quantity || "0").mul(i.unitPrice || "0").mul(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber());
+  const lines = items.map(i => new Decimal(numeric(i.quantity)).mul(numeric(i.unitPrice)).mul(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber());
   const subtotal = lines.reduce((a, b) => a + b, 0);
   if (!Number.isSafeInteger(subtotal) || subtotal > 1e12) throw new InvoiceError("发票金额超出支持范围");
   const gst = new Decimal(subtotal).mul("0.1").toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
@@ -86,27 +95,44 @@ export function isValidAbn(value: string) {
 export function validDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(`${value}T12:00:00Z`)) && new Date(`${value}T12:00:00Z`).toISOString().slice(0, 10) === value;
 }
+// Invoice-facing text is entered in English; UI labels and internal notes remain Chinese.
+export function nonEnglish(value: string) { return /[^\u0020-\u024f\n\r\t\u2000-\u206f]/u.test(value); }
 function requireEnglish(value: string, label: string) {
-  // Invoice-facing text is entered in English; UI labels and internal notes remain Chinese.
-  if (/[^\u0020-\u024f\n\r\t\u2000-\u206f]/u.test(value)) throw new InvoiceError(`${label}请填写英文（导出文件使用英文）`);
+  if (nonEnglish(value)) throw new InvoiceError(`${label}请填写英文（导出文件使用英文）`);
+}
+const companyLabels: Partial<Record<keyof Company, string>> = { name: "公司名称", abn: "ABN", address: "公司地址", email: "邮箱", phone: "电话", bankAccountName: "账户名称", bsb: "BSB", bankAccountNumber: "账号" };
+export function companyProblems(company: Company) {
+  const problems: string[] = [];
+  if (!company.verified || !company.gstRegistered) problems.push("请先在设置中核实公司资料并确认 GST 登记");
+  if (!company.name || !isValidAbn(company.abn) || !company.bankAccountName || !/^\d{3}-?\d{3}$/.test(company.bsb) || !/^\d{5,12}$/.test(company.bankAccountNumber)) problems.push("请检查公司名称、ABN、银行账户名称、BSB 和账号");
+  for (const [key, label] of Object.entries(companyLabels)) if (nonEnglish(String(company[key as keyof Company] ?? ""))) problems.push(`${label}请填写英文（导出文件使用英文）`);
+  return problems;
 }
 export function validateCompany(company: Company) {
-  if (!company.verified || !company.gstRegistered) throw new InvoiceError("请先核实公司资料并确认 GST 登记");
-  if (!company.name || !isValidAbn(company.abn) || !company.bankAccountName || !/^\d{3}-?\d{3}$/.test(company.bsb) || !/^\d{5,12}$/.test(company.bankAccountNumber)) throw new InvoiceError("请检查公司名称、ABN、银行账户名称、BSB 和账号");
-  for (const [key, value] of Object.entries(company)) if (typeof value === "string") requireEnglish(value, key);
+  const [problem] = companyProblems(company);
+  if (problem) throw new InvoiceError(problem);
+}
+// Every reason an invoice cannot be issued yet, so the editor can list them all at once.
+export function issueProblems(input: InvoiceInput, company: Company) {
+  const problems = companyProblems(company);
+  if (!validDate(input.date)) problems.push("请检查开票日期");
+  if (input.dueDate && (!validDate(input.dueDate) || input.dueDate < input.date)) problems.push("付款到期日不能早于开票日期");
+  if (input.customer.abn && !isValidAbn(input.customer.abn)) problems.push("客户 ABN 格式不正确");
+  input.items.forEach((i, n) => {
+    if (!i.description.trim() || new Decimal(numeric(i.quantity)).lte(0) || cleanNumber(i.unitPrice) === "") problems.push(`项目 ${n + 1}：请完善英文描述、数量和单价`);
+  });
+  let total = 0;
+  try { total = calculateTotals(input.items).total; } catch (error) { problems.push((error as Error).message); }
+  if (total <= 0 && !problems.some(p => p.startsWith("项目"))) problems.push("发票总额必须大于零");
+  // ATO: a tax invoice of A$1,000 or more must show the buyer's identity or ABN.
+  if (total >= 100000 && !input.customer.name.trim() && !input.customer.abn.trim()) problems.push("A$1,000 及以上的发票必须填写客户名称或客户 ABN");
+  if (!input.customer.name.trim() && !input.customer.billingAddress.trim() && !input.siteAddress.trim()) problems.push("请至少填写客户名称、账单地址或施工地址");
+  if ([input.customer.name, input.customer.billingAddress, input.siteAddress, input.purchaseOrder, input.notes, ...input.items.map(i => i.description)].some(nonEnglish)) problems.push("发票内容请填写英文（导出文件使用英文）");
+  return problems;
 }
 export function validateIssue(input: InvoiceInput, company: Company) {
-  validateCompany(company);
-  if (!validDate(input.date)) throw new InvoiceError("请检查开票日期");
-  if (input.dueDate && (!validDate(input.dueDate) || input.dueDate < input.date)) throw new InvoiceError("付款到期日不能早于开票日期");
-  if (input.customer.abn && !isValidAbn(input.customer.abn)) throw new InvoiceError("客户 ABN 格式不正确");
-  if (input.items.some(i => !i.description || !i.quantity || new Decimal(i.quantity).lte(0) || !i.unitPrice)) throw new InvoiceError("请完善每项英文描述、数量和单价");
-  const { total } = calculateTotals(input.items);
-  if (total <= 0) throw new InvoiceError("发票总额必须大于零");
-  // ATO: a tax invoice of A$1,000 or more must show the buyer's identity or ABN.
-  if (total >= 100000 && !input.customer.name.trim() && !input.customer.abn.trim()) throw new InvoiceError("A$1,000 及以上的发票必须填写客户名称或客户 ABN");
-  if (!input.customer.name.trim() && !input.customer.billingAddress.trim() && !input.siteAddress.trim()) throw new InvoiceError("请至少填写客户名称、账单地址或施工地址");
-  for (const v of [input.customer.name, input.customer.billingAddress, input.siteAddress, input.purchaseOrder, input.notes, ...input.items.map(i => i.description)]) requireEnglish(v, "发票内容");
+  const [problem] = issueProblems(input, company);
+  if (problem) throw new InvoiceError(problem);
 }
 export function englishReason(reason: string) {
   if (!reason.trim() || reason.length > 500) throw new InvoiceError("请输入更正原因（最多 500 字符）");

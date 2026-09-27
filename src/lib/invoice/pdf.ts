@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { PDFDocument, StandardFonts, rgb, degrees, type PDFFont, type PDFPage } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { getAdminStorageBucket } from "@/lib/firebase-admin";
-import { aud, formatAbn, formatBsb, formatDate, type InvoiceVersion, InvoiceError } from "./domain";
+import { aud, cents, formatAbn, formatBsb, formatDate, type InvoiceVersion, InvoiceError } from "./domain";
 
 const A4: [number, number] = [595.28, 841.89];
 const left = 44, edge = 551;
@@ -171,7 +171,7 @@ export async function generateInvoicePdf(v: InvoiceVersion, kind: "invoice" | "a
         draw(row, descX, y, 10);
         if (rowIndex === 0) {
           draw(`${item.quantity || "0"} ${item.unit}`, qtyX, y, 9.5);
-          right(aud(Math.round(Number(item.unitPrice || "0") * 100)), priceEdge, y, 10);
+          right(aud(cents(item.unitPrice)), priceEdge, y, 10);
           right(aud(v.totals.lines[index] || 0), amountEdge, y, 10);
         }
         y -= 14;

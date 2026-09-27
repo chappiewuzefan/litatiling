@@ -27,16 +27,17 @@ class FakeDb {
   }
   runTransaction<T>(fn: (tx: unknown) => Promise<T>) {
     const run = async () => {
-      const writes: [string, "set" | "create" | "update", Record<string, unknown>][] = [];
+      const writes: [string, "set" | "create" | "update" | "delete", Record<string, unknown>][] = [];
       const tx = {
         get: async (ref: { path: string }) => this.snap(ref.path),
         set: (ref: { path: string }, v: Record<string, unknown>) => writes.push([ref.path, "set", v]),
         create: (ref: { path: string }, v: Record<string, unknown>) => writes.push([ref.path, "create", v]),
         update: (ref: { path: string }, v: Record<string, unknown>) => writes.push([ref.path, "update", v]),
+        delete: (ref: { path: string }) => writes.push([ref.path, "delete", {}]),
       };
       const result = await fn(tx);
       for (const [path, kind] of writes) if (kind === "create" && this.docs.has(path)) throw new Error(`ALREADY_EXISTS ${path}`);
-      for (const [path, kind, v] of writes) this.docs.set(path, structuredClone(kind === "update" ? { ...this.docs.get(path), ...v } : v));
+      for (const [path, kind, v] of writes) if (kind === "delete") this.docs.delete(path); else this.docs.set(path, structuredClone(kind === "update" ? { ...this.docs.get(path), ...v } : v));
       return result;
     };
     const next = this.queue.then(run, run);
@@ -131,5 +132,31 @@ describe("invoice store", () => {
     const issued = await store.command({ action: "issue", id: kept.id, operationId: opId(), expectedVersion: kept.lockVersion }, "uid");
     await expect(store.command({ action: "delete-draft", id: kept.id, operationId: opId(), expectedVersion: issued.lockVersion }, "uid")).rejects.toThrow(/作废/);
     expect((await store.list()).map(r => r.id)).toContain(kept.id);
+  });
+  it("keeps the other built-in presets when one is edited or deleted", async () => {
+    const presets = await store.catalog("items") as unknown as { id: string; version: number; label: string }[];
+    expect(presets).toHaveLength(5);
+    await store.saveCatalog("items", "default-1", { label: "铺砖", description: "Floor tiling", quantity: "1", unit: "m²", unitPrice: "45" }, 0);
+    let after = await store.catalog("items") as unknown as { id: string; unitPrice: string }[];
+    expect(after).toHaveLength(5);
+    expect(after.find(p => p.id === "default-1")?.unitPrice).toBe("45");
+    await store.deleteCatalog("items", "default-3", 0);
+    after = await store.catalog("items") as unknown as { id: string; unitPrice: string }[];
+    expect(after.map(p => p.id).sort()).toEqual(["default-0", "default-1", "default-2", "default-4"]);
+  });
+
+  it("normalises half-typed numbers when saving drafts", async () => {
+    const saved = await store.command({ action: "save", id: "invoice-numbers", operationId: opId(), expectedVersion: 0, input: { ...input(), items: [{ description: "Tiling", quantity: "12.", unit: "m²", unitPrice: ".5" }] } }, "uid");
+    expect(saved.input.items[0]).toMatchObject({ quantity: "12", unitPrice: "0.5" });
+    expect(saved.totals.subtotal).toBe(600);
+  });
+  it("keeps presets deleted after all of them are removed", async () => {
+    for (let i = 0; i < 5; i++) await store.deleteCatalog("items", `default-${i}`, 0);
+    expect(await store.catalog("items")).toEqual([]);
+  });
+
+  it("normalises preset numbers when saving", async () => {
+    const saved = await store.saveCatalog("items", "preset-custom-1", { label: "找平", description: "Screed", quantity: "2.", unit: "m²", unitPrice: "." }, 0) as unknown as { quantity: string; unitPrice: string };
+    expect(saved).toMatchObject({ quantity: "2", unitPrice: "" });
   });
 });
