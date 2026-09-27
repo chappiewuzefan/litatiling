@@ -106,7 +106,7 @@ export async function generateInvoicePdf(v: InvoiceVersion, kind: "invoice" | "a
   right(title, edge, y - 4, 20, true, accent);
   const details: [string, string][] = adjustment
     ? [["Adjustment No.", documentNumber], ["Date", formatDate(v.createdAt.slice(0, 10))], ["Related invoice", v.number]]
-    : [["Invoice No.", reference], ["Date", formatDate(v.input.date)]];
+    : [["Invoice No.", reference], ["Date", formatDate(v.input.date)], ["Due date", v.input.dueDate ? formatDate(v.input.dueDate) : ""]];
   if (!adjustment && v.input.purchaseOrder) details.push(["Order No.", v.input.purchaseOrder]);
   let detailY = y - 30;
   const shown = details.filter(([, value]) => value);
@@ -189,7 +189,8 @@ export async function generateInvoicePdf(v: InvoiceVersion, kind: "invoice" | "a
     if (!v.void) {
       // Bank details are what the customer acts on, so they get the most visible block after the total.
       ensure(104);
-      const top = y, height = reference ? 88 : 70;
+      const note = [v.input.dueDate && `Please pay by ${formatDate(v.input.dueDate)}`, reference && "quote the reference above when paying"].filter(Boolean).join(" and ");
+      const top = y, height = note ? 88 : 70;
       page.drawRectangle({ x: left, y: top - height + 12, width: edge - left, height, color: soft });
       page.drawRectangle({ x: left, y: top - height + 12, width: 4, height, color: accent });
       label("PAYMENT BY BANK TRANSFER", left + 16, top - 4);
@@ -203,7 +204,7 @@ export async function generateInvoicePdf(v: InvoiceVersion, kind: "invoice" | "a
         draw(name, xs[i], top - 24, 8, false, muted);
         block(value, xs[i], top - 42, i === 0 ? 176 : edge - xs[i] - 4, size, true);
       });
-      if (reference) draw("Please quote the reference above when paying.", left + 16, top - 68, 8.5, false, muted);
+      if (note) draw(`${note.charAt(0).toUpperCase()}${note.slice(1)}.`, left + 16, top - 68, 8.5, false, muted);
       y = top - height - 10;
     }
     if (v.input.notes) {

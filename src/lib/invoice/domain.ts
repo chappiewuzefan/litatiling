@@ -57,7 +57,7 @@ export function sydneyDate(date = new Date()) {
 export function addDays(date: string, days: number) {
   const d = new Date(`${date}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10);
 }
-// `dueDate` stays in the schema for older records, but LITA invoices no longer use a payment due date.
+// The payment due date is optional and starts empty.
 export function blankInvoice(): InvoiceInput {
   const date = sydneyDate();
   return { customer: { ...emptyCustomer }, siteAddress: "", date, dueDate: "", purchaseOrder: "", notes: "", items: [{ description: "", quantity: "1", unit: "job", unitPrice: "" }] };
@@ -96,6 +96,7 @@ export function validateCompany(company: Company) {
 export function validateIssue(input: InvoiceInput, company: Company) {
   validateCompany(company);
   if (!validDate(input.date)) throw new InvoiceError("请检查开票日期");
+  if (input.dueDate && (!validDate(input.dueDate) || input.dueDate < input.date)) throw new InvoiceError("付款到期日不能早于开票日期");
   if (input.customer.abn && !isValidAbn(input.customer.abn)) throw new InvoiceError("客户 ABN 格式不正确");
   if (input.items.some(i => !i.description || !i.quantity || new Decimal(i.quantity).lte(0) || !i.unitPrice)) throw new InvoiceError("请完善每项英文描述、数量和单价");
   const { total } = calculateTotals(input.items);
@@ -109,10 +110,11 @@ export function englishReason(reason: string) {
   if (!reason.trim() || reason.length > 500) throw new InvoiceError("请输入更正原因（最多 500 字符）");
   requireEnglish(reason, "更正原因"); return reason.trim();
 }
-export function paymentState(invoice: Pick<InvoiceRecord, "totals" | "paidCents" | "status">) {
+export function paymentState(invoice: Pick<InvoiceRecord, "totals" | "paidCents" | "status"> & { input?: Pick<InvoiceInput, "dueDate"> }, today = sydneyDate()) {
   const due = invoice.status === "void" ? 0 : invoice.totals.total;
   const balance = due - invoice.paidCents;
-  return { balance, status: balance < 0 ? "overpaid" : balance === 0 ? "paid" : invoice.paidCents > 0 ? "partial" : "unpaid" };
+  const dueDate = invoice.input?.dueDate;
+  return { balance, status: balance < 0 ? "overpaid" : balance === 0 ? "paid" : invoice.paidCents > 0 ? "partial" : "unpaid", overdue: invoice.status === "issued" && balance > 0 && !!dueDate && dueDate < today };
 }
 export function csvCell(value: unknown) {
   let s = String(value ?? "");
