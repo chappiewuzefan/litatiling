@@ -5,3 +5,8 @@ env:
     value: AIzaSyCCXc_UYTfTeP0q5XCFhkUoMvE9SVjycQI
     availability:
       - RUNTIME
+  # Only this Firebase Auth user (the shared LITA invoice account) may use the invoice module.
+  - variable: INVOICE_ALLOWED_UID
+    value: wyXXdkzqNJQFC9UrI1Hez54PSVu1
+    availability:
+      - RUNTIME
