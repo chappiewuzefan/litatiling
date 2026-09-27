@@ -47,9 +47,9 @@ export function InvoiceApp() {
       {session && !session.authenticated && <Login session={session} onLogin={loadSession} />}
       {session?.authenticated && !data && !error && <div className="invoice-loading"><Spin /></div>}
       {session?.authenticated && data && <><nav className="invoice-nav" aria-label="开票导航">{([['new', '＋ 新建发票'], ['history', '历史发票'], ['customers', '客户'], ['items', '常用项目'], ['settings', '设置']] as [Screen, string][]).map(([key, label]) => <button key={key} aria-current={active === key ? "page" : undefined} onClick={() => void navigate(key)}>{label}</button>)}</nav><main className="invoice-main">
-        {(screen === "new" || screen === "edit") && <InvoiceEditor ref={editor} key={editorKey} data={data} initial={initial} copy={copy} onDone={open} onReload={() => void reloadEditor().catch(e => setError(errorText(e)))} refresh={refresh} />}
+        {(screen === "new" || screen === "edit") && <InvoiceEditor ref={editor} key={editorKey} data={data} initial={initial} copy={copy} onDone={open} onDeleted={() => { setInitial(undefined); setCopy(undefined); setScreen("history"); }} onReload={() => void reloadEditor().catch(e => setError(errorText(e)))} refresh={refresh} />}
         {screen === "history" && <InvoiceHistory onOpen={open} />}
-        {screen === "detail" && <InvoiceDetail key={selected} id={selected} onEdit={edit} onCopy={duplicate} />}
+        {screen === "detail" && <InvoiceDetail key={selected} id={selected} onEdit={edit} onCopy={duplicate} onDeleted={() => setScreen("history")} />}
         {(screen === "customers" || screen === "items") && <Catalog key={screen} kind={screen} data={data} refresh={refresh} />}
         {screen === "settings" && <CompanySettings data={data} refresh={refresh} />}
       </main></>}

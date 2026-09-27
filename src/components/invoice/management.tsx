@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Checkbox, Empty, Form, Input, Modal, Pagination, Select, Space, Spin, Tag } from "antd";
 import { aud, blankInvoice, defaultCompany, emptyCustomer, paymentState, sydneyDate, type Company, type Customer, type InvoiceInput, type InvoiceRecord, type Preset } from "@/lib/invoice/domain";
 import { api, createCommandSender, errorText, uid, type Bootstrap, type CustomerEntry, type Detail, type PresetEntry } from "./client";
+import { DeleteDraftButton } from "./delete-draft";
 import { ExportButtons } from "./exports";
 import { InvoicePaper } from "./editor";
 
@@ -35,7 +36,7 @@ export function InvoiceHistory({ onOpen }: { onOpen: (id: string) => void }) {
   </>;
 }
 
-export function InvoiceDetail({ id, onEdit, onCopy }: { id: string; onEdit: (r: InvoiceRecord) => void; onCopy: (input: InvoiceInput) => void }) {
+export function InvoiceDetail({ id, onEdit, onCopy, onDeleted }: { id: string; onEdit: (r: InvoiceRecord) => void; onCopy: (input: InvoiceInput) => void; onDeleted: () => void }) {
   const [detail, setDetail] = useState<Detail | null>(null), [error, setError] = useState(""), [busy, setBusy] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false), [action, setAction] = useState<{ type: "void" | "reverse-payment"; paymentId?: string } | null>(null), [reason, setReason] = useState("");
   const [form] = Form.useForm();
@@ -56,7 +57,7 @@ export function InvoiceDetail({ id, onEdit, onCopy }: { id: string; onEdit: (r: 
   const { invoice, versions, payments } = detail;
   const balance = paymentState(invoice).balance;
   return <>
-    <div className="invoice-section-heading"><div><h1>{invoice.number || "发票草稿"}</h1><StatusTags invoice={invoice} /></div><Space wrap>{invoice.status !== "void" && <Button onClick={() => onEdit(invoice)}>{invoice.status === "draft" ? "继续填写" : "更正发票"}</Button>}<Button onClick={() => { const fresh = blankInvoice(); onCopy({ ...structuredClone(invoice.input), date: fresh.date, dueDate: fresh.dueDate }); }}>复制为新发票</Button></Space></div>
+    <div className="invoice-section-heading"><div><h1>{invoice.number || "发票草稿"}</h1><StatusTags invoice={invoice} /></div><Space wrap>{invoice.status !== "void" && <Button onClick={() => onEdit(invoice)}>{invoice.status === "draft" ? "继续填写" : "更正发票"}</Button>}<Button onClick={() => { const fresh = blankInvoice(); onCopy({ ...structuredClone(invoice.input), date: fresh.date, dueDate: fresh.dueDate }); }}>复制为新发票</Button>{invoice.status === "draft" && <DeleteDraftButton prepare={() => invoice} onDeleted={onDeleted} />}</Space></div>
     {error && <Alert className="invoice-alert" type="warning" title={error} action={<Button onClick={() => void load().catch(e => setError(errorText(e)))}>重新加载</Button>} />}
     <div className="invoice-detail-grid"><section><div className="invoice-panel"><h2>收款情况</h2><div className="invoice-money-summary"><div><small>应收总额</small><strong>{aud(invoice.status === "void" ? 0 : invoice.totals.total)}</strong></div><div><small>已收到</small><strong>{aud(invoice.paidCents)}</strong></div><div><small>{balance < 0 ? "多收金额" : "剩余应收"}</small><strong>{aud(Math.abs(balance))}</strong></div></div>
       {balance < 0 && <Alert type="warning" title="存在多收款，请人工核对退款或后续处理；系统不会自动退款。" />}

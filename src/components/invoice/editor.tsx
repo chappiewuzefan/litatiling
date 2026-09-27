@@ -4,11 +4,12 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import { Alert, Button, Input, Select, Space, Tag } from "antd";
 import { aud, blankInvoice, calculateTotals, formatAbn, formatBsb, formatDate, type Company, type InvoiceInput, type InvoiceRecord } from "@/lib/invoice/domain";
 import { api, ApiError, createCommandSender, errorText, uid, type Bootstrap } from "./client";
+import { DeleteDraftButton } from "./delete-draft";
 import { ExportButtons } from "./exports";
 
 export type EditorHandle = { flush: () => Promise<void> };
-type Props = { data: Bootstrap; initial?: InvoiceRecord; copy?: InvoiceInput; onDone: (id: string) => void; onReload: () => void; refresh: () => Promise<void> };
-export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEditor({ data, initial, copy, onDone, onReload, refresh }, ref) {
+type Props = { data: Bootstrap; initial?: InvoiceRecord; copy?: InvoiceInput; onDone: (id: string) => void; onReload: () => void; onDeleted: () => void; refresh: () => Promise<void> };
+export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEditor({ data, initial, copy, onDone, onReload, onDeleted, refresh }, ref) {
   const [input, setInput] = useState<InvoiceInput>(() => initial?.input || copy || blankInvoice());
   const [record, setRecord] = useState(initial);
   const [saveState, setSaveState] = useState(initial ? "已保存" : "填写后自动保存");
@@ -16,7 +17,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
   const inputRef = useRef(input), recordRef = useRef(record), idRef = useRef(initial?.id || uid());
   // A fresh blank invoice starts as "saved" so leaving it untouched never creates an empty draft; copies still save at once.
   const saved = useRef(initial ? JSON.stringify(initial.input) : copy ? "" : JSON.stringify(input));
-  const pending = useRef<Record<string, unknown> | null>(null), flight = useRef<Promise<void> | null>(null), blocked = useRef(false);
+  const pending = useRef<Record<string, unknown> | null>(null), flight = useRef<Promise<void> | null>(null), blocked = useRef(false), deleting = useRef(false);
   const send = useRef(createCommandSender());
   const revision = initial?.status === "issued";
   const dirtyRevision = revision && JSON.stringify(initial.input) !== JSON.stringify(input);
@@ -27,6 +28,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
       if (JSON.stringify(initial.input) !== JSON.stringify(inputRef.current)) throw new Error("请先提交更正，或点击取消更正");
       return;
     }
+    if (deleting.current) return;
     if (blocked.current) throw new Error("请先重新打开服务器上的最新版本");
     if (flight.current) await flight.current;
     if (saved.current === JSON.stringify(inputRef.current) && (recordRef.current || !copy)) return;
@@ -111,7 +113,7 @@ export const InvoiceEditor = forwardRef<EditorHandle, Props>(function InvoiceEdi
       </div>
       <aside className="invoice-preview-column"><InvoicePaper input={input} company={initial?.company || data.settings.company} number={initial?.number || "DRAFT"} /><p className="invoice-preview-note">内容预览 · 正式 PDF 按 A4 自动分页</p></aside>
     </div>
-    <div className="invoice-action-bar"><div><small>含 GST 总额</small><strong>{aud(totals.total)}</strong></div><Space wrap>{revision ? <Button onClick={onReload}>取消更正</Button> : <Button disabled={busy} onClick={() => void flush().catch(() => {})}>保存草稿</Button>}{record && !revision && saveState === "已保存" && <ExportButtons url={`/api/invoice/preview/${record.id}`} name="LITA-DRAFT" label="草稿" />}<Button type="primary" size="large" disabled={conflict || (revision && (!reason || !dirtyRevision))} loading={busy} onClick={() => void issue()}>{revision ? "提交更正并留档" : "正式开票"}</Button></Space></div>
+    <div className="invoice-action-bar"><div><small>含 GST 总额</small><strong>{aud(totals.total)}</strong></div><Space wrap>{revision ? <Button onClick={onReload}>取消更正</Button> : <Button disabled={busy} onClick={() => void flush().catch(() => {})}>保存草稿</Button>}{record && !revision && <DeleteDraftButton prepare={async () => { deleting.current = true; await flight.current?.catch(() => {}); return recordRef.current; }} onFailed={() => { deleting.current = false; }} onDeleted={() => { saved.current = JSON.stringify(inputRef.current); onDeleted(); }} />}{record && !revision && saveState === "已保存" && <ExportButtons url={`/api/invoice/preview/${record.id}`} name="LITA-DRAFT" label="草稿" />}<Button type="primary" size="large" disabled={conflict || (revision && (!reason || !dirtyRevision))} loading={busy} onClick={() => void issue()}>{revision ? "提交更正并留档" : "正式开票"}</Button></Space></div>
   </>;
 });
 

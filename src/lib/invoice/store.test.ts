@@ -119,4 +119,17 @@ describe("invoice store", () => {
     const issued = await store.command({ action: "issue", id: d.id, operationId: opId(), expectedVersion: d.lockVersion }, "uid");
     await expect(store.command({ action: "save", id: d.id, operationId: opId(), expectedVersion: issued.lockVersion, input: input("1") }, "uid")).rejects.toThrow(/更正/);
   });
+  it("deletes drafts only, hiding them from lists and blocking later edits", async () => {
+    const d = await draft("invoice-delete");
+    const deleted = await store.command({ action: "delete-draft", id: d.id, operationId: opId(), expectedVersion: d.lockVersion }, "uid");
+    expect(deleted.deletedAt).toBeTruthy();
+    expect((await store.list()).map(r => r.id)).not.toContain(d.id);
+    await expect(store.detail(d.id)).rejects.toMatchObject({ status: 404 });
+    await expect(store.command({ action: "save", id: d.id, operationId: opId(), expectedVersion: deleted.lockVersion, input: input("1") }, "uid")).rejects.toThrow(/已删除/);
+
+    const kept = await draft("invoice-keep");
+    const issued = await store.command({ action: "issue", id: kept.id, operationId: opId(), expectedVersion: kept.lockVersion }, "uid");
+    await expect(store.command({ action: "delete-draft", id: kept.id, operationId: opId(), expectedVersion: issued.lockVersion }, "uid")).rejects.toThrow(/作废/);
+    expect((await store.list()).map(r => r.id)).toContain(kept.id);
+  });
 });

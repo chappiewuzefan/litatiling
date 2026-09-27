@@ -35,6 +35,8 @@ export type InvoiceRecord = {
   id: string; input: InvoiceInput; company: Company | null; totals: Totals; number: string | null;
   status: "draft" | "issued" | "void"; version: number; lockVersion: number;
   paidCents: number; createdAt: string; updatedAt: string; voidReason?: string;
+  // Deleted drafts are hidden everywhere but kept with their event trail; issued invoices are voided instead.
+  deletedAt?: string;
 };
 export type InvoiceVersion = {
   version: number; number: string; input: InvoiceInput; company: Company; totals: Totals;

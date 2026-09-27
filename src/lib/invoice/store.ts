@@ -13,6 +13,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("void"), ...commandBase, reason: z.string().min(1).max(500) }),
   z.object({ action: z.literal("payment"), ...commandBase, amount: z.string().regex(/^\d{1,8}(\.\d{1,2})?$/), date: z.string(), method: z.enum(["Bank transfer", "Cash", "Other"]), note: z.string().max(500) }),
   z.object({ action: z.literal("reverse-payment"), ...commandBase, paymentId: idSchema, reason: z.string().min(1).max(500) }),
+  z.object({ action: z.literal("delete-draft"), ...commandBase }),
 ]);
 export type InvoiceCommand = z.infer<typeof commandSchema>;
 const hash = (v: unknown) => createHash("sha256").update(JSON.stringify(v)).digest("hex");
@@ -56,13 +57,13 @@ export class InvoiceStore {
   async list() {
     // Small internal ledger: search/CSV operate on the complete ledger, never a silently truncated page.
     const result = await this.records().orderBy("updatedAt", "desc").get();
-    return result.docs.map(d => d.data() as InvoiceRecord);
+    return result.docs.map(d => d.data() as InvoiceRecord).filter(r => !r.deletedAt);
   }
   async detail(id: string) {
     idSchema.parse(id);
     const ref = this.records().doc(id);
     const [doc, versions, payments] = await Promise.all([ref.get(), ref.collection("versions").orderBy("version", "desc").get(), ref.collection("payments").orderBy("createdAt", "desc").get()]);
-    if (!doc.exists) throw new InvoiceError("发票不存在", 404);
+    if (!doc.exists || (doc.data() as InvoiceRecord).deletedAt) throw new InvoiceError("发票不存在或草稿已删除", 404);
     return { invoice: doc.data() as InvoiceRecord, versions: versions.docs.map(d => d.data() as InvoiceVersion), payments: payments.docs.map(d => d.data() as Payment) };
   }
   async getVersion(id: string, version: number) {
@@ -85,6 +86,7 @@ export class InvoiceStore {
       }
       const doc = await tx.get(ref);
       const existing = doc.exists ? doc.data() as InvoiceRecord : null;
+      if (existing?.deletedAt) throw new InvoiceError("这张草稿已删除", 409);
       if ((existing?.lockVersion || 0) !== cmd.expectedVersion) throw new InvoiceError("这张发票已在其他设备修改。请重新打开后再编辑。", 409);
       const timestamp = now();
       let result: InvoiceRecord;
@@ -127,6 +129,9 @@ export class InvoiceStore {
           const payment: Payment = { id: cmd.operationId, cents: amount, date: cmd.date, method: cmd.method, note: cmd.note, createdAt: timestamp };
           tx.create(ref.collection("payments").doc(cmd.operationId), payment);
           result.paidCents += amount;
+        } else if (cmd.action === "delete-draft") {
+          if (existing.status !== "draft") throw new InvoiceError("只有草稿可以删除；已开票的发票请使用作废", 409);
+          result.deletedAt = timestamp;
         } else if (cmd.action === "reverse-payment") {
           const pRef = ref.collection("payments").doc(cmd.paymentId);
           const pDoc = await tx.get(pRef);
